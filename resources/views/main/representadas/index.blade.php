@@ -4,7 +4,7 @@
 <section class="container">
     <div class="row" style="padding-top:60px;">
         <div class="col-8" style="vertical-align: middle">
-            <h4 style="color:#003162;" class="title mt-2">
+            <h4 style="color:#003162;" class="title  mt-2">
                 <i class="fa fa-building mx-2"></i>Cadastro de Representadas
             </h4>
         </div>
@@ -20,26 +20,27 @@
 </section>
 <script>
     $("#addNew").click(function(){
-        showModal("{{ route('representadas.form') }}");
+        showModal("{{route('fornecedores.form')}}");
     });
 
     function tblPopulate(){
         $.ajax({
-            url: "{{ route('representadas.show') }}",
+            url: "{{route('fornecedores.show')}}",
             method: "GET",
-            beforeSend: function(){
+            beforeSend:function(){
                 $("#divTable").html("Carregando");
             },
-            success: function(response){
+            success:function(response){
                 $("#divTable").html(response);
             },
             error: function(){
-                $("#divTable").html("Erro ao carregar dados");
+                $("#divTable").html('Erro ao carregar dados');
             }
         });
     }
 
     tblPopulate();
+
 
 </script>
 @endsection

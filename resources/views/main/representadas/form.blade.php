@@ -155,11 +155,11 @@ $('#create_edit').on('keydown', function (e) {
 
 
 @if($representada!=null)
-    var url_post = "{{route('representadaes.update',$representada->id)}}";
+    var url_post = "{{route('representadas.update',$representada->id)}}";
     var tipo = $("#tipo_pessoa").val();
     showTipo(tipo);
 @else
-    var url_post = "{{route('representadaes.store')}}";
+    var url_post = "{{route('representadas.store')}}";
 @endif
 
 

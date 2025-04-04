@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Fornecedor extends Model
+class Representada extends Model
 {
-
     // Nome da tabela
     protected $table = 'representadas';
 

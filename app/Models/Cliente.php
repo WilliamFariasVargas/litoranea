@@ -3,11 +3,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Fornecedor extends Model
+class Cliente extends Model
 {
 
     // Nome da tabela
-    protected $table = 'fornecedores';
+    protected $table = 'clientes';
 
     // Atribuição em massa (mass assignment)
     protected $fillable = [

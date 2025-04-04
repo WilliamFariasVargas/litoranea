@@ -19,6 +19,7 @@
     }
 </style>
 
+
 <!-- Nav Tabs -->
 <ul class="nav nav-tabs justify-content-center" id="clientesTabs" role="tablist">
     <li class="nav-item" role="presentation">
@@ -42,27 +43,24 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>CPF/CNPJ</th>
-                        <th>Nome (Razão Social)</th>
-                        <th>Fantasia (Se houver)</th>
-                        <th>Telefone</th>
-                        <th>E-mail</th>
-                        <th>Cidade-UF</th>
+                        <th style="white-space: nowrap">CNPJ</th>
+                        <th style="white-space: nowrap">Empresa</th>
+                        <th style="white-space: nowrap">Fantasia</th>
+                        <th style="white-space: nowrap">Telefone</th>
+                        <th style="white-space: nowrap">E-mail</th>
+                        <th style="white-space: nowrap">Cidade-UF</th>
                         <th class="text-center" style="white-space: nowrap">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @php $juridicoExiste = false; @endphp
                     @foreach ($clientes as $cliente)
                         @if($cliente->tipo_pessoa == 1)
-                            @php $juridicoExiste = true; @endphp
                             <tr>
                                 <td>{{ $cliente->id }}</td>
-                                <td>{{ $cliente->cpf }}</td>
-                                <td>{{ $cliente->nome }}</td>
-                                <td>{{ $cliente->sobrenome }}</td>
-                                <!-- ou nome_fantasia, caso use esse campo -->
-                                <td>{{ $cliente->telefone }}</td>
+                                <td>{{ $cliente->cpf_cnpj }}</td>
+                                <td>{{ $cliente->razao_social }}</td>
+                                <td>{{ $cliente->nome_fantasia }}</td>
+                                <td>{{ $cliente->fone }}</td>
                                 <td>{{ $cliente->email }}</td>
                                 <td>{{ $cliente->cidade }}-{{ $cliente->uf }}</td>
                                 <td class="text-center" style="white-space: nowrap">
@@ -72,129 +70,115 @@
                             </tr>
                         @endif
                     @endforeach
-                    @if(!$juridicoExiste)
-                        <tr>
-                            <td colspan="8" class="text-center">Nenhum registro encontrado</td>
-                        </tr>
-                    @endif
                 </tbody>
             </table>
         </div>
 
         <!-- Cards para celular -->
         <div class="d-lg-none">
-            @php $juridicoExisteMobile = false; @endphp
             @foreach ($clientes as $cliente)
                 @if($cliente->tipo_pessoa == 1)
-                    @php $juridicoExisteMobile = true; @endphp
                     <div class="card mb-3 shadow-sm border-secondary">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">{{ $cliente->nome }}</h6>
+                            <h6 class="mb-0">{{ $cliente->nome_fantasia }}</h6>
                             <div style="min-width: 75px">
                                 <button class="btn btn-sm btn-edit me-2" data-id="{{ $cliente->id }}"><i class="fa fa-edit"></i></button>
                                 <button class="btn btn-sm btn-delete" data-id="{{ $cliente->id }}"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
                         <div class="card-body">
-                            <p><b>CPF/CNPJ:</b> {{ $cliente->cpf }}</p>
-                            <p><b>Razão Social:</b> {{ $cliente->nome }}</p>
-                            <p><b>Telefone:</b> {{ $cliente->telefone }}</p>
-                            <p><b>E-mail:</b> {{ $cliente->email }}</p>
+                            <p><b>CNPJ:</b> {{ $cliente->cpf_cnpj }}</p>
+                            <p><b>Empresa:</b> {{ $cliente->razao_social }}</p>
+                            <p><b>Telefone:</b> {{ $cliente->fone }}</p>
+                            <p><b>Email:</b> {{ $cliente->email }}</p>
                             <p><b>Cidade-UF:</b> {{ $cliente->cidade }}-{{ $cliente->uf }}</p>
                         </div>
                     </div>
                 @endif
             @endforeach
-            @if(!$juridicoExisteMobile)
-                <p class="text-center">Nenhum registro encontrado</p>
-            @endif
         </div>
     </div>
 
     <!-- Pessoa Física Tab -->
     <div class="tab-pane fade" id="fisica" role="tabpanel" aria-labelledby="fisica-tab">
-        <!-- Tabela para telas maiores -->
-        <div class="d-none d-lg-block" style="padding-top:60px;">
-            <table class="table" id="table-fisico">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>CPF</th>
-                        <th>Nome</th>
-                        <th>Sobrenome</th>
-                        <th>Telefone</th>
-                        <th>E-mail</th>
-                        <th>Cidade-UF</th>
-                        <th class="text-center" style="white-space: nowrap">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $fisicoExiste = false; @endphp
-                    @foreach ($clientes as $cliente)
-                        @if($cliente->tipo_pessoa == 2)
-                            @php $fisicoExiste = true; @endphp
-                            <tr>
-                                <td>{{ $cliente->id }}</td>
-                                <td>{{ $cliente->cpf }}</td>
-                                <td>{{ $cliente->nome }}</td>
-                                <td>{{ $cliente->sobrenome }}</td>
-                                <td>{{ $cliente->telefone }}</td>
-                                <td>{{ $cliente->email }}</td>
-                                <td>{{ $cliente->cidade }}-{{ $cliente->uf }}</td>
-                                <td class="text-center" style="white-space: nowrap">
-                                    <button class="btn btn-sm btn-success btn-edit" data-id="{{ $cliente->id }}"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $cliente->id }}"><i class="fa fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        @endif
-                    @endforeach
-                    @if(!$fisicoExiste)
-                        <tr>
-                            <td colspan="8" class="text-center">Nenhum registro encontrado</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
+        @php $exists = false; @endphp
+        @foreach ($clientes as $cliente)
+            @if($cliente->tipo_pessoa == 2)
+                @php $exists = true; @endphp
+            @endif
+        @endforeach
 
-        <!-- Cards para celular -->
-        <div class="d-lg-none">
-            @php $fisicoExisteMobile = false; @endphp
-            @foreach ($clientes as $cliente)
-                @if($cliente->tipo_pessoa == 2)
-                    @php $fisicoExisteMobile = true; @endphp
-                    <div class="card mb-3 shadow-sm border-secondary">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">{{ $cliente->nome }}</h6>
-                            <div style="min-width: 75px">
-                                <button class="btn btn-sm btn-edit me-2" data-id="{{ $cliente->id }}"><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-sm btn-delete" data-id="{{ $cliente->id }}"><i class="fa fa-trash"></i></button>
+        @if($exists)
+            <!-- Tabela para telas maiores -->
+            <div class="d-none d-lg-block" style="padding-top:60px;">
+                <table class="table" id="table-fisico">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th style="white-space: nowrap">CPF</th>
+                            <th style="white-space: nowrap">Nome</th>
+                            <th style="white-space: nowrap">Sobrenome</th>
+                            <th style="white-space: nowrap">Telefone</th>
+                            <th style="white-space: nowrap">E-mail</th>
+                            <th style="white-space: nowrap">Cidade-UF</th>
+                            <th class="text-center" style="white-space: nowrap">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($clientes as $cliente)
+                            @if($cliente->tipo_pessoa == 2)
+                                <tr>
+                                    <td>{{ $cliente->id }}</td>
+                                    <td>{{ $cliente->cpf_cnpj }}</td>
+                                    <td>{{ $cliente->razao_social }}</td>
+                                    <td>{{ $cliente->nome_fantasia }}</td>
+                                    <td>{{ $cliente->fone }}</td>
+                                    <td>{{ $cliente->email }}</td>
+                                    <td>{{ $cliente->cidade }}-{{ $cliente->uf }}</td>
+                                    <td class="text-center" style="white-space: nowrap">
+                                        <button class="btn btn-sm btn-success btn-edit" data-id="{{ $cliente->id }}"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $cliente->id }}"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Cards para celular -->
+            <div class="d-lg-none">
+                @foreach ($clientes as $cliente)
+                    @if($cliente->tipo_pessoa == 2)
+                        <div class="card mb-3 shadow-sm border-secondary">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">{{ $cliente->razao_social }}</h6>
+                                <div style="min-width: 75px">
+                                    <button class="btn btn-sm btn-edit me-2" data-id="{{ $cliente->id }}"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-delete" data-id="{{ $cliente->id }}"><i class="fa fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p><b>CPF:</b> {{ $cliente->cpf_cnpj }}</p>
+                                <p><b>Nome:</b> {{ $cliente->razao_social }}</p>
+                                <p><b>Telefone:</b> {{ $cliente->fone }}</p>
+                                <p><b>Email:</b> {{ $cliente->email }}</p>
+                                <p><b>Cidade-UF:</b> {{ $cliente->cidade }}-{{ $cliente->uf }}</p>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <p><b>CPF:</b> {{ $cliente->cpf }}</p>
-                            <p><b>Nome:</b> {{ $cliente->nome }}</p>
-                            <p><b>Sobrenome:</b> {{ $cliente->sobrenome }}</p>
-                            <p><b>Telefone:</b> {{ $cliente->telefone }}</p>
-                            <p><b>E-mail:</b> {{ $cliente->email }}</p>
-                            <p><b>Cidade-UF:</b> {{ $cliente->cidade }}-{{ $cliente->uf }}</p>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-            @if(!$fisicoExisteMobile)
-                <p class="text-center">Nenhum registro encontrado</p>
-            @endif
-        </div>
+                    @endif
+                @endforeach
+            </div>
+        @else
+            <p class="text-center">Nenhum registro para Pessoa Física.</p>
+        @endif
     </div>
 </div>
 
 <script>
 $(document).ready(function() {
-    // Tooltip (se necessário)
     $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Botão Editar
     $(".btn-edit").click(function(e) {
         e.preventDefault();
         var id = $(this).data('id');
@@ -202,9 +186,7 @@ $(document).ready(function() {
         showModal(url);
     });
 
-    // Botão Excluir
     $(".btn-delete").click(function(e) {
-        e.preventDefault();
         var id = $(this).data('id');
         var url = "{{ route('clientes.delete') }}" + '/' + id;
         swal.fire({
@@ -229,8 +211,9 @@ $(document).ready(function() {
                             icon: 'success',
                             confirmButtonText: 'OK'
                         }).then(function() {
-                            tblPopulate(); // Recarrega a tabela
+                            tblPopulate();
                         });
+                        $("#closeModal").trigger('click');
                     },
                     error: function(xhr) {
                         var errorMessage = 'Erro ao remover registro';
@@ -249,7 +232,6 @@ $(document).ready(function() {
         });
     });
 
-    // DataTables para as duas tabelas
     $('#table-fisico').DataTable({
         paging: true,
         searching: true,

@@ -12,18 +12,34 @@
         <br><br><hr>
     </div>
 </section>
-<section class="col-md-12 mt-2 container-fluid" id="divTable"></section>
+
+
+<section class="col-md-12 mt-2 container-fluid" id="divTable">
+
+</section>
 <script>
-    $("#addNew").click(function(){ showModal("{{ route('transportadoras.form') }}"); });
+    $("#addNew").click(function(){
+        showModal("{{route('fornecedores.form')}}");
+    });
+
     function tblPopulate(){
         $.ajax({
-            url: "{{ route('transportadoras.show') }}",
+            url: "{{route('fornecedores.show')}}",
             method: "GET",
-            beforeSend: function(){ $("#divTable").html("Carregando..."); },
-            success: function(response){ $("#divTable").html(response); },
-            error: function(){ $("#divTable").html('Erro ao carregar dados'); }
+            beforeSend:function(){
+                $("#divTable").html("Carregando");
+            },
+            success:function(response){
+                $("#divTable").html(response);
+            },
+            error: function(){
+                $("#divTable").html('Erro ao carregar dados');
+            }
         });
     }
+
     tblPopulate();
+
+
 </script>
 @endsection
