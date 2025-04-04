@@ -16,7 +16,8 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                 <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                <li><a class="dropdown-item" href="{{ route('main.usuarios') }}">Cadastrar</a></li>
+                <li><a class="dropdown-item" href="{{ route('users.index') }}">Cadastrar</a></li>
+
                 </ul>
             </li>
 

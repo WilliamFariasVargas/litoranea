@@ -1,12 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 Route::prefix('/')->middleware('auth')->group(function () {
     Route::get('/' , [\App\Http\Controllers\UserController::class, 'logged'])->name('main.index');
 });
 
 Auth::routes();
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('users', UserController::class)->middleware('can:manage-users');
+});
+
 
 
 Route::prefix('main')->middleware('auth')->group(function () {
@@ -67,11 +73,3 @@ Route::prefix('transportadoras')->middleware('auth')->group(function () {
     Route::post('/delete/{id?}', [\App\Http\Controllers\TransportadoraController::class, 'delete'])->name('transportadoras.delete');
 });
 
-Route::prefix('usuarios')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\UsuarioController::class, 'index'])->name('main.usuarios');
-    Route::get('/form/{id?}', [\App\Http\Controllers\UsuarioController::class, 'form'])->name('usuarios.form');
-    Route::post('/store', [\App\Http\Controllers\UsuarioController::class, 'store'])->name('usuarios.store');
-    Route::post('/update/{id?}', [\App\Http\Controllers\UsuarioController::class, 'update'])->name('usuarios.update');
-    Route::get('/show', [\App\Http\Controllers\UsuarioController::class, 'show'])->name('usuarios.show');
-    Route::post('/delete/{id?}', [\App\Http\Controllers\UsuarioController::class, 'delete'])->name('usuarios.delete');
-});
