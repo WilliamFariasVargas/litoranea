@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +28,9 @@
 
      <!-- jQuery e JavaScript do DataTables -->
      <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+     <!------ CSS login -------->
+     <script src="{{asset('assets/css/login.css')}}?id={{rand()}}"></script>
 
 
      <script src="{{asset('assets/js/main.js')}}?id={{rand()}}"></script>

@@ -4,7 +4,7 @@
 
 <style>
     /* Centraliza os nav tabs */
-    #fornecedoresTabs {
+    #representadasTabs {
         justify-content: center;
     }
     /* Define a cor para os nav links inativos */
@@ -19,8 +19,9 @@
     }
 </style>
 
+
 <!-- Nav Tabs -->
-<ul class="nav nav-tabs justify-content-center" id="fornecedoresTabs" role="tablist">
+<ul class="nav nav-tabs justify-content-center" id="representadasTabs" role="tablist">
     <li class="nav-item" role="presentation">
         <a class="nav-link active" id="juridica-tab" data-bs-toggle="tab" href="#juridica" role="tab" aria-controls="juridica" aria-selected="true">
             <i class="fa fa-users mx-1"></i> Pessoa Jurídica
@@ -33,7 +34,7 @@
     </li>
 </ul>
 
-<div class="tab-content" id="fornecedoresTabsContent">
+<div class="tab-content" id="representadasTabsContent">
     <!-- Pessoa Jurídica Tab -->
     <div class="tab-pane fade show active" id="juridica" role="tabpanel" aria-labelledby="juridica-tab">
         <!-- Tabela para telas maiores -->
@@ -52,19 +53,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($fornecedores as $fornecedor)
-                        @if($fornecedor->tipo_pessoa == 1)
+                    @foreach ($representadas as $representada)
+                        @if($representada->tipo_pessoa == 1)
                             <tr>
-                                <td>{{ $fornecedor->id }}</td>
-                                <td>{{ $fornecedor->cpf_cnpj }}</td>
-                                <td>{{ $fornecedor->razao_social }}</td>
-                                <td>{{ $fornecedor->nome_fantasia }}</td>
-                                <td>{{ $fornecedor->fone }}</td>
-                                <td>{{ $fornecedor->email }}</td>
-                                <td>{{ $fornecedor->cidade }}-{{ $fornecedor->uf }}</td>
+                                <td>{{ $representada->id }}</td>
+                                <td>{{ $representada->cpf_cnpj }}</td>
+                                <td>{{ $representada->razao_social }}</td>
+                                <td>{{ $representada->nome_fantasia }}</td>
+                                <td>{{ $representada->fone }}</td>
+                                <td>{{ $representada->email }}</td>
+                                <td>{{ $representada->cidade }}-{{ $representada->uf }}</td>
                                 <td class="text-center" style="white-space: nowrap">
-                                    <button class="btn btn-sm btn-success btn-edit" data-id="{{ $fornecedor->id }}"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $fornecedor->id }}"><i class="fa fa-trash"></i></button>
+                                    <button class="btn btn-sm btn-success btn-edit" data-id="{{ $representada->id }}"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $representada->id }}"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                         @endif
@@ -75,22 +76,22 @@
 
         <!-- Cards para celular -->
         <div class="d-lg-none">
-            @foreach ($fornecedores as $fornecedor)
-                @if($fornecedor->tipo_pessoa == 1)
+            @foreach ($representadas as $representada)
+                @if($representada->tipo_pessoa == 1)
                     <div class="card mb-3 shadow-sm border-secondary">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0">{{ $fornecedor->nome_fantasia }}</h6>
+                            <h6 class="mb-0">{{ $representada->nome_fantasia }}</h6>
                             <div style="min-width: 75px">
-                                <button class="btn btn-sm btn-edit me-2" data-id="{{ $fornecedor->id }}"><i class="fa fa-edit"></i></button>
-                                <button class="btn btn-sm btn-delete" data-id="{{ $fornecedor->id }}"><i class="fa fa-trash"></i></button>
+                                <button class="btn btn-sm btn-edit me-2" data-id="{{ $representada->id }}"><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-sm btn-delete" data-id="{{ $representada->id }}"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
                         <div class="card-body">
-                            <p><b>CNPJ:</b> {{ $fornecedor->cpf_cnpj }}</p>
-                            <p><b>Empresa:</b> {{ $fornecedor->razao_social }}</p>
-                            <p><b>Telefone:</b> {{ $fornecedor->fone }}</p>
-                            <p><b>Email:</b> {{ $fornecedor->email }}</p>
-                            <p><b>Cidade-UF:</b> {{ $fornecedor->cidade }}-{{ $fornecedor->uf }}</p>
+                            <p><b>CNPJ:</b> {{ $representada->cpf_cnpj }}</p>
+                            <p><b>Empresa:</b> {{ $representada->razao_social }}</p>
+                            <p><b>Telefone:</b> {{ $representada->fone }}</p>
+                            <p><b>Email:</b> {{ $representada->email }}</p>
+                            <p><b>Cidade-UF:</b> {{ $representada->cidade }}-{{ $representada->uf }}</p>
                         </div>
                     </div>
                 @endif
@@ -101,8 +102,8 @@
     <!-- Pessoa Física Tab -->
     <div class="tab-pane fade" id="fisica" role="tabpanel" aria-labelledby="fisica-tab">
         @php $exists = false; @endphp
-        @foreach ($fornecedores as $fornecedor)
-            @if($fornecedor->tipo_pessoa == 2)
+        @foreach ($representadas as $representada)
+            @if($representada->tipo_pessoa == 2)
                 @php $exists = true; @endphp
             @endif
         @endforeach
@@ -124,19 +125,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($fornecedores as $fornecedor)
-                            @if($fornecedor->tipo_pessoa == 2)
+                        @foreach ($representadas as $representada)
+                            @if($representada->tipo_pessoa == 2)
                                 <tr>
-                                    <td>{{ $fornecedor->id }}</td>
-                                    <td>{{ $fornecedor->cpf_cnpj }}</td>
-                                    <td>{{ $fornecedor->razao_social }}</td>
-                                    <td>{{ $fornecedor->nome_fantasia }}</td>
-                                    <td>{{ $fornecedor->fone }}</td>
-                                    <td>{{ $fornecedor->email }}</td>
-                                    <td>{{ $fornecedor->cidade }}-{{ $fornecedor->uf }}</td>
+                                    <td>{{ $representada->id }}</td>
+                                    <td>{{ $representada->cpf_cnpj }}</td>
+                                    <td>{{ $representada->razao_social }}</td>
+                                    <td>{{ $representada->nome_fantasia }}</td>
+                                    <td>{{ $representada->fone }}</td>
+                                    <td>{{ $representada->email }}</td>
+                                    <td>{{ $representada->cidade }}-{{ $representada->uf }}</td>
                                     <td class="text-center" style="white-space: nowrap">
-                                        <button class="btn btn-sm btn-success btn-edit" data-id="{{ $fornecedor->id }}"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $fornecedor->id }}"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-sm btn-success btn-edit" data-id="{{ $representada->id }}"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-danger btn-delete" data-id="{{ $representada->id }}"><i class="fa fa-trash"></i></button>
                                     </td>
                                 </tr>
                             @endif
@@ -147,22 +148,22 @@
 
             <!-- Cards para celular -->
             <div class="d-lg-none">
-                @foreach ($fornecedores as $fornecedor)
-                    @if($fornecedor->tipo_pessoa == 2)
+                @foreach ($representadas as $representada)
+                    @if($representada->tipo_pessoa == 2)
                         <div class="card mb-3 shadow-sm border-secondary">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0">{{ $fornecedor->razao_social }}</h6>
+                                <h6 class="mb-0">{{ $representada->razao_social }}</h6>
                                 <div style="min-width: 75px">
-                                    <button class="btn btn-sm btn-edit me-2" data-id="{{ $fornecedor->id }}"><i class="fa fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-delete" data-id="{{ $fornecedor->id }}"><i class="fa fa-trash"></i></button>
+                                    <button class="btn btn-sm btn-edit me-2" data-id="{{ $representada->id }}"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-delete" data-id="{{ $representada->id }}"><i class="fa fa-trash"></i></button>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <p><b>CPF:</b> {{ $fornecedor->cpf_cnpj }}</p>
-                                <p><b>Nome:</b> {{ $fornecedor->razao_social }}</p>
-                                <p><b>Telefone:</b> {{ $fornecedor->fone }}</p>
-                                <p><b>Email:</b> {{ $fornecedor->email }}</p>
-                                <p><b>Cidade-UF:</b> {{ $fornecedor->cidade }}-{{ $fornecedor->uf }}</p>
+                                <p><b>CPF:</b> {{ $representada->cpf_cnpj }}</p>
+                                <p><b>Nome:</b> {{ $representada->razao_social }}</p>
+                                <p><b>Telefone:</b> {{ $representada->fone }}</p>
+                                <p><b>Email:</b> {{ $representada->email }}</p>
+                                <p><b>Cidade-UF:</b> {{ $representada->cidade }}-{{ $representada->uf }}</p>
                             </div>
                         </div>
                     @endif
@@ -181,13 +182,13 @@ $(document).ready(function() {
     $(".btn-edit").click(function(e) {
         e.preventDefault();
         var id = $(this).data('id');
-        var url = "{{ route('fornecedores.form') }}" + '/' + id;
+        var url = "{{ route('representadas.form') }}" + '/' + id;
         showModal(url);
     });
 
     $(".btn-delete").click(function(e) {
         var id = $(this).data('id');
-        var url = "{{ route('fornecedores.delete') }}" + '/' + id;
+        var url = "{{ route('representadas.delete') }}" + '/' + id;
         swal.fire({
             title: 'Atenção',
             text: "Você deseja excluir o registro?",
