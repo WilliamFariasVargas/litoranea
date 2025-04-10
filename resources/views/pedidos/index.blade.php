@@ -1,0 +1,37 @@
+@extends('layouts.app')
+@section('content')
+<div class="container">
+    <h1 class="mb-4">Pedidos</h1>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <a href="{{ route('pedidos.create') }}" class="btn btn-primary mb-3">Novo Pedido</a>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Valor Total</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($pedidos as $pedido)
+                <tr>
+                    <td>{{ $pedido->numero_pedido }}</td>
+                    <td>{{ $pedido->cliente->nome }}</td>
+                    <td>R$ {{ number_format($pedido->valor_total, 2, ',', '.') }}</td>
+                    <td>
+                        <a href="{{ route('pedidos.pdf', $pedido) }}" class="btn btn-sm btn-secondary" target="_blank">PDF</a>
+                        <a href="{{ route('pedidos.imprimir', $pedido) }}" class="btn btn-sm btn-info" target="_blank">Imprimir</a>
+                        <a href="https://wa.me/?text={{ urlencode('Olá! Segue o pedido número ' . $pedido->numero_pedido . '.') }}" target="_blank" class="btn btn-sm btn-success">WhatsApp</a>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endsection

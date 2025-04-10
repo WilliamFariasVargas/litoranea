@@ -83,3 +83,7 @@ Route::prefix('transportadoras')->middleware('auth')->group(function () {
     Route::post('/delete/{id?}', [\App\Http\Controllers\TransportadoraController::class, 'delete'])->name('transportadoras.delete');
 });
 
+Route::resource('pedidos', PedidoController::class);
+Route::get('pedidos/{pedido}/pdf', [PedidoController::class, 'gerarPdf'])->name('pedidos.pdf');
+Route::get('pedidos/{pedido}/imprimir', [PedidoController::class, 'imprimir'])->name('pedidos.imprimir');
+

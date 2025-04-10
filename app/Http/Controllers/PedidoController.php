@@ -1,82 +1,75 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Pedido;
+use App\Models\PedidoItem;
+use App\Models\Fornecedor;
+use App\Models\Representada;
+use App\Models\Cliente;
+use App\Models\Transportadora;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PedidoController extends Controller
 {
     public function index()
     {
-        return view('main.pedidos.index');
+        $pedidos = Pedido::with('cliente')->orderByDesc('id')->get();
+        return view('pedidos.index', compact('pedidos'));
     }
 
-    public function form(Request $request, $id = '')
+    public function create()
     {
-        $pedido = ($id != '') ? Pedido::find($id) : null;
-        return view('main.pedidos.form', compact('pedido'));
-    }
-
-    public function show()
-    {
-        $pedidos = Pedido::orderBy('data_pedido', 'desc')->get();
-        return view('main.pedidos.table', compact('pedidos'));
+        return view('pedidos.create', [
+            'clientes' => Cliente::all(),
+            'representadas' => Representada::all(),
+            'fornecedores' => Fornecedor::all(),
+            'transportadoras' => Transportadora::all(),
+        ]);
     }
 
     public function store(Request $request)
     {
-        try {
-            $this->validate($request, [
-                'cliente_id'  => 'required|integer',
-                'data_pedido' => 'required|date',
-                'status'      => 'required|string',
-                'valor_total' => 'required|numeric'
+        $pedido = Pedido::create([
+            'numero_pedido' => uniqid('PED'),
+            'representada_id' => $request->representada_id,
+            'cliente_id' => $request->cliente_id,
+            'Fornecedor_id' => $request->Fornecedor_id,
+            'transportadora_id' => $request->transportadora_id,
+            'valor_total' => 0,
+        ]);
+
+        $totalGeral = 0;
+        foreach ($request->itens as $item) {
+            $total = $item['quantidade'] * $item['valor_unitario'];
+            PedidoItem::create([
+                'pedido_id' => $pedido->id,
+                'item' => $item['item'],
+                'codigo' => $item['codigo'],
+                'descricao' => $item['descricao'],
+                'quantidade' => $item['quantidade'],
+                'valor_unitario' => $item['valor_unitario'],
+                'valor_com_desconto' => $item['valor_com_desconto'] ?? $item['valor_unitario'],
+                'total' => $total,
             ]);
-
-            // Regras de negócio e verificações adicionais podem ser implementadas aqui
-
-            $pedido = Pedido::create($request->all());
-
-            return response()->json([
-                'id_pedido' => $pedido->id,
-                'message'   => "Registro salvo com sucesso"
-            ], 201);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], 500);
+            $totalGeral += $total;
         }
+
+        $pedido->update(['valor_total' => $totalGeral]);
+
+        return redirect()->route('pedidos.index')->with('success', 'Pedido criado com sucesso!');
     }
 
-    public function update(Request $request, $id = '')
+    public function imprimir(Pedido $pedido)
     {
-        try {
-            $pedido = Pedido::find($id);
-            if (!$pedido) {
-                return response()->json(['message' => "Registro não encontrado"], 404);
-            }
-            $pedido->update($request->all());
-
-            return response()->json([
-                'id_pedido' => $id,
-                'message'   => "Registro atualizado com sucesso"
-            ], 200);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], 500);
-        }
+        $pedido->load('itens', 'cliente', 'representada', 'Fornecedor', 'transportadora');
+        return view('pedidos.imprimir', compact('pedido'));
     }
 
-    public function delete(Request $request, $id = '')
+    public function gerarPdf(Pedido $pedido)
     {
-        try {
-            $pedido = Pedido::find($id);
-            if (!$pedido) {
-                return response()->json(['message' => "Registro não encontrado"], 404);
-            }
-            $pedido->delete();
-
-            return response()->json(['message' => "Registro excluído com sucesso"], 200);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], 500);
-        }
+        $pedido->load('itens', 'cliente', 'representada', 'Fornecedor', 'transportadora');
+        $pdf = Pdf::loadView('pedidos.pdf', compact('pedido'));
+        return $pdf->download("pedido-{$pedido->numero_pedido}.pdf");
     }
 }
