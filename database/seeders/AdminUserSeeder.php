@@ -17,11 +17,11 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'admin@system.com'],
+            ['email' => 'wf.vargas@hotmail.com'],
             [
                 'name'              => 'Admin',
                 'email_verified_at' => Carbon::now(),
-                'password'          => Hash::make('1234'),
+                'password'          => Hash::make('487041wfv'),
                 'level'             => 10,
             ]
         );

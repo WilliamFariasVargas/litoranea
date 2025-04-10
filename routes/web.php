@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PedidoController;
+
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class)->middleware('can:manage-users');
@@ -84,6 +86,7 @@ Route::prefix('transportadoras')->middleware('auth')->group(function () {
 });
 
 Route::resource('pedidos', PedidoController::class);
+Route::get('/pedidos', [PedidoController::class, 'index']);
 Route::get('pedidos/{pedido}/pdf', [PedidoController::class, 'gerarPdf'])->name('pedidos.pdf');
 Route::get('pedidos/{pedido}/imprimir', [PedidoController::class, 'imprimir'])->name('pedidos.imprimir');
 
