@@ -4,58 +4,115 @@
 <section class="container">
     <div class="row" style="padding-top:60px;">
         <div class="col-8">
-            <h4 style="color:#003162;" class="title mt-2"><i class="fa fa-user mx-2"></i>Gerenciamento de Usuários</h4>
+            <h4 style="color:#003162;" class="title mt-2">
+                <i class="fa fa-user mx-2"></i>Gerenciamento de Usuários
+            </h4>
         </div>
         <div class="col-4 text-end">
-            <button style="background-color:#003162;" class="btn btn-primary" id="addNew"><i class="fa fa-plus mx-2"></i>Novo</button>
+            <button style="background-color:#003162;" class="btn btn-primary" id="addNew">
+                <i class="fa fa-plus mx-2"></i>Novo
+            </button>
         </div>
         <br><br><hr>
     </div>
 </section>
 
-
 <section class="col-md-12 mt-2 container-fluid" id="divTable">
-
+    @include('main.users.table')
 </section>
-<script>
-    $(document).ready(function() {
-        $('#table-users').DataTable({ ... });
 
-        // Novo usuário
-        $("#addNew").click(function(){
+<script>
+    function initUserTable() {
+        if ( $.fn.dataTable.isDataTable('#table-users') ) {
+            $('#table-users').DataTable().destroy();
+        }
+
+        $('#table-users').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            lengthChange: true,
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            }
+        });
+    }
+
+    function bindUserForm() {
+        $(document).off('submit', '#formUser').on('submit', '#formUser', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const url = form.attr('action');
+            const method = form.find('input[name="_method"]').val() || 'POST';
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: form.serialize(),
+                success: function(data) {
+                    Swal.fire('Sucesso', data.message, 'success')
+                        .then(() => location.reload());
+                },
+                error: function(xhr) {
+                    const msg = xhr.responseJSON?.message || 'Erro ao salvar usuário';
+                    Swal.fire('Erro!', msg, 'error');
+                }
+            });
+        });
+    }
+
+    function showModal(url) {
+        const modal = $('#modal');
+        modal.modal('show');
+        modal.find('.modal-content').html('<div class="text-center p-5">Carregando...</div>');
+
+        modal.find('.modal-content').load(url, function(response, status) {
+            if (status === "error") {
+                Swal.fire('Erro!', 'Erro ao carregar o conteúdo.', 'error');
+            } else {
+                bindUserForm();
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        initUserTable();
+
+        $("#addNew").click(function() {
             showModal("{{ route('users.form') }}");
         });
 
-        // Editar usuário
-        $(".btn-edit").click(function(e) {
+        $(document).on('click', '.btn-edit', function(e) {
             e.preventDefault();
-            let id = $(this).data('id');
-            showModal("{{ url('/users/form') }}/" + id); // monta na hora
+            const id = $(this).data('id');
+            showModal("{{ url('/users/form') }}/" + id);
         });
 
-        // Excluir
-        $(".btn-delete").click(function(e) {
+        $(document).on('click', '.btn-delete', function(e) {
             e.preventDefault();
-            let id = $(this).data('id');
+            const id = $(this).data('id');
+            const url = "{{ url('/users/delete') }}/" + id;
+
             Swal.fire({
                 title: 'Atenção',
-                text: "Deseja excluir este usuário?",
+                text: "Você deseja excluir este usuário?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sim',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post("{{ url('/users/delete') }}/" + id, { _token: "{{ csrf_token() }}" }, function(data) {
+                    $.post(url, { _token: "{{ csrf_token() }}" }, function(data) {
                         Swal.fire('Sucesso', data.message, 'success')
                             .then(() => location.reload());
                     }).fail(function(xhr) {
-                        Swal.fire('Erro', 'Erro ao remover', 'error');
+                        let msg = xhr.responseJSON?.message || 'Erro ao remover registro';
+                        Swal.fire('Erro!', msg, 'error');
                     });
                 }
             });
         });
     });
 </script>
-
 @endsection

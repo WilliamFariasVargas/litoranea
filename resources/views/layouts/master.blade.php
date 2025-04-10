@@ -39,12 +39,22 @@
      <script src="{{asset('assets/js/validators.js')}}?id={{rand()}}"></script>
 
 </head>
+
 <body>
 
     @include('layouts.navbar')
 
     <div class="container mt-2">
         @yield('content')
+    </div>
+
+    <!-- Modal global reutilizável -->
+    <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Conteúdo será carregado dinamicamente -->
+            </div>
+        </div>
     </div>
 
 </body>

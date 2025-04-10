@@ -21,8 +21,8 @@ class UserController extends Controller
             abort(403, 'Acesso não autorizado');
         }
 
-        $usuarios = User::orderBy('name')->get();
-        return view('main.usuarios.index', compact('usuarios'));
+        $users = User::orderBy('name')->get();
+        return view('main.users.index', compact('users'));
     }
 
     public function form($id = null)
@@ -31,8 +31,8 @@ class UserController extends Controller
             abort(403, 'Acesso não autorizado');
         }
 
-        $usuario = User::find($id);
-        return view('main.usuarios.form', compact('usuario'));
+        $user = User::find($id);
+        return view('main.users.form', compact('user'));
     }
 
     public function store(Request $request)
@@ -51,7 +51,7 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
 
-        return redirect()->route('usuarios.index')->with('success', 'Usuário criado com sucesso.');
+        return redirect()->route('users.index')->with('success', 'Usuário criado com sucesso.');
     }
 
     public function update(Request $request, $id)
@@ -75,7 +75,7 @@ class UserController extends Controller
         }
 
         $user->update($data);
-        return redirect()->route('usuarios.index')->with('success', 'Usuário atualizado com sucesso.');
+        return redirect()->route('users.index')->with('success', 'Usuário atualizado com sucesso.');
     }
 
     public function delete($id)

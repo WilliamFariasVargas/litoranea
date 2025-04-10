@@ -1,4 +1,4 @@
-@extends('layouts\loginmodel')
+@extends('layouts.loginmodel')
 
 @section('content')
 <div class="container vh-100 align-items-center d-flex">

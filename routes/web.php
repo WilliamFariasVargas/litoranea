@@ -3,6 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
+Route::middleware(['auth', 'can:manage-users'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/form/{id?}', [UserController::class, 'form'])->name('users.form');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::post('/users/delete/{id}', [UserController::class, 'delete'])->name('users.delete');
+});
 Route::prefix('/')->middleware('auth')->group(function () {
     Route::get('/' , [\App\Http\Controllers\UserController::class, 'logged'])->name('main.index');
 });
@@ -12,8 +19,9 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class)->middleware('can:manage-users');
 });
-
-
+Route::middleware(['auth', 'can:manage-users'])->group(function () {
+    Route::get('/users/form/{id?}', [UserController::class, 'form'])->name('users.form');
+});
 
 Route::prefix('main')->middleware('auth')->group(function () {
     Route::get('/' , [\App\Http\Controllers\UserController::class, 'logged'])->name('main.index');

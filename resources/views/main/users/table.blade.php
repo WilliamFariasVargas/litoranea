@@ -82,7 +82,8 @@
         $(".btn-delete").click(function(e) {
             e.preventDefault();
             var id = $(this).data('id');
-            var url = "{{ route('users.delete') }}/" + id;
+            var url = "{{ url('/users/delete') }}/" + id;
+
             Swal.fire({
                 title: 'Atenção',
                 text: "Você deseja excluir este usuário?",
@@ -102,5 +103,6 @@
                 }
             });
         });
+
     });
 </script>

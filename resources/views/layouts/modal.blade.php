@@ -14,12 +14,14 @@
                         @yield("modal_content")
                     </section>
                 </div>
-                <div class="modal-footer" style="background-color: #f2f2f2">
-                    <!--
-                    <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" id="modalCloseButton">Fechar</button>
-                    -->
-                    <button type="submit" class="btn btn-success" id="modalSaveButton"><i class="fa fa-save mx-2"></i>Salvar</button>
+                <div class="modal-footer">
+                    @hasSection('modal_footer')
+                        @yield('modal_footer')
+                    @else
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    @endif
                 </div>
+
             </div>
         </div>
     </div>
