@@ -20,7 +20,6 @@
 <section class="col-md-12 mt-2 container-fluid" id="divTable">
     @include('main.users.table')
 </section>
-
 <script>
     function initUserTable() {
         if ( $.fn.dataTable.isDataTable('#table-users') ) {
@@ -44,11 +43,10 @@
 
             const form = $(this);
             const url = form.attr('action');
-            const method = form.find('input[name="_method"]').val() || 'POST';
 
             $.ajax({
                 url: url,
-                method: method,
+                type: 'POST', // forçar sempre POST
                 data: form.serialize(),
                 success: function(data) {
                     Swal.fire('Sucesso', data.message, 'success')
@@ -64,15 +62,14 @@
 
     function showModal(url) {
         const modal = $('#modal');
-        modal.modal('show');
         modal.find('.modal-content').html('<div class="text-center p-5">Carregando...</div>');
+        modal.modal('show');
 
-        modal.find('.modal-content').load(url, function(response, status) {
-            if (status === "error") {
-                Swal.fire('Erro!', 'Erro ao carregar o conteúdo.', 'error');
-            } else {
-                bindUserForm();
-            }
+        $.get(url, function(response) {
+            modal.find('.modal-content').html(response);
+            bindUserForm(); // 🔥 Chama bind aqui após o conteúdo estar carregado
+        }).fail(function() {
+            Swal.fire('Erro!', 'Erro ao carregar o conteúdo.', 'error');
         });
     }
 

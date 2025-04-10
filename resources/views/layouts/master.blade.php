@@ -48,14 +48,15 @@
         @yield('content')
     </div>
 
-    <!-- Modal global reutilizável -->
-    <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <!-- Conteúdo será carregado dinamicamente -->
-            </div>
-        </div>
+    <!-- Modal global -->
+<div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Conteúdo será carregado via JS -->
+      </div>
     </div>
+  </div>
+
 
 </body>
 </html>

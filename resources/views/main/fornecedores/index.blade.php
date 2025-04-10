@@ -6,7 +6,7 @@
 <section class="container">
     <div class="row" style="padding-top:60px;">
         <div class="col-8" style="vertical-align: middle">
-            <h4 style="color:#003162;" class="title  mt-2"><i class="fa fa-users mx-2"></i>Cadastro de Fornecedores </h4>
+            <h4 style="color:#003162;" class="title  mt-2"><i class="fa fa-users mx-2"></i>Cadastro de Representante</h4>
         </div>
 
         <div class="col-4 text-end">

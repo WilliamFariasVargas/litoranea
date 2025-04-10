@@ -36,7 +36,7 @@
             <li class="nav-item dropdown">
                 <a style="color:#003162!important;font-weight:600;" class="nav-link dropdown-toggle" href="#" id="cadastroDropdown" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
-                    Fornecedores
+                    Representante
                 </a>
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
