@@ -21,12 +21,12 @@
 </section>
 <script>
     $("#addNew").click(function(){
-        showModal("{{route('clienteses.form')}}");
+        showModal("{{route('clientes.form')}}");
     });
 
     function tblPopulate(){
         $.ajax({
-            url: "{{route('clienteses.show')}}",
+            url: "{{route('clientes.show')}}",
             method: "GET",
             beforeSend:function(){
                 $("#divTable").html("Carregando");
