@@ -13,21 +13,31 @@
     <table class="table table-bordered table-striped">
         <thead class="table-light">
             <tr>
-                <th>#</th>
+                <th>Código do Pedido</th>
                 <th>Cliente</th>
                 <th>Valor Total</th>
                 <th>Ações</th>
             </tr>
         </thead>
+        @php
+        function nomeFormatado($entidade) {
+            if (!$entidade) return 'Não informado';
+            if (!empty($entidade->razao_social)) {
+                return $entidade->nome
+                    ? "{$entidade->razao_social} ({$entidade->nome})"
+                    : $entidade->razao_social;
+            }
+            return $entidade->nome ?? 'Não informado';
+        }
+    @endphp
         <tbody>
             @foreach($pedidos as $pedido)
                 <tr>
                     <td>{{ $pedido->numero_pedido }}</td>
-                    <td>{{ $pedido->cliente->nome }}</td>
+                    <td>{{ nomeFormatado($pedido->cliente) }}</td>
                     <td>R$ {{ number_format($pedido->valor_total, 2, ',', '.') }}</td>
                     <td>
                         <a href="{{ route('pedidos.pdf', $pedido) }}" class="btn btn-sm btn-secondary" target="_blank">PDF</a>
-                        <a href="{{ route('pedidos.imprimir', $pedido) }}" class="btn btn-sm btn-info" target="_blank">Imprimir</a>
 
                         <a href="{{ route('pedidos.whatsapp', $pedido) }}"
                            target="_blank"

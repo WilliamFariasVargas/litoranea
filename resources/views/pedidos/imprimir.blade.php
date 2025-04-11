@@ -11,7 +11,6 @@
 </style>
 
 <div class="container">
-    <h2 class="text-center mb-4">Pedido Nº {{ $pedido->numero_pedido }}</h2>
 
     <div style="text-align: center; margin-bottom: 20px;">
         <img src="{{ isset($is_pdf) ? public_path('assets/images/logo.png') : asset('assets/images/logo.png') }}" alt="Logo do Sistema" style="max-height: 80px;">
@@ -28,7 +27,13 @@
         return $entidade->nome ?? 'Não informado';
     }
 @endphp
-
+<table class="table table-bordered text-center mb-4">
+    <tbody>
+        <tr>
+            <th>Pedido Nº {{ $pedido->numero_pedido }}</th>
+        </tr>
+    </tbody>
+</table>
 <table class="table table-bordered mb-4">
     <tbody>
         <tr>
@@ -41,15 +46,15 @@
     <tbody>
         <tr>
             <th colspan="1">Representante</th>
-            <td colspan="3">{{ nomeFormatado($pedido->fornecedores_id) }}</td>
+            <td colspan="3">{{ nomeFormatado($pedido->fornecedor) }}</td>
         </tr>
 
         <tr>
             <th>Email do Representante</th>
-            <td>{{ $pedido->fornecedores->email ?? 'Não informado' }}</td>
+            <td>{{ $pedido->fornecedor->email ?? 'Não informado' }}</td>
 
             <th>Telefone do Representante</th>
-            <td>{{ $pedido->fornecedores->fone ?? 'Não informado' }}</td>
+            <td>{{ $pedido->fornecedor->fone ?? 'Não informado' }}</td>
         </tr>
     </tbody>
 </table>
@@ -62,14 +67,14 @@
         </tr>
         <tr>
             <th colspan="1">Endereço do Cliente</th>
-            <td colspan="5">{{ $pedido->cliente->endereco ?? 'Não informado' }}</td>
+            <td colspan="5">{{ $pedido->cliente->rua ?? 'Não informado' }}</td>
         </tr>
         <tr>
             <th>Cidade do Cliente</th>
             <td>{{ $pedido->cliente->cidade ?? 'Não informado' }}</td>
 
             <th>Estado do Cliente</th>
-            <td>{{ $pedido->cliente->estado ?? 'Não informado' }}</td>
+            <td>{{ $pedido->cliente->uf ?? 'Não informado' }}</td>
 
             <th>CEP do Cliente</th>
             <td>{{ $pedido->cliente->cep ?? 'Não informado' }}</td>
@@ -84,7 +89,7 @@
             <td>{{ $pedido->cliente->email ?? 'Não informado' }}</td>
 
             <th>CPF/CNPJ do Cliente</th>
-            <td>{{ $pedido->cliente->cpf ?? $pedido->cliente->cnpj ?? 'Não informado' }}</td>
+            <td>{{ $pedido->cliente->cpf_cnpj ?? 'Não informado' }}</td>
         </tr>
 </tbody>
 </table>
@@ -96,7 +101,7 @@
         </tr>
         <tr>
             <th>Telefone da Transportadora</th>
-            <td>{{ $pedido->transportadora->telefone ?? 'Não informado' }}</td>
+            <td>{{ $pedido->transportadora->celular ?? 'Não informado' }}</td>
 
             <th>Email da Transportadora</th>
             <td>{{ $pedido->transportadora->email ?? 'Não informado' }}</td>
@@ -107,28 +112,28 @@
 
 
 
-    <table class="table table-bordered">
+    <table class="table table-bordered mb-12">
         <thead class="table-light">
             <tr>
-                <th>Item</th>
-                <th>Código</th>
-                <th>Descrição</th>
-                <th>Qtd</th>
-                <th>Unitário</th>
-                <th>Desconto</th>
-                <th>Total</th>
+                <th colspan="1">Item</th>
+                <th colspan="1">Código</th>
+                <th colspan="6">Descrição</th>
+                <th colspan="1">Quantidade</th>
+                <th colspan="1">Valor Unitário</th>
+                <th colspan="1">Desconto</th>
+                <th colspan="1">Valor Total</th>
             </tr>
         </thead>
         <tbody>
             @foreach($pedido->itens as $item)
                 <tr>
-                    <td>{{ $item->item }}</td>
-                    <td>{{ $item->codigo }}</td>
-                    <td>{{ $item->descricao }}</td>
-                    <td>{{ $item->quantidade }}</td>
-                    <td>R$ {{ number_format($item->valor_unitario, 2, ',', '.') }}</td>
-                    <td>R$ {{ number_format($item->valor_com_desconto ?? $item->valor_unitario, 2, ',', '.') }}</td>
-                    <td>R$ {{ number_format($item->total, 2, ',', '.') }}</td>
+                    <td colspan="1">{{ $item->item }}</td>
+                    <td colspan="1">{{ $item->codigo }}</td>
+                    <td colspan="6">{{ $item->descricao }}</td>
+                    <td colspan="1">{{ $item->quantidade }}</td>
+                    <td colspan="1">R$ {{ number_format($item->valor_unitario, 2, ',', '.') }}</td>
+                    <td colspan="1">R$ {{ number_format($item->valor_com_desconto ?? $item->valor_unitario, 2, ',', '.') }}</td>
+                    <td colspan="1">R$ {{ number_format($item->total, 2, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -25,10 +25,11 @@ class Pedido extends Model
     public function cliente() {
         return $this->belongsTo(Cliente::class);
     }
-
-    public function fornecedor() {
-        return $this->belongsTo(Fornecedor::class);
+    public function fornecedor()
+    {
+        return $this->belongsTo(Fornecedor::class, 'fornecedores_id');
     }
+
 
     public function representada() {
         return $this->belongsTo(Representada::class);

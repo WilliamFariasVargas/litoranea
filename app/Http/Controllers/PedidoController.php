@@ -16,33 +16,51 @@ class PedidoController extends Controller
 
 
     public function whatsapp(Pedido $pedido)
-{
-    $pedido->load(['cliente', 'representada', 'fornecedor', 'transportadora', 'itens']);
+    {
+        $pedido->load(['cliente', 'representada', 'fornecedor', 'transportadora', 'itens']);
 
-    $msg = "*Pedido Nº {$pedido->numero_pedido}*\n\n";
+        $msg = "*Pedido Nº {$pedido->numero_pedido}*\n\n";
 
-    $msg .= "*Cliente:* " . ($pedido->cliente->razao_social ?? $pedido->cliente->nome ?? '-') . "\n";
-    $msg .= "*Representada:* " . ($pedido->representada->razao_social ?? $pedido->representada->nome ?? '-') . "\n";
-    $msg .= "*Fornecedor:* " . ($pedido->fornecedor->razao_social ?? $pedido->fornecedor->nome ?? '-') . "\n";
-    $msg .= "*Transportadora:* " . ($pedido->transportadora->razao_social ?? $pedido->transportadora->nome ?? '-') . "\n\n";
+        // Representada
+        $msg .= "*Representada:* " . ($pedido->representada->razao_social ?? $pedido->representada->nome ?? '-') . "\n\n";
 
-    $msg .= "*Itens do Pedido:*\n";
+        // Representante (Fornecedor)
+        $msg .= "*Representante:* " . ($pedido->fornecedor->razao_social ?? $pedido->fornecedor->nome ?? '-') . "\n";
+        $msg .= "*Email:* " . ($pedido->fornecedor->email ?? 'Não informado') . "\n";
+        $msg .= "*Telefone:* " . ($pedido->fornecedor->fone ?? 'Não informado') . "\n\n";
 
-    foreach ($pedido->itens as $index => $item) {
-        $numero = $index + 1;
-        $msg .= "{$numero}) {$item->descricao} (Cod: {$item->codigo})\n";
-        $msg .= "   Quantidade: {$item->quantidade} un\n";
-        $msg .= "   Unitário: R$ " . number_format($item->valor_unitario, 2, ',', '.') . "\n";
-        $msg .= "   Desconto: R$ " . number_format($item->valor_com_desconto ?? 0, 2, ',', '.') . "\n";
-        $msg .= "   Total: R$ " . number_format($item->total, 2, ',', '.') . "\n\n";
+        // Cliente
+        $cliente = $pedido->cliente;
+        $msg .= "*Cliente:* " . ($cliente->razao_social ?? $cliente->nome ?? '-') . "\n";
+        $msg .= "*Endereço:* " . ($cliente->rua ?? 'Não informado') . "\n";
+        $msg .= "*Cidade:* " . ($cliente->cidade ?? 'Não informado') . " / " . ($cliente->uf ?? '-') . "\n";
+        $msg .= "*CEP:* " . ($cliente->cep ?? 'Não informado') . "\n";
+        $msg .= "*Celular:* " . ($cliente->celular ?? 'Não informado') . "\n";
+        $msg .= "*Email:* " . ($cliente->email ?? 'Não informado') . "\n";
+        $msg .= "*CPF/CNPJ:* " . ($cliente->cpf_cnpj ?? 'Não informado') . "\n\n";
+
+        // Transportadora
+        $msg .= "*Transportadora:* " . ($pedido->transportadora->razao_social ?? $pedido->transportadora->nome ?? '-') . "\n";
+        $msg .= "*Telefone:* " . ($pedido->transportadora->celular ?? 'Não informado') . "\n";
+        $msg .= "*Email:* " . ($pedido->transportadora->email ?? 'Não informado') . "\n\n";
+
+        // Itens
+        $msg .= "*Itens do Pedido:*\n";
+        foreach ($pedido->itens as $index => $item) {
+            $msg .= ($index + 1) . ") {$item->descricao} (Cod: {$item->codigo})\n";
+            $msg .= "Quantidade: {$item->quantidade} un\n";
+            $msg .= "Valor Unitário: R$ " . number_format($item->valor_unitario, 2, ',', '.') . "\n";
+            $msg .= "Desconto: R$ " . number_format($item->valor_com_desconto ?? $item->valor_unitario, 2, ',', '.') . "\n";
+            $msg .= "Total: R$ " . number_format($item->total, 2, ',', '.') . "\n\n";
+        }
+
+        // Total Geral
+        $msg .= "*Total Geral:* R$ " . number_format($pedido->valor_total, 2, ',', '.');
+
+        // Redireciona para WhatsApp com mensagem codificada
+        $url = 'https://wa.me/?text=' . rawurlencode($msg);
+        return redirect()->away($url);
     }
-
-    $msg .= "*Total Geral:* R$ " . number_format($pedido->valor_total, 2, ',', '.');
-
-    $url = 'https://wa.me/?text=' . rawurlencode($msg);
-    return redirect()->away($url);
-}
-
 
 
 
