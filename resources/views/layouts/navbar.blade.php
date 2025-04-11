@@ -86,7 +86,7 @@
                 </a>
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
-                    <li><a class="dropdown-item" href="{{ route('main.comissoes') }}">Consultar Comissões</a></li>
+                    <li><a class="dropdown-item" href="{{ route('comissoes.index') }}">Consultar Comissões</a></li>
                 </ul>
             </li>
         </ul>

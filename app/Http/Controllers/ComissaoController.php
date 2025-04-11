@@ -1,81 +1,60 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Pedido;
 use App\Models\Comissao;
 use Illuminate\Http\Request;
 
 class ComissaoController extends Controller
 {
-    public function index()
+    public function create()
     {
-        return view('main.comissoes.index');
-    }
+        $pedidos = Pedido::orderByDesc('created_at')->get();
 
-    public function form(Request $request, $id = '')
-    {
-        $comissao = ($id != '') ? Comissao::find($id) : null;
-        return view('main.comissoes.form', compact('comissao'));
-    }
-
-    public function show()
-    {
-        $comissoes = Comissao::orderBy('data', 'desc')->get();
-        return view('main.comissoes.table', compact('comissoes'));
+        return view('comissoes.create', compact('pedidos'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $this->validate($request, [
-                'pedido_id'  => 'nullable|integer',
-                'valor'      => 'required|numeric',
-                'data'       => 'required|date'
-            ]);
+        $request->validate([
+            'pedido_id' => 'required|exists:pedidos,id',
+        ]);
 
-            // Verificações adicionais podem ser inseridas aqui, se necessário
+        $pedido = Pedido::findOrFail($request->pedido_id);
 
-            $comissao = Comissao::create($request->all());
+        // Decide se é percentual ou valor fixo
+        $percentual = $request->percentual;
+        $valorInformado = $request->valor;
+        $valor_calculado = null;
 
-            return response()->json([
-                'id_comissao' => $comissao->id,
-                'message'     => "Registro salvo com sucesso"
-            ], 201);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], 500);
+        if ($percentual) {
+            $valor_calculado = ($pedido->valor_total * $percentual) / 100;
+        } elseif ($valorInformado) {
+            $valor_calculado = $valorInformado;
         }
+
+        Comissao::create([
+            'pedido_id' => $pedido->id,
+            'percentual' => $percentual,
+            'valor' => $valorInformado,
+            'valor_calculado' => $valor_calculado,
+        ]);
+
+        return redirect()->route('comissoes.create')->with('success', 'Comissão salva com sucesso!');
     }
 
-    public function update(Request $request, $id = '')
+    public function relatorioMensal(Request $request)
     {
-        try {
-            $comissao = Comissao::find($id);
-            if (!$comissao) {
-                return response()->json(['message' => "Registro não encontrado"], 404);
-            }
-            $comissao->update($request->all());
+        $mes = $request->input('mes', date('m'));
+        $ano = $request->input('ano', date('Y'));
 
-            return response()->json([
-                'id_comissao' => $id,
-                'message'     => "Registro atualizado com sucesso"
-            ], 200);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], 500);
-        }
-    }
+        $comissoes = Comissao::whereMonth('created_at', $mes)
+            ->whereYear('created_at', $ano)
+            ->with('pedido.cliente')
+            ->get();
 
-    public function delete(Request $request, $id = '')
-    {
-        try {
-            $comissao = Comissao::find($id);
-            if (!$comissao) {
-                return response()->json(['message' => "Registro não encontrado"], 404);
-            }
-            $comissao->delete();
+        $total = $comissoes->sum('valor_calculado');
 
-            return response()->json(['message' => "Registro excluído com sucesso"], 200);
-        } catch (\Exception $ex) {
-            return response()->json(['message' => $ex->getMessage()], 500);
-        }
+        return view('comissoes.relatorio', compact('comissoes', 'total', 'mes', 'ano'));
     }
 }

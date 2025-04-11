@@ -3,9 +3,24 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\ComissaoController;
 
 Route::delete('/pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
 
+Route::get('/comissoes/index', function () {
+    $comissoes = \App\Models\Comissao::with('pedido.cliente')->latest()->get();
+    return view('comissoes.index', compact('comissoes'));
+})->name('comissoes.index');
+Route::get('/comissoes', [ComissaoController::class, 'index'])->name('comissoes.index');
+Route::get('/comissoes/create', [ComissaoController::class, 'create'])->name('comissoes.create');
+Route::post('/comissoes', [ComissaoController::class, 'store'])->name('comissoes.store');
+
+Route::get('/comissoes/relatorio', [ComissaoController::class, 'relatorioMensal'])->name('comissoes.relatorio');
+Route::get('/comissoes/export', [ComissaoController::class, 'export'])->name('comissoes.export');
+
+Route::get('/comissoes/{id}/edit', [ComissaoController::class, 'edit'])->name('comissoes.edit');
+Route::put('/comissoes/{id}', [ComissaoController::class, 'update'])->name('comissoes.update');
+Route::delete('/comissoes/{id}', [ComissaoController::class, 'destroy'])->name('comissoes.destroy');
 
 Route::get('/pedidos/{pedido}/whatsapp', [PedidoController::class, 'whatsapp'])->name('pedidos.whatsapp');
 Route::get('/users/form/{id?}', [UserController::class, 'form'])->name('users.form');
