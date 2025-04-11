@@ -119,4 +119,11 @@ class PedidoController extends Controller
         $pdf = Pdf::loadView('pedidos.pdf', compact('pedido'));
         return $pdf->download("pedido-{$pedido->numero_pedido}.pdf");
     }
+    public function destroy(Pedido $pedido)
+    {
+        $pedido->delete();
+        return redirect()->route('pedidos.index')->with('success', 'Pedido excluído com sucesso.');
+    }
+
 }
+
