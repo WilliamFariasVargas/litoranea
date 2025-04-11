@@ -1,13 +1,22 @@
 @extends('layouts.pages') {{-- ou outro layout seu --}}
 
 @section('content')
-<div class="container">
-    <h2 class="mb-4">Comissões Cadastradas</h2>
 
-    <div class="mb-3">
-        <a href="{{ route('comissoes.create') }}" class="btn btn-primary">+ Nova Comissão</a>
-        <a href="{{ route('comissoes.relatorio') }}" class="btn btn-secondary">📊 Ver Relatório Mensal</a>
+<section class="container">
+    <div class="row" style="padding-top:60px;">
+        <div class="col-8" style="vertical-align: middle">
+            <h4 style="color:#003162;" class="title  mt-2">
+                <i class="fa fa-building mx-2"></i>Cadastro de Comissões
+            </h4>
+        </div>
+        <div class="mb-3">
+            <a href="{{ route('comissoes.create') }}" class="btn btn-primary">+ Nova Comissão</a>
+            <a href="{{ route('comissoes.relatorio') }}" class="btn btn-secondary">📊 Ver Relatório Mensal</a>
+        </div>
+        <br><br><hr>
     </div>
+</section>
+
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
