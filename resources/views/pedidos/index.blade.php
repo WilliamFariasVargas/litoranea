@@ -28,8 +28,14 @@
                     <td>
                         <a href="{{ route('pedidos.pdf', $pedido) }}" class="btn btn-sm btn-secondary" target="_blank">PDF</a>
                         <a href="{{ route('pedidos.imprimir', $pedido) }}" class="btn btn-sm btn-info" target="_blank">Imprimir</a>
-                        <a href="https://wa.me/?text={{ urlencode('Olá! Segue o pedido número ' . $pedido->numero_pedido . '.') }}" target="_blank" class="btn btn-sm btn-success">WhatsApp</a>
-                    </td>
+
+                        <a href="{{ route('pedidos.whatsapp', $pedido) }}"
+                        target="_blank"
+                        class="btn btn-sm btn-success">
+                        WhatsApp
+                        </a>
+
+                        </td>
                 </tr>
             @endforeach
         </tbody>

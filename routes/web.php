@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PedidoController;
 
+
+
+Route::get('/pedidos/{pedido}/whatsapp', [PedidoController::class, 'whatsapp'])->name('pedidos.whatsapp');
 Route::get('/users/form/{id?}', [UserController::class, 'form'])->name('users.form');
 
 Route::middleware(['auth'])->group(function () {

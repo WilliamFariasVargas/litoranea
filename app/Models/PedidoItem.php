@@ -2,17 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PedidoItem extends Model
 {
-    protected $fillable = [
-        'pedido_id', 'item', 'codigo', 'descricao',
-        'quantidade', 'valor_unitario', 'valor_com_desconto', 'total'
-    ];
+    use HasFactory;
 
-    public function pedido() {
-        return $this->belongsTo(Pedido::class);
-    }
+    protected $table = 'pedido_itens';
+
+    protected $fillable = [
+        'pedido_id',
+        'item',
+        'codigo',
+        'descricao',
+        'quantidade',
+        'valor_unitario',
+        'valor_com_desconto',
+        'total'
+    ];
 }
+

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar no-print navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <img style="height:50px;" src="{{ asset('assets/images/logo.png') }}" alt="Logo">
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"

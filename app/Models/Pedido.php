@@ -9,9 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Pedido extends Model
 {
     protected $fillable = [
-        'numero_pedido', 'representada_id', 'cliente_id',
-        'representante_id', 'transportadora_id', 'valor_total'
+        'numero_pedido',
+        'representada_id',
+        'cliente_id',
+        'fornecedores_id',
+        'transportadora_id',
+        'valor_total',
     ];
+
 
     public function itens() {
         return $this->hasMany(PedidoItem::class);
@@ -32,4 +37,8 @@ class Pedido extends Model
     public function transportadora() {
         return $this->belongsTo(Transportadora::class);
     }
+    public function representante() {
+        return $this->belongsTo(User::class, 'representante_id');
+    }
+
 }

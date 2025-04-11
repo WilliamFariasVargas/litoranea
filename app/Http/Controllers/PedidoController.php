@@ -12,6 +12,43 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PedidoController extends Controller
 {
+
+
+
+    public function whatsapp(Pedido $pedido)
+{
+    $pedido->load(['cliente', 'representada', 'fornecedor', 'transportadora', 'itens']);
+
+    $msg = "*Pedido Nº {$pedido->numero_pedido}*\n\n";
+
+    $msg .= "*Cliente:* " . ($pedido->cliente->razao_social ?? $pedido->cliente->nome ?? '-') . "\n";
+    $msg .= "*Representada:* " . ($pedido->representada->razao_social ?? $pedido->representada->nome ?? '-') . "\n";
+    $msg .= "*Fornecedor:* " . ($pedido->fornecedor->razao_social ?? $pedido->fornecedor->nome ?? '-') . "\n";
+    $msg .= "*Transportadora:* " . ($pedido->transportadora->razao_social ?? $pedido->transportadora->nome ?? '-') . "\n\n";
+
+    $msg .= "*Itens do Pedido:*\n";
+
+    foreach ($pedido->itens as $index => $item) {
+        $numero = $index + 1;
+        $msg .= "{$numero}) {$item->descricao} (Cod: {$item->codigo})\n";
+        $msg .= "   Quantidade: {$item->quantidade} un\n";
+        $msg .= "   Unitário: R$ " . number_format($item->valor_unitario, 2, ',', '.') . "\n";
+        $msg .= "   Desconto: R$ " . number_format($item->valor_com_desconto ?? 0, 2, ',', '.') . "\n";
+        $msg .= "   Total: R$ " . number_format($item->total, 2, ',', '.') . "\n\n";
+    }
+
+    $msg .= "*Total Geral:* R$ " . number_format($pedido->valor_total, 2, ',', '.');
+
+    $url = 'https://wa.me/?text=' . rawurlencode($msg);
+    return redirect()->away($url);
+}
+
+
+
+
+
+
+
     public function index()
     {
         $pedidos = Pedido::with('cliente')->orderByDesc('id')->get();
@@ -19,38 +56,47 @@ class PedidoController extends Controller
     }
 
     public function create()
-    {
-        return view('pedidos.create', [
-            'clientes' => Cliente::all(),
-            'representadas' => Representada::all(),
-            'fornecedores' => Fornecedor::all(),
-            'transportadoras' => Transportadora::all(),
-        ]);
-    }
+{
+    $representadas   = Representada::all();
+    $clientes        = Cliente::all();
+    $fornecedores    = Fornecedor::all(); // <- precisa estar assim
+    $transportadoras = Transportadora::all();
+
+    return view('pedidos.create', compact(
+        'representadas',
+        'clientes',
+        'fornecedores',
+        'transportadoras'
+    ));
+}
 
     public function store(Request $request)
     {
         $pedido = Pedido::create([
-            'numero_pedido' => uniqid('PED'),
-            'representada_id' => $request->representada_id,
-            'cliente_id' => $request->cliente_id,
-            'Fornecedor_id' => $request->Fornecedor_id,
+            'numero_pedido'     => uniqid('PED'),
+            'representada_id'   => $request->representada_id,
+            'cliente_id'        => $request->cliente_id,
+            'fornecedores_id'     => $request->fornecedor_id,
             'transportadora_id' => $request->transportadora_id,
-            'valor_total' => 0,
+            'valor_total'       => 0,
         ]);
 
         $totalGeral = 0;
+
+
+
+
         foreach ($request->itens as $item) {
             $total = $item['quantidade'] * $item['valor_unitario'];
             PedidoItem::create([
-                'pedido_id' => $pedido->id,
-                'item' => $item['item'],
-                'codigo' => $item['codigo'],
-                'descricao' => $item['descricao'],
-                'quantidade' => $item['quantidade'],
-                'valor_unitario' => $item['valor_unitario'],
-                'valor_com_desconto' => $item['valor_com_desconto'] ?? $item['valor_unitario'],
-                'total' => $total,
+                'pedido_id'           => $pedido->id,
+                'item'                => $item['item'],
+                'codigo'              => $item['codigo'],
+                'descricao'           => $item['descricao'],
+                'quantidade'          => $item['quantidade'],
+                'valor_unitario'      => $item['valor_unitario'],
+                'valor_com_desconto'  => $item['valor_com_desconto'] ?? $item['valor_unitario'],
+                'total'               => $total,
             ]);
             $totalGeral += $total;
         }
@@ -60,6 +106,7 @@ class PedidoController extends Controller
         return redirect()->route('pedidos.index')->with('success', 'Pedido criado com sucesso!');
     }
 
+
     public function imprimir(Pedido $pedido)
     {
         $pedido->load('itens', 'cliente', 'representada', 'Fornecedor', 'transportadora');
@@ -68,7 +115,7 @@ class PedidoController extends Controller
 
     public function gerarPdf(Pedido $pedido)
     {
-        $pedido->load('itens', 'cliente', 'representada', 'Fornecedor', 'transportadora');
+        $pedido->load('representada', 'cliente', 'fornecedor', 'transportadora', 'representante', 'itens');
         $pdf = Pdf::loadView('pedidos.pdf', compact('pedido'));
         return $pdf->download("pedido-{$pedido->numero_pedido}.pdf");
     }
