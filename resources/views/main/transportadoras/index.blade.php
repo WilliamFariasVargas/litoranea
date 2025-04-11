@@ -19,12 +19,12 @@
 </section>
 <script>
     $("#addNew").click(function(){
-        showModal("{{route('fornecedores.form')}}");
+        showModal("{{route('transportadoras.form')}}");
     });
 
     function tblPopulate(){
         $.ajax({
-            url: "{{route('fornecedores.show')}}",
+            url: "{{route('transportadoras.show')}}",
             method: "GET",
             beforeSend:function(){
                 $("#divTable").html("Carregando");

@@ -14,10 +14,6 @@ class RepresentadaController extends Controller
 
     /**
      * Exibe o formulário de criação/edição de representadas.
-     *
-     * @param Request $request
-     * @param string $id (opcional) O identificador da representada para edição, vazio para criação.
-     * @return \Illuminate\View\View
      */
     public function form(Request $request, $id = '')
     {
@@ -27,8 +23,6 @@ class RepresentadaController extends Controller
 
     /**
      * Exibe a tabela de representadas ordenada por razão social.
-     *
-     * @return \Illuminate\View\View
      */
     public function show()
     {
@@ -38,17 +32,14 @@ class RepresentadaController extends Controller
 
     /**
      * Armazena uma nova representada.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
         try {
             $this->validate($request, [
-                'nome'       => 'required|string|max:255',
-                'cpf_cnpj'   => 'required|string|unique:representadas,cpf_cnpj',
-                'email'      => 'required|email|unique:representadas,email',
+                'razao_social' => 'required|string|max:255',
+                'cpf_cnpj'     => 'required|string|unique:representadas,cpf_cnpj',
+                'email'        => 'required|email|unique:representadas,email',
             ]);
 
             $representada = Representada::create($request->all());
@@ -64,10 +55,6 @@ class RepresentadaController extends Controller
 
     /**
      * Atualiza uma representada existente.
-     *
-     * @param Request $request
-     * @param string $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id = '')
     {
@@ -109,10 +96,6 @@ class RepresentadaController extends Controller
 
     /**
      * Exclui uma representada.
-     *
-     * @param Request $request
-     * @param string $id
-     * @return \Illuminate\Http\JsonResponse
      */
     public function delete(Request $request, $id = '')
     {

@@ -1,13 +1,11 @@
 @extends('layouts.modal')
 
 @php
-    $title = "Cadastro de Clientes";
-    if ($cliente != null) {
-        $title = "Editando: " . $cliente->id . " - " . $cliente->nome;
-    }
-@endphp
+    $title  = "Cadastro de clientes" ;
+    if($cliente!= null) $title = 'Editando: '. $cliente->id.' - '.$cliente->razao_social;
 
-@section('modal_title') {{ $title }} @endsection
+@endphp
+@section('modal_title') {{ $title }}@endsection
 
 @section('modal_content')
 

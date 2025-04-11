@@ -2,92 +2,109 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cliente;
+use App\Models\cliente;
 use Illuminate\Http\Request;
 
-class ClienteController extends Controller
+class clienteController extends Controller
 {
     public function index()
     {
         return view('main.clientes.index');
     }
 
+    /**
+     * Exibe o formulário de criação/edição de clientes.
+     */
     public function form(Request $request, $id = '')
     {
-        $cliente = ($id != '') ? Cliente::find($id) : null;
+        $cliente = cliente::find($id);
         return view('main.clientes.form', compact('cliente'));
     }
 
+    /**
+     * Exibe a tabela de clientes ordenada por razão social.
+     */
     public function show()
     {
-        $clientes = Cliente::orderBy('nome','asc')->get();
+        $clientes = cliente::orderBy('razao_social', 'asc')->get();
         return view('main.clientes.table', compact('clientes'));
     }
 
-
+    /**
+     * Armazena uma nova cliente.
+     */
     public function store(Request $request)
     {
         try {
             $this->validate($request, [
-                'nome'      => 'required|string|max:255',
-                'sobrenome' => 'required|string|max:255',
-                'cpf'       => 'required|string|unique:clientes,cpf',
-                'email'     => 'required|email|unique:clientes,email',
+                'razao_social' => 'required|string|max:255',
+                'cpf_cnpj'     => 'required|string|unique:clientes,cpf_cnpj',
+                'email'        => 'required|email|unique:clientes,email',
             ]);
 
-            $cliente = Cliente::create($request->all());
+            $cliente = cliente::create($request->all());
 
             return response()->json([
                 'id_cliente' => $cliente->id,
-                'message'    => "Registro salvo com sucesso"
+                'message'         => "Registro salvo com sucesso"
             ], 201);
         } catch (\Exception $ex) {
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
 
+    /**
+     * Atualiza uma cliente existente.
+     */
     public function update(Request $request, $id = '')
     {
         try {
-            $cliente = Cliente::find($id);
+            $cliente = cliente::find($id);
             if (!$cliente) {
                 return response()->json(['message' => "Registro não encontrado"], 404);
             }
-            // Verifica duplicidade para CPF e e-mail
-            if (isset($request->cpf) && $request->cpf) {
-                $exists = Cliente::where('id', '!=', $id)
-                    ->where('cpf', $request->cpf)
+
+            // Verifica duplicidade para CPF/CNPJ e e-mail
+            if (isset($request->cpf_cnpj)) {
+                $exists = cliente::where('id', '!=', $id)
+                    ->where('cpf_cnpj', $request->cpf_cnpj)
                     ->first();
                 if ($exists) {
-                    throw new \Exception("CPF já cadastrado. ID: " . $exists->id);
+                    throw new \Exception("CPF/CNPJ já cadastrado. ID: " . $exists->id);
                 }
             }
-            if (isset($request->email) && $request->email) {
-                $exists = Cliente::where('id', '!=', $id)
+
+            if (isset($request->email)) {
+                $exists = cliente::where('id', '!=', $id)
                     ->where('email', $request->email)
                     ->first();
                 if ($exists) {
                     throw new \Exception("E-mail já cadastrado. ID: " . $exists->id);
                 }
             }
+
             $cliente->update($request->all());
 
             return response()->json([
                 'id_cliente' => $id,
-                'message'    => "Registro atualizado com sucesso"
+                'message'         => "Registro atualizado com sucesso"
             ], 200);
         } catch (\Exception $ex) {
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
 
+    /**
+     * Exclui uma cliente.
+     */
     public function delete(Request $request, $id = '')
     {
         try {
-            $cliente = Cliente::find($id);
+            $cliente = cliente::find($id);
             if (!$cliente) {
                 return response()->json(['message' => "Registro não encontrado"], 404);
             }
+
             $cliente->delete();
 
             return response()->json(['message' => "Registro excluído com sucesso"], 200);

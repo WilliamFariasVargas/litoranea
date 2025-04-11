@@ -8,7 +8,7 @@ class Transportadora extends Model
 {
 
     // Nome da tabela
-    protected $table = 'transportadora';
+    protected $table = 'transportadoras';
 
    // Atribuição em massa (mass assignment)
    protected $fillable = [

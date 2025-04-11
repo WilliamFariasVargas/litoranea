@@ -2,8 +2,11 @@
 
 @php
     $title = "Cadastro de Transportadoras";
-    if ($transportadora != null) { $title = "Editando: " . $transportadora->nome; }
+    if ($transportadora != null) {
+        $title = "Editando: " . $transportadora->razao_social;
+    }
 @endphp
+
 
 @section('modal_title') {{ $title }} @endsection
 

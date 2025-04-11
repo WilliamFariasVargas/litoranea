@@ -1,13 +1,14 @@
+
+
 @extends('layouts.pages')
 
 @section('page-content')
 <section class="container">
     <div class="row" style="padding-top:60px;">
         <div class="col-8" style="vertical-align: middle">
-            <h4 style="color:#003162;" class="title  mt-2">
-                <i class="fa fa-users mx-2"></i>Cadastro de clientes
-            </h4>
+            <h4 style="color:#003162;" class="title  mt-2"><i class="fa fa-users mx-2"></i>Cadastro de Cliente</h4>
         </div>
+
         <div class="col-4 text-end">
             <button style="background-color:#003162;" class="btn btn-primary" id="addNew"><i class="fa fa-plus mx-2"></i>Novo</button>
         </div>
@@ -20,12 +21,12 @@
 </section>
 <script>
     $("#addNew").click(function(){
-        showModal("{{route('clientes.form')}}");
+        showModal("{{route('clienteses.form')}}");
     });
 
     function tblPopulate(){
         $.ajax({
-            url: "{{route('clientes.show')}}",
+            url: "{{route('clienteses.show')}}",
             method: "GET",
             beforeSend:function(){
                 $("#divTable").html("Carregando");

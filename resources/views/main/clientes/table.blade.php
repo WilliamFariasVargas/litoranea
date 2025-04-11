@@ -19,7 +19,6 @@
     }
 </style>
 
-
 <!-- Nav Tabs -->
 <ul class="nav nav-tabs justify-content-center" id="clientesTabs" role="tablist">
     <li class="nav-item" role="presentation">

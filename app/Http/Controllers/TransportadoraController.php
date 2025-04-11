@@ -20,17 +20,19 @@ class TransportadoraController extends Controller
 
     public function show()
     {
-        $transportadoras = Transportadora::orderBy('nome', 'asc')->get();
+        // Ordena pela razão social em ordem alfabética
+        $transportadoras = Transportadora::orderBy('razao_social', 'asc')->get();
         return view('main.transportadoras.table', compact('transportadoras'));
     }
 
     public function store(Request $request)
     {
         try {
+            // Validação dos dados com base no model
             $this->validate($request, [
-                'nome'  => 'required|string|max:255',
-                'cnpj'  => 'nullable|string|unique:transportadoras,cnpj',
-                'email' => 'required|email|unique:transportadoras,email',
+                'razao_social' => 'required|string|max:255',
+                'cpf_cnpj'     => 'nullable|string|unique:transportadoras,cpf_cnpj',
+                'email'        => 'required|email|unique:transportadoras,email',
             ]);
 
             $transportadora = Transportadora::create($request->all());
@@ -51,15 +53,18 @@ class TransportadoraController extends Controller
             if (!$transportadora) {
                 return response()->json(['message' => "Registro não encontrado"], 404);
             }
-            // Verifica duplicidade para CNPJ e e-mail
-            if (isset($request->cnpj)) {
+
+            // Verifica duplicidade de CPF/CNPJ
+            if (isset($request->cpf_cnpj)) {
                 $exists = Transportadora::where('id', '!=', $id)
-                    ->where('cnpj', $request->cnpj)
+                    ->where('cpf_cnpj', $request->cpf_cnpj)
                     ->first();
                 if ($exists) {
-                    throw new \Exception("CNPJ já cadastrado. ID: " . $exists->id);
+                    throw new \Exception("CPF/CNPJ já cadastrado. ID: " . $exists->id);
                 }
             }
+
+            // Verifica duplicidade de E-mail
             if (isset($request->email)) {
                 $exists = Transportadora::where('id', '!=', $id)
                     ->where('email', $request->email)
@@ -68,6 +73,7 @@ class TransportadoraController extends Controller
                     throw new \Exception("E-mail já cadastrado. ID: " . $exists->id);
                 }
             }
+
             $transportadora->update($request->all());
 
             return response()->json([
@@ -86,6 +92,7 @@ class TransportadoraController extends Controller
             if (!$transportadora) {
                 return response()->json(['message' => "Registro não encontrado"], 404);
             }
+
             $transportadora->delete();
 
             return response()->json(['message' => "Registro excluído com sucesso"], 200);
