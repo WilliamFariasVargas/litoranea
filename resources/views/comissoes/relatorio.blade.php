@@ -4,6 +4,35 @@
 <div class="container mt-5">
     <h2 class="mb-4">Relatório de Comissões - {{ $mes }}/{{ $ano }}</h2>
 
+    <form action="{{ route('comissoes.relatorio') }}" method="GET" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="mes" class="form-label">Mês</label>
+            <select name="mes" id="mes" class="form-select">
+                @for ($m = 1; $m <= 12; $m++)
+                    <option value="{{ $m }}" {{ $m == $mes ? 'selected' : '' }}>
+                        {{ str_pad($m, 2, '0', STR_PAD_LEFT) }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="ano" class="form-label">Ano</label>
+            <select name="ano" id="ano" class="form-select">
+                @for ($y = date('Y') - 5; $y <= date('Y') + 1; $y++)
+                    <option value="{{ $y }}" {{ $y == $ano ? 'selected' : '' }}>{{ $y }}</option>
+                @endfor
+            </select>
+        </div>
+
+        <div class="col-md-3 align-self-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Relatório de Comissões - {{ $mes }}/{{ $ano }}</h2>
+
     @if($comissoes->isEmpty())
         <div class="alert alert-warning">Nenhuma comissão encontrada para esse período.</div>
     @else

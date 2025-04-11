@@ -57,4 +57,19 @@ class ComissaoController extends Controller
 
         return view('comissoes.relatorio', compact('comissoes', 'total', 'mes', 'ano'));
     }
+    public function relatorio(Request $request)
+{
+    $mes = $request->get('mes', now()->month);
+    $ano = $request->get('ano', now()->year);
+
+    $comissoes = Comissao::with(['pedido.cliente'])
+        ->whereYear('created_at', $ano)
+        ->whereMonth('created_at', $mes)
+        ->get();
+
+    $total = $comissoes->sum('valor_calculado');
+
+    return view('comissoes.relatorio', compact('comissoes', 'mes', 'ano', 'total'));
+}
+
 }

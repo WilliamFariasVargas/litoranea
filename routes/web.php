@@ -6,6 +6,8 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ComissaoController;
 
 Route::delete('/pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
+Route::get('/comissoes/relatorio', [ComissaoController::class, 'relatorio'])->name('comissoes.relatorio');
+
 
 Route::get('/comissoes/index', function () {
     $comissoes = \App\Models\Comissao::with('pedido.cliente')->latest()->get();
