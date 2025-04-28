@@ -112,4 +112,19 @@ class clienteController extends Controller
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
+    public function search(Request $request)
+    {
+        $search = $request->q;
+
+        $clientes = \App\Models\Cliente::where(function ($query) use ($search) {
+                $query->where('razao_social', 'LIKE', "%$search%")
+                    ->orWhere('nome_fantasia', 'LIKE', "%$search%");
+            })
+            ->select('id', 'razao_social')
+            ->limit(20)
+            ->get();
+
+        return response()->json($clientes);
+    }
+
 }

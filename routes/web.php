@@ -99,6 +99,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/show', [RepresentadaController::class, 'show'])->name('representadas.show');
         Route::post('/delete/{id?}', [RepresentadaController::class, 'delete'])->name('representadas.delete');
     });
+/**
+     * CRIANDO PEDIDOS
+     */
+    Route::middleware('auth')->group(function () {
+        Route::resource('cadastrodepedido', CadastroDePedidoController::class);
+    });
+
+    // FILTROS FINAL
+    Route::get('clientes/search', [ClienteController::class, 'search'])->name('clientes.search');
+    Route::get('representadas/search', [RepresentadaController::class, 'search'])->name('representadas.search');
+    Route::get('transportadoras/search', [TransportadoraController::class, 'search'])->name('transportadoras.search');
+
 
     /**
      * TRANSPORTADORAS
@@ -111,5 +123,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/show', [TransportadoraController::class, 'show'])->name('transportadoras.show');
         Route::post('/delete/{id?}', [TransportadoraController::class, 'delete'])->name('transportadoras.delete');
     });
+
+    Route::get('cadastrodepedido-export', [CadastroDePedidoController::class, 'export'])->name('cadastrodepedido.export');
+
 
 });

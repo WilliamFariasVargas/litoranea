@@ -18,46 +18,71 @@
         <div class="col-md-4 form-group mb-2">
             <label for="tipo">Tipo</label>
             <select name="tipo_pessoa" id="tipo_pessoa" class="form-control select2" required>
+                <option value="" {{ $representada == null || $representada->tipo_pessoa == null ? 'selected' : '' }}>Selecione</option>
+
                 <option {{ $representada != null ? ($representada->tipo_pessoa==1 ? 'selected' : '') : ''}} value="1" >Pessoa Jurídica</option>
                 <option {{ $representada != null ? ($representada->tipo_pessoa==2 ? 'selected' : '') : ''}} value="2">Pessoa Física</option>
             </select>
         </div>
+        <div class="col-md-8 mt-12">
+            <label for="cnpj" id="labelCNPJ">CNPJ:</label>
+            <input type="text" maxlength="20" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="{{ $representada != null ? $representada->cpf_cnpj : '' }}" />
+        </div>
     </section>
+    <!-- EMPRESA -->
 
-    <div class="col-md-4 mt-2">
-        <label for="cnpj" id="labelCNPJ">CNPJ:</label>
-        <input type="text" maxlength="20" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="{{ $representada != null ? $representada->cpf_cnpj : '' }}" />
-    </div>
-
-    <div class="form-group col-md-8 mt-2">
+    <div class="form-group col-md-6 mt-2">
         <label for="empresa" id="labelNome">Razão Social:</label>
-        <input type="text" maxlength="250" name="razao_social" class="form-control" id="razao_social" value="{{ $representada != null ?  $representada->razao_social : '' }}" required />
+        <input type="text" maxlength="250" name="razao_social" class="form-control" id="razao_social" value="{{ $representada != null ?  $representada->razao_social : '' }}"  />
     </div>
 
-    <div class="col-md-8 form-group mt-2">
-        <label for="nome_fantasia" id="labelFantasia">Nome Fantasia:</label>
-        <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control" value="{{ $representada != null ? $representada->nome_fantasia : '' }}">
+    <!-- CNPJ -->
+    <!-- NOME FANTASIA -->
+    <div class="col-md-6 form-group mt-2">
+        <label for="nome_fantasia" id="labelFantasia">Nome Fantasia: </label>
+        <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  required value="{{ $representada != null ? $representada->nome_fantasia : '' }} ">
     </div>
 
+    <!-- INSCRIÇÃO ESTADUAL (aparece só para Jurídica) -->
+    <div class="col-md-4 form-group mt-2" id="div_inscricao_estadual" style="display: none;">
+        <label for="inscricao_estadual">Inscrição Estadual:</label>
+        <input type="text" maxlength="50" name="inscricao_estadual" id="inscricao_estadual" class="form-control" value="{{ $representada != null ? $representada->inscricao_estadual : '' }}">
+    </div>
+
+
+    <!-- FONE -->
     <div class="col-md-4 form-group mt-2">
         <label for="fone">Telefone:</label>
         <input type="tel" name="fone" id="fone" class="form-control" value="{{ $representada != null ? $representada->fone : '' }}" >
     </div>
 
+    <!-- CELULAR -->
+    <div class="col-md-4  form-group  mt-2">
+        <label for="celular">Celular:</label>
+        <input type="tel" name="celular" id="celular" class="form-control" value="{{ $representada != null ? $representada->celular : '' }}" >
+    </div>
+
+
+    <!-- RESPONSÁVEL -->
     <div class="col-md-4 form-group mt-2">
         <label for="email">Responsável:</label>
         <input type="text" name="responsavel" id="responsavel" class="form-control" value="{{ $representada != null ? $representada->responsavel : '' }}" >
     </div>
 
+
+    <!-- EMAIL -->
     <div class="col-md-4 form-group mt-2">
         <label for="email">E-mail:</label>
         <input type="email" name="email" id="email" class="form-control" value="{{ $representada != null ? $representada->email : '' }}" >
     </div>
 
-    <div class="col-md-4  form-group  mt-2">
-        <label for="celular">Celular:</label>
-        <input type="tel" name="celular" id="celular" class="form-control" value="{{ $representada != null ? $representada->celular : '' }}" >
+    <!-- E-MAIL PARA NOTA FISCAL -->
+    <div class="col-md-4 form-group mt-2">
+        <label for="email_nfe">E-mail para NFe:</label>
+        <input type="email" maxlength="120" name="email_nfe" id="email_nfe" class="form-control" value="{{ $representada != null ? $representada->email_nfe : '' }}">
     </div>
+
+
 
     <div class="col-md-12 form-group mt-2 mt-3 ">
         <div class="form-separator"><span>Endereço</span></div>
@@ -125,18 +150,21 @@
     });
 
     function showTipo(tipo){
-        if(tipo==1){
-            $("#labelCNPJ").html("CNPJ:");
-            $("#labelNome").html("Razão Social:");
-            $("#labelFantasia").html("Nome Fantasia:");
-            $("#cpf_cnpj").mask('00.000.000/0000-00');
-        }else if(tipo==2){
-            $("#labelCNPJ").html("CPF:");
-            $("#labelNome").html("Nome:");
-            $("#labelFantasia").html("Sobrenome:");
-            $("#cpf_cnpj").mask('000.000.000-00');
-        }
+    if(tipo == 1){
+        $("#labelCNPJ").html("CNPJ:");
+        $("#labelNome").html("Razão Social:");
+        $("#labelFantasia").html("Nome Fantasia:");
+        $("#cpf_cnpj").mask('00.000.000/0000-00');
+        $("#div_inscricao_estadual").show(); // Mostra Inscrição Estadual para Jurídica
+    } else if(tipo == 2){
+        $("#labelCNPJ").html("CPF:");
+        $("#labelNome").html("Nome:");
+        $("#labelFantasia").html("Sobrenome:");
+        $("#cpf_cnpj").mask('000.000.000-00');
+        $("#div_inscricao_estadual").hide(); // Esconde Inscrição Estadual para Física
     }
+}
+
 
     $(document).ready(function() {
         $('#create_edit').submit(function(e) {

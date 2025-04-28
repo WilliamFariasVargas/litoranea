@@ -12,10 +12,12 @@ class Representada extends Model
     protected $fillable = [
         'tipo_pessoa',
         'cpf_cnpj',
+        'inscricao_estadual',
         'razao_social',
         'nome_fantasia',
         'responsavel',
         'email',
+        'email_nfe',
         'fone',
         'celular',
         'cep',
