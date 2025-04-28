@@ -29,7 +29,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                 <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                <li><a class="dropdown-item" href="{{ route('main.clientes') }}">Cadastrar</a></li>
+                <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cadastrar</a></li>
                 </ul>
             </li>
 
@@ -41,7 +41,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                     <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                    <li><a class="dropdown-item" href="{{ route('main.fornecedores') }}">Cadastrar</a></li>
+                    <li><a class="dropdown-item" href="{{ route('fornecedores.index') }}">Cadastrar</a></li>
                 </ul>
             </li>
 
@@ -53,7 +53,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                     <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                    <li><a class="dropdown-item" href="{{ route('main.transportadoras') }}">Cadastrar</a></li>
+                    <li><a class="dropdown-item" href="{{ route('transportadoras.index') }}">Cadastrar</a></li>
                 </ul>
             </li>
 
@@ -65,7 +65,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                     <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                    <li><a class="dropdown-item" href="{{ route('main.representadas') }}">Cadastrar</a></li>
+                    <li><a class="dropdown-item" href="{{ route('representadas.index') }}">Cadastrar</a></li>
                 </ul>
             </li>
             <li class="nav-item dropdown">
