@@ -2,15 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CadastroDePedido;
 use Illuminate\Http\Request;
-use App\Exports\CadastroDePedidoExport;
-use Maatwebsite\Excel\Facades\Excel;
-
-public function export(Request $request)
-{
-    return Excel::download(new CadastroDePedidoExport($request), 'pedidos.xlsx');
-}
+use App\Models\CadastroDePedido;
 
 class CadastroDePedidoController extends Controller
 {
@@ -21,19 +14,15 @@ class CadastroDePedidoController extends Controller
         if ($request->cliente_id) {
             $query->where('cliente_id', $request->cliente_id);
         }
-
         if ($request->representada_id) {
             $query->where('representada_id', $request->representada_id);
         }
-
         if ($request->transportadora_id) {
             $query->where('transportadora_id', $request->transportadora_id);
         }
-
         if ($request->mes) {
             $query->whereMonth('data_pedido', $request->mes);
         }
-
         if ($request->ano) {
             $query->whereYear('data_pedido', $request->ano);
         }
@@ -63,13 +52,30 @@ class CadastroDePedidoController extends Controller
         return view('cadastrodepedido.edit', compact('pedido'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $pedido = CadastroDePedido::findOrFail($id);
-        $pedido->update($request->all());
+    public function update(Request $request, CadastroDePedido $pedido)
+{
+    // Função interna para converter valores monetários do formato brasileiro para americano
+    $convertDecimal = function ($value) {
+        if (!$value) return null;
+        return str_replace(',', '.', str_replace('.', '', $value));
+    };
 
-        return response()->json(['message' => 'Pedido atualizado com sucesso!']);
-    }
+    $pedido->update([
+        'data_pedido'             => $request->data_pedido,
+        'cliente_id'              => $request->cliente_id,
+        'representada_id'         => $request->representada_id,
+        'transportadora_id'       => $request->transportadora_id,
+        'valor_pedido'            => $convertDecimal($request->valor_pedido),
+        'valor_faturado'          => $convertDecimal($request->valor_faturado),
+        'data_faturamento'        => $request->data_faturamento,
+        'valor_comissao_parcial'  => $convertDecimal($request->valor_comissao_parcial),
+        'valor_comissao_faturada' => $convertDecimal($request->valor_comissao_faturada),
+    ]);
+
+    return response()->json([
+        'message' => 'Pedido atualizado com sucesso!'
+    ]);
+}
 
     public function destroy($id)
     {
@@ -78,4 +84,61 @@ class CadastroDePedidoController extends Controller
 
         return response()->json(['message' => 'Pedido excluído com sucesso!']);
     }
+    public function show()
+    {
+        $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
+
+        if (request('cliente_id')) {
+            $query->where('cliente_id', request('cliente_id'));
+        }
+
+        if (request('representada_id')) {
+            $query->where('representada_id', request('representada_id'));
+        }
+
+        if (request('transportadora_id')) {
+            $query->where('transportadora_id', request('transportadora_id'));
+        }
+
+        if (request('mes')) {
+            $query->whereMonth('data_pedido', request('mes'));
+        }
+
+        if (request('ano')) {
+            $query->whereYear('data_pedido', request('ano'));
+        }
+
+        $pedidos = $query->get();
+        $valor_total = $pedidos->sum('valor_pedido');
+
+        return view('cadastrodepedido.table', compact('pedidos', 'valor_total'));
+    }
+
+    public function showTabela()
+{
+    $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
+
+    if (request('cliente_id')) {
+        $query->where('cliente_id', request('cliente_id'));
+    }
+    if (request('representada_id')) {
+        $query->where('representada_id', request('representada_id'));
+    }
+    if (request('transportadora_id')) {
+        $query->where('transportadora_id', request('transportadora_id'));
+    }
+    if (request('mes')) {
+        $query->whereMonth('data_pedido', request('mes'));
+    }
+    if (request('ano')) {
+        $query->whereYear('data_pedido', request('ano'));
+    }
+
+    $pedidos = $query->get();
+    $valor_total = $pedidos->sum('valor_pedido');
+
+    return view('cadastrodepedido.table', compact('pedidos', 'valor_total'));
+}
+
+
 }

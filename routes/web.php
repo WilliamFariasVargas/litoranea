@@ -8,7 +8,8 @@ use App\Http\Controllers\{
     FornecedorController,
     ClienteController,
     RepresentadaController,
-    TransportadoraController
+    TransportadoraController,
+    CadastroDePedidoController
 };
 
 // Autenticação padrão
@@ -17,13 +18,13 @@ Auth::routes();
 // Página principal (após login)
 Route::middleware('auth')->get('/', [UserController::class, 'logged'])->name('main.index');
 
-// Grupo com autenticação
+// Rotas protegidas
 Route::middleware('auth')->group(function () {
 
     /**
-     * USUÁRIOS - Apenas administradores com permissão
+     * USUÁRIOS
      */
-    Route::middleware('can:manage-users')->prefix('users')->group(function () {
+    Route::prefix('users')->middleware('can:manage-users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::get('/form/{id?}', [UserController::class, 'form'])->name('users.form');
         Route::post('/', [UserController::class, 'store'])->name('users.store');
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/show', [PedidoController::class, 'show'])->name('pedidos.show');
         Route::post('/delete/{id?}', [PedidoController::class, 'delete'])->name('pedidos.delete');
 
-        // Funcionalidades extras
+        // Extras
         Route::get('/{pedido}/pdf', [PedidoController::class, 'gerarPdf'])->name('pedidos.pdf');
         Route::get('/{pedido}/imprimir', [PedidoController::class, 'imprimir'])->name('pedidos.imprimir');
         Route::get('/{pedido}/whatsapp', [PedidoController::class, 'whatsapp'])->name('pedidos.whatsapp');
@@ -59,7 +60,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/show', [ComissaoController::class, 'show'])->name('comissoes.show');
         Route::post('/delete/{id?}', [ComissaoController::class, 'delete'])->name('comissoes.delete');
 
-        // Relatórios e exportação
+        // Relatórios
         Route::get('/relatorio', [ComissaoController::class, 'relatorioMensal'])->name('comissoes.relatorio');
         Route::get('/export', [ComissaoController::class, 'export'])->name('comissoes.export');
     });
@@ -99,18 +100,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/show', [RepresentadaController::class, 'show'])->name('representadas.show');
         Route::post('/delete/{id?}', [RepresentadaController::class, 'delete'])->name('representadas.delete');
     });
-/**
-     * CRIANDO PEDIDOS
-     */
-    Route::middleware('auth')->group(function () {
-        Route::resource('cadastrodepedido', CadastroDePedidoController::class);
-    });
-
-    // FILTROS FINAL
-    Route::get('clientes/search', [ClienteController::class, 'search'])->name('clientes.search');
-    Route::get('representadas/search', [RepresentadaController::class, 'search'])->name('representadas.search');
-    Route::get('transportadoras/search', [TransportadoraController::class, 'search'])->name('transportadoras.search');
-
 
     /**
      * TRANSPORTADORAS
@@ -124,7 +113,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/delete/{id?}', [TransportadoraController::class, 'delete'])->name('transportadoras.delete');
     });
 
+    /**
+     * CADASTRO DE PEDIDOS (NOVO MÓDULO)
+     */
     Route::get('cadastrodepedido-export', [CadastroDePedidoController::class, 'export'])->name('cadastrodepedido.export');
+    Route::get('cadastrodepedido/tabela', [CadastroDePedidoController::class, 'showTabela'])->name('cadastrodepedido.tabela');
+    Route::resource('cadastrodepedido', CadastroDePedidoController::class)->except(['show']);
 
+    /**
+     * BUSCAS AJAX
+     */
+    Route::get('clientes/search', [ClienteController::class, 'search'])->name('clientes.search');
+    Route::get('representadas/search', [RepresentadaController::class, 'search'])->name('representadas.search');
+    Route::get('transportadoras/search', [TransportadoraController::class, 'search'])->name('transportadoras.search');
 
 });

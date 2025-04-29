@@ -112,16 +112,28 @@ class RepresentadaController extends Controller
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
+
     public function search(Request $request)
-    {
-        $search = $request->q;
+{
+    $search = $request->q;
 
-        $representadas = \App\Models\Representada::where('nome', 'LIKE', "%$search%")
-            ->select('id', 'nome')
-            ->limit(20)
-            ->get();
+    $representadas = Representada::where('nome', 'like', "%$search%")
+                        ->orderBy('nome')
+                        ->limit(20)
+                        ->get();
 
-        return response()->json($representadas);
+    $results = [];
+
+    foreach ($representadas as $item) {
+        $results[] = [
+            'id' => $item->id,
+            'text' => $item->nome,
+        ];
     }
+
+    return response()->json($results);
+}
+
+
 
 }

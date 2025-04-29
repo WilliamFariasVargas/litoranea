@@ -100,16 +100,28 @@ class TransportadoraController extends Controller
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
+
     public function search(Request $request)
-    {
-        $search = $request->q;
+{
+    $search = $request->q;
 
-        $transportadoras = \App\Models\Transportadora::where('nome', 'LIKE', "%$search%")
-            ->select('id', 'nome')
-            ->limit(20)
-            ->get();
+    $transportadoras = \App\Models\Transportadora::where('nome', 'like', "%$search%")
+                        ->orderBy('nome')
+                        ->limit(20)
+                        ->get();
 
-        return response()->json($transportadoras);
+    $results = [];
+
+    foreach ($transportadoras as $item) {
+        $results[] = [
+            'id' => $item->id,
+            'text' => $item->nome,
+        ];
     }
+
+    return response()->json($results);
+}
+
+
 
 }
