@@ -112,4 +112,42 @@ class RepresentadaController extends Controller
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
+
+
+    public function search(Request $request)
+    {
+        $search = $request->q;
+
+        $query = \App\Models\Representada::query();
+
+        if (!empty($search)) {
+            // Verifica se existe coluna 'nome'
+            $columns = \Schema::getColumnListing('representadas');
+
+            if (in_array('nome', $columns)) {
+                $query->where('nome', 'like', "%{$search}%");
+            } elseif (in_array('razao_social', $columns)) {
+                $query->where('razao_social', 'like', "%{$search}%");
+            } else {
+                return response()->json(['results' => []]);
+            }
+        }
+
+        $representadas = $query->orderBy('id')->limit(20)->get();
+
+        $results = [];
+
+        foreach ($representadas as $item) {
+            $results[] = [
+                'id' => $item->id,
+                'text' => $item->nome ?? $item->razao_social, // Pega o que existir
+            ];
+        }
+
+        return response()->json(['results' => $results]);
+    }
+
+
+
+
 }

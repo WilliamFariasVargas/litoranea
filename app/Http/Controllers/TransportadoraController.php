@@ -100,4 +100,34 @@ class TransportadoraController extends Controller
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
+
+    public function search(Request $request)
+{
+    $search = $request->q;
+
+    $query = \App\Models\Transportadora::query();
+
+    if (!empty($search)) {
+        $query->where('razao_social', 'like', "%{$search}%");
+    }
+
+    $transportadoras = $query->orderBy('razao_social')->limit(20)->get();
+
+    $results = [];
+
+    foreach ($transportadoras as $item) {
+        $results[] = [
+            'id' => $item->id,
+            'text' => $item->razao_social,
+        ];
+    }
+
+    return response()->json(['results' => $results]);
+}
+
+
+
+
+
+
 }

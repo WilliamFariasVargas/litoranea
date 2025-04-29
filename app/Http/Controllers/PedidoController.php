@@ -60,8 +60,9 @@ class PedidoController extends Controller
         // Redireciona para WhatsApp com mensagem codificada
         $url = 'https://wa.me/?text=' . rawurlencode($msg);
         return redirect()->away($url);
-    }
 
+
+    }
 
 
 
