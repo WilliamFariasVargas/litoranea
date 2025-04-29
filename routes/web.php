@@ -75,6 +75,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{id?}', [ClienteController::class, 'update'])->name('clientes.update');
         Route::get('/show', [ClienteController::class, 'show'])->name('clientes.show');
         Route::post('/delete/{id?}', [ClienteController::class, 'delete'])->name('clientes.delete');
+
+        // Busca AJAX
+        Route::get('/search', [ClienteController::class, 'search'])->name('clientes.search');
     });
 
     /**
@@ -99,6 +102,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{id?}', [RepresentadaController::class, 'update'])->name('representadas.update');
         Route::get('/show', [RepresentadaController::class, 'show'])->name('representadas.show');
         Route::post('/delete/{id?}', [RepresentadaController::class, 'delete'])->name('representadas.delete');
+
+        // Busca AJAX
+        Route::get('/search', [RepresentadaController::class, 'search'])->name('representadas.search');
     });
 
     /**
@@ -111,20 +117,36 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{id?}', [TransportadoraController::class, 'update'])->name('transportadoras.update');
         Route::get('/show', [TransportadoraController::class, 'show'])->name('transportadoras.show');
         Route::post('/delete/{id?}', [TransportadoraController::class, 'delete'])->name('transportadoras.delete');
+
+        // Busca AJAX
+        Route::get('/search', [TransportadoraController::class, 'search'])->name('transportadoras.search');
     });
 
     /**
-     * CADASTRO DE PEDIDOS (NOVO MÓDULO)
+     * CADASTRO DE PEDIDOS
      */
-    Route::get('cadastrodepedido-export', [CadastroDePedidoController::class, 'export'])->name('cadastrodepedido.export');
-    Route::get('cadastrodepedido/tabela', [CadastroDePedidoController::class, 'showTabela'])->name('cadastrodepedido.tabela');
-    Route::resource('cadastrodepedido', CadastroDePedidoController::class)->except(['show']);
+    Route::prefix('cadastrodepedido')->group(function () {
 
-    /**
-     * BUSCAS AJAX
-     */
-    Route::get('clientes/search', [ClienteController::class, 'search'])->name('clientes.search');
-    Route::get('representadas/search', [RepresentadaController::class, 'search'])->name('representadas.search');
+
+
+
+
+
+
+        Route::get('/tabela', [CadastroDePedidoController::class, 'showTabela'])->name('cadastrodepedido.tabela');
+        Route::get('/export', [CadastroDePedidoController::class, 'export'])->name('cadastrodepedido.export');
+        Route::put('/cadastrodepedido/{cadastrodepedido}', [CadastroDePedidoController::class, 'update'])->name('cadastrodepedido.update');
+        Route::get('cadastrodepedido/dashboard', [CadastroDePedidoController::class, 'dashboard'])->name('cadastrodepedido.dashboard');
+
+
+    });
+
+
+    // Rota do dashboard primeiro!
+Route::get('cadastrodepedido/dashboard', [CadastroDePedidoController::class, 'dashboard'])->name('cadastrodepedido.dashboard');
+
+// Depois registra o resource normal
+Route::resource('cadastrodepedido', CadastroDePedidoController::class)->except(['show']);
     Route::get('transportadoras/search', [TransportadoraController::class, 'search'])->name('transportadoras.search');
 
 });

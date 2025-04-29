@@ -6,7 +6,7 @@
 <div class="modal-body">
     <form id="create_edit" method="POST" class="row g-2">
         @csrf
-        @method('PUT') {{-- IMPORTANTE para editar no Laravel --}}
+        @method('PUT')
 
         {{-- Data Pedido --}}
         <div class="col-md-6">
@@ -64,121 +64,73 @@
     <button type="submit" form="create_edit" class="btn btn-primary">Salvar</button>
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 </div>
-
 <script>
-$(document).ready(function() {
-    const url_update = "{{ route('cadastrodepedido.update', $pedido->id) }}";
+    $(document).ready(function() {
+        $('.money').mask('000.000.000,00', { reverse: true });
 
-    // Máscara para campos monetários
-    $('.money').mask('000.000.000,00', { reverse: true });
+        const url_update = "{{ route('cadastrodepedido.update', $pedido->id) }}";
 
-    function initSelect2(selector, urlSearch, valueSelected) {
-        $(selector).select2({
-            placeholder: 'Selecione',
-            allowClear: true,
-            ajax: {
-                url: urlSearch,
-                dataType: 'json',
-                delay: 250,
-                data: params => ({ q: params.term }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.razao_social || item.nome
-                    }))
-                }),
-                cache: true
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
-        if (valueSelected) {
-            let option = new Option(valueSelected.text, valueSelected.id, true, true);
-            $(selector).append(option).trigger('change');
-        }
+        function initSelect2(selector, urlSearch, valueSelected) {
+    const $el = $(selector);
+    if ($el.hasClass("select2-hidden-accessible")) {
+        $el.select2('destroy');
     }
 
-    // Inicializar os selects carregando o valor atual
-    initSelect2('#cliente_id', "{{ route('clientes.search') }}", @json($pedido->cliente ? ['id' => $pedido->cliente->id, 'text' => $pedido->cliente->razao_social] : null));
-    initSelect2('#representada_id', "{{ route('representadas.search') }}", @json($pedido->representada ? ['id' => $pedido->representada->id, 'text' => $pedido->representada->razao_social] : null));
-    initSelect2('#transportadora_id', "{{ route('transportadoras.search') }}", @json($pedido->transportadora ? ['id' => $pedido->transportadora->id, 'text' => $pedido->transportadora->razao_social] : null));
-
-    // Select2 - Cliente
-    $('#cliente_id').select2({
-        placeholder: 'Selecione um cliente',
+    $el.select2({
+        width: '100%',
+        placeholder: 'Selecione',
         allowClear: true,
+        dropdownParent: $('#modalMain'),
         ajax: {
-            url: "{{ route('clientes.search') }}",
+            url: urlSearch,
             dataType: 'json',
             delay: 250,
             data: params => ({ q: params.term }),
-            processResults: data => ({
-                results: data.map(item => ({
-                    id: item.id,
-                    text: item.razao_social
-                }))
-            }),
-            cache: true
-        }
-    });
-
-    // Select2 - Representada
-    $('#representada_id').select2({
-        placeholder: 'Selecione uma representada',
-        allowClear: true,
-        ajax: {
-            url: "{{ route('representadas.search') }}",
-            dataType: 'json',
-            delay: 250,
-            data: params => ({ q: params.term }),
-            processResults: data => ({
-                results: data.map(item => ({
-                    id: item.id,
-                    text: item.nome
-                }))
-            }),
-            cache: true
-        }
-    });
-
-    // Select2 - Transportadora
-    $('#transportadora_id').select2({
-        placeholder: 'Selecione uma transportadora',
-        allowClear: true,
-        ajax: {
-            url: "{{ route('transportadoras.search') }}",
-            dataType: 'json',
-            delay: 250,
-            data: params => ({ q: params.term }),
-            processResults: data => ({
-                results: data.map(item => ({
-                    id: item.id,
-                    text: item.nome
-                }))
-            }),
-            cache: true
-        }
-    });
-
-    // Envio AJAX do formulário de edição
-    $('#create_edit').submit(function(e) {
-        e.preventDefault();
-
-        const formData = $(this).serialize();
-
-        $.ajax({
-            url: url_update,
-            method: 'POST',
-            data: formData,
-            success: function(data) {
-                Swal.fire('Sucesso!', data.message, 'success').then(() => {
-                    tblPopulate(); // Atualiza a tabela de pedidos
-                    $('#modalMain').modal('hide'); // Fecha o modal
-                });
+            processResults: function (data) {
+                return {
+                    results: data.results // <- Pega do campo correto agora!
+                };
             },
-            error: function(xhr) {
-                Swal.fire('Erro!', xhr.responseJSON?.message || 'Erro ao atualizar pedido.', 'error');
-            }
+            cache: true
+        }
+    });
+
+    if (valueSelected) {
+        const option = new Option(valueSelected.text, valueSelected.id, true, true);
+        $el.append(option).trigger('change');
+    }
+}
+
+        // Chama diretamente após renderização (não depende do modal shown)
+        initSelect2('#cliente_id', "{{ route('clientes.search') }}", @json($pedido->cliente ? ['id' => $pedido->cliente->id, 'text' => $pedido->cliente->razao_social] : null));
+        initSelect2('#representada_id', "{{ route('representadas.search') }}", @json($pedido->representada ? ['id' => $pedido->representada->id, 'text' => $pedido->representada->razao_social] : null));
+        initSelect2('#transportadora_id', "{{ route('transportadoras.search') }}", @json($pedido->transportadora ? ['id' => $pedido->transportadora->id, 'text' => $pedido->transportadora->razao_social] : null));
+
+        $('#create_edit').submit(function(e) {
+            e.preventDefault();
+
+            const formData = $(this).serialize();
+
+            $.ajax({
+                url: url_update,
+                method: 'PUT',
+                data: formData,
+                success: function(data) {
+                    Swal.fire('Sucesso!', data.message, 'success').then(() => {
+                        tblPopulate();
+                        $('#modalMain').modal('hide');
+                    });
+                },
+                error: function(xhr) {
+                    Swal.fire('Erro!', xhr.responseJSON?.message || 'Erro ao atualizar pedido.', 'error');
+                }
+            });
         });
     });
-});
-</script>
+    </script>

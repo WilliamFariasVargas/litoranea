@@ -112,16 +112,30 @@ class clienteController extends Controller
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
+
+
     public function search(Request $request)
 {
     $search = $request->q;
 
-    $clientes = \App\Models\Cliente::where('razao_social', 'like', "%$search%")
-                    ->orderBy('razao_social')
-                    ->limit(20)
-                    ->get();
+    $query = \App\Models\Cliente::query();
 
-    return response()->json($clientes);
+    if (!empty($search)) {
+        $query->where('razao_social', 'like', "%{$search}%");
+    }
+
+    $clientes = $query->orderBy('razao_social')->limit(20)->get();
+
+    $results = [];
+
+    foreach ($clientes as $item) {
+        $results[] = [
+            'id' => $item->id,
+            'text' => $item->razao_social,
+        ];
+    }
+
+    return response()->json(['results' => $results]);
 }
 
 

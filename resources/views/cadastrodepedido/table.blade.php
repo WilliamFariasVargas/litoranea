@@ -58,15 +58,14 @@
 
 </form>
 
-<h5 class="mb-3">
-    Valor total dos pedidos: <strong>R$ {{ number_format($valor_total, 2, ',', '.') }}</strong>
-</h5>
+
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Cliente</th>
             <th>Representada</th>
+            <th>Transportadora</th>
             <th>Valor Pedido</th>
             <th>Valor Faturado</th>
             <th>Data Pedido</th>
@@ -77,7 +76,8 @@
         @foreach ($pedidos as $pedido)
         <tr>
             <td>{{ $pedido->cliente->razao_social ?? '-' }}</td>
-            <td>{{ $pedido->representada->nome ?? '-' }}</td>
+            <td>{{ $pedido->representada->razao_social ?? '-' }}</td>
+            <td>{{ $pedido->transportadora->razao_social ?? '-' }}</td>
             <td>R$ {{ number_format($pedido->valor_pedido, 2, ',', '.') }}</td>
             <td>R$ {{ number_format($pedido->valor_faturado, 2, ',', '.') }}</td>
             <td>{{ \Carbon\Carbon::parse($pedido->data_pedido)->format('d/m/Y') }}</td>
@@ -93,6 +93,17 @@
         @endforeach
     </tbody>
 </table>
+
+<div class="mt-4">
+    <h5 class="mb-2">Totais:</h5>
+    <ul class="list-unstyled">
+        <li><strong>Valor total dos pedidos:</strong> R$ {{ number_format($valor_total, 2, ',', '.') }}</li>
+        <li><strong>Valor total faturado:</strong> R$ {{ number_format($valor_total_faturado, 2, ',', '.') }}</li>
+        <li><strong>Valor total comissão parcial:</strong> R$ {{ number_format($valor_total_comissao_parcial, 2, ',', '.') }}</li>
+        <li><strong>Valor total comissão faturada:</strong> R$ {{ number_format($valor_total_comissao_faturada, 2, ',', '.') }}</li>
+    </ul>
+</div>
+
 <script>
     function editPedido(id) {
         $.ajax({

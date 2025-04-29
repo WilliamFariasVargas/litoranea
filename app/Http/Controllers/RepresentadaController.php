@@ -113,26 +113,40 @@ class RepresentadaController extends Controller
         }
     }
 
+
     public function search(Request $request)
-{
-    $search = $request->q;
+    {
+        $search = $request->q;
 
-    $representadas = Representada::where('nome', 'like', "%$search%")
-                        ->orderBy('nome')
-                        ->limit(20)
-                        ->get();
+        $query = \App\Models\Representada::query();
 
-    $results = [];
+        if (!empty($search)) {
+            // Verifica se existe coluna 'nome'
+            $columns = \Schema::getColumnListing('representadas');
 
-    foreach ($representadas as $item) {
-        $results[] = [
-            'id' => $item->id,
-            'text' => $item->nome,
-        ];
+            if (in_array('nome', $columns)) {
+                $query->where('nome', 'like', "%{$search}%");
+            } elseif (in_array('razao_social', $columns)) {
+                $query->where('razao_social', 'like', "%{$search}%");
+            } else {
+                return response()->json(['results' => []]);
+            }
+        }
+
+        $representadas = $query->orderBy('id')->limit(20)->get();
+
+        $results = [];
+
+        foreach ($representadas as $item) {
+            $results[] = [
+                'id' => $item->id,
+                'text' => $item->nome ?? $item->razao_social, // Pega o que existir
+            ];
+        }
+
+        return response()->json(['results' => $results]);
     }
 
-    return response()->json($results);
-}
 
 
 

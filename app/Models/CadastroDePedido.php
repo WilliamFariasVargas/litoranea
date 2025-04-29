@@ -37,4 +37,6 @@ class CadastroDePedido extends Model
     {
         return $this->belongsTo(Transportadora::class);
     }
+
+
 }

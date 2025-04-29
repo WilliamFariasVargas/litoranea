@@ -8,8 +8,13 @@
                 <i class="fa fa-list-alt mx-2"></i>Cadastro de Pedidos
             </h4>
         </div>
+        <div class="col-2 text-end">
+            <a href="{{ route('cadastrodepedido.dashboard') }}" style="background-color:#003162;" class="btn btn-primary" id="dashboardBtn">
+                <i class="fas fa-chart-line mx-2"></i> Dashboard
+            </a>
+        </div>
 
-        <div class="col-4 text-end">
+        <div class="col-2 text-end">
             <button type="button" style="background-color:#003162;" class="btn btn-primary" id="novoPedidoBtn">
                 <i class="fa fa-plus mx-2"></i> Novo
             </button>
