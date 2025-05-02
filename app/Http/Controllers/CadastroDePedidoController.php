@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CadastroDePedido;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PedidosExport;
+use PDF; // para o dompdf
 
 class CadastroDePedidoController extends Controller
 {
+
+
     public function index(Request $request)
     {
         $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
@@ -267,6 +272,61 @@ class CadastroDePedidoController extends Controller
         'transportadoras'
     ));
 }
+public function exportExcel(Request $request)
+{
+    return Excel::download(new PedidosExport($request), 'pedidos.xlsx');
+}
+
+public function exportPdf(Request $request)
+{
+    $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
+
+    if ($request->filled('cliente_id')) {
+        $query->where('cliente_id', $request->cliente_id);
+    }
+    if ($request->filled('representada_id')) {
+        $query->where('representada_id', $request->representada_id);
+    }
+    if ($request->filled('transportadora_id')) {
+        $query->where('transportadora_id', $request->transportadora_id);
+    }
+    if ($request->filled('mes')) {
+        $query->whereMonth('data_pedido', $request->mes);
+    }
+    if ($request->filled('ano')) {
+        $query->whereYear('data_pedido', $request->ano);
+    }
+
+    $pedidos = $query->get();
+
+    $total_pedidos = $pedidos->sum('valor_pedido');
+    $total_faturado = $pedidos->sum('valor_faturado');
+    $total_comissao_parcial = $pedidos->sum('valor_comissao_parcial');
+    $total_comissao_faturada = $pedidos->sum('valor_comissao_faturada');
+
+    // Pegando os nomes dos filtros
+    $cliente = $request->filled('cliente_id') ? \App\Models\Cliente::find($request->cliente_id) : null;
+    $representada = $request->filled('representada_id') ? \App\Models\Representada::find($request->representada_id) : null;
+    $transportadora = $request->filled('transportadora_id') ? \App\Models\Transportadora::find($request->transportadora_id) : null;
+    $mes = $request->mes;
+    $ano = $request->ano;
+
+    $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(
+        'pedidos',
+        'total_pedidos',
+        'total_faturado',
+        'total_comissao_parcial',
+        'total_comissao_faturada',
+        'cliente',
+        'representada',
+        'transportadora',
+        'mes',
+        'ano'
+    ));
+
+    return $pdf->download('relatorio_pedidos.pdf');
+}
+
 
 
 

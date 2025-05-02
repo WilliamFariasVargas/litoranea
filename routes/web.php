@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExportacoesController;
 use App\Http\Controllers\{
     UserController,
     PedidoController,
@@ -148,5 +149,17 @@ Route::get('cadastrodepedido/dashboard', [CadastroDePedidoController::class, 'da
 // Depois registra o resource normal
 Route::resource('cadastrodepedido', CadastroDePedidoController::class)->except(['show']);
     Route::get('transportadoras/search', [TransportadoraController::class, 'search'])->name('transportadoras.search');
+
+
+    Route::get('cadastrodepedido/export-excel', [CadastroDePedidoController::class, 'exportExcel'])->name('cadastrodepedido.export.excel');
+Route::get('cadastrodepedido/export-pdf', [CadastroDePedidoController::class, 'exportPdf'])->name('cadastrodepedido.export.pdf');
+
+
+
+
+Route::get('/exportar-clientes', [ExportacoesController::class, 'exportarClientes'])->name('exportar.clientes');
+Route::get('/exportar-representadas', [ExportacoesController::class, 'exportarRepresentadas'])->name('exportar.representadas');
+Route::get('/exportar-transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
+
 
 });

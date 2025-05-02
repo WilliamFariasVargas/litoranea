@@ -5,9 +5,10 @@
     <div class="row" style="padding-top:60px;">
         <div class="col-8" style="vertical-align: middle">
             <h4 style="color:#003162;" class="title mt-2">
-                <i class="fa fa-list-alt mx-2"></i>Cadastro de Pedidos
+                <i class="fa fa-list-alt mx-2"></i> Cadastro de Pedidos
             </h4>
         </div>
+
         <div class="col-2 text-end">
             <a href="{{ route('cadastrodepedido.dashboard') }}" style="background-color:#003162;" class="btn btn-primary" id="dashboardBtn">
                 <i class="fas fa-chart-line mx-2"></i> Dashboard
@@ -24,65 +25,171 @@
     </div>
 </section>
 
+<div class="d-flex gap-2 mb-4">
+    <a href="{{ route('exportar.clientes') }}" class="btn btn-outline-primary">
+        <i class="fas fa-users mx-2"></i> Exportar Clientes
+    </a>
+
+    <a href="{{ route('exportar.representadas') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-user-tie mx-2"></i> Exportar Representadas
+    </a>
+
+    <a href="{{ route('exportar.transportadoras') }}" class="btn btn-outline-success">
+        <i class="fas fa-truck mx-2"></i> Exportar Transportadoras
+    </a>
+</div>
+
+
+<form method="GET" action="{{ route('cadastrodepedido.index') }}" id="filter_form" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label>Cliente:</label>
+        <select name="cliente_id" class="form-control select2">
+            <option value="">Selecione</option>
+            @foreach(\App\Models\Cliente::all() as $cliente)
+                <option value="{{ $cliente->id }}" {{ request('cliente_id') == $cliente->id ? 'selected' : '' }}>
+                    {{ $cliente->razao_social }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label>Representada:</label>
+        <select name="representada_id" class="form-control select2">
+            <option value="">Selecione</option>
+            @foreach(\App\Models\Representada::all() as $rep)
+                <option value="{{ $rep->id }}" {{ request('representada_id') == $rep->id ? 'selected' : '' }}>
+                    {{ $rep->razao_social }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label>Transportadora:</label>
+        <select name="transportadora_id" class="form-control select2">
+            <option value="">Selecione</option>
+            @foreach(\App\Models\Transportadora::all() as $trans)
+                <option value="{{ $trans->id }}" {{ request('transportadora_id') == $trans->id ? 'selected' : '' }}>
+                    {{ $trans->razao_social }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-1">
+        <label>Mês:</label>
+        <input type="number" name="mes" min="1" max="12" value="{{ request('mes') }}" class="form-control">
+    </div>
+
+    <div class="col-md-1">
+        <label>Ano:</label>
+        <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
+    </div>
+
+    <div class="col-md-1 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+</form>
+
+{{-- Botões de Exportação --}}
+<div class="d-flex gap-2 mb-4">
+    <a id="btnExportExcel" href="#" class="btn btn-success">
+        <i class="fas fa-file-excel mx-2"></i> Exportar Excel
+    </a>
+
+    <a id="btnExportPdf" href="#" class="btn btn-danger">
+        <i class="fas fa-file-pdf mx-2"></i> Exportar PDF
+    </a>
+</div>
+
+
+{{-- Área para carregar a tabela --}}
 <section class="col-md-12 mt-2 container-fluid" id="divTable">
-    {{-- Aqui vai carregar a tabela via AJAX --}}
+    {{-- A tabela vai ser carregada via AJAX aqui --}}
 </section>
 
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
+        // Inicializa os selects
+        $('.select2').select2({
+            placeholder: 'Selecione',
+            allowClear: true,
+            width: '100%'
+        });
 
-    // Botão Novo Pedido - abre modal
-    $('#novoPedidoBtn').click(function() {
+        // Botão Novo Pedido - abre modal
+        $('#novoPedidoBtn').click(function() {
+            $.ajax({
+                url: "{{ route('cadastrodepedido.create') }}",
+                method: 'GET',
+                success: function(data) {
+                    showModal(data);
+                },
+                error: function() {
+                    Swal.fire('Erro!', 'Não foi possível abrir o formulário.', 'error');
+                }
+            });
+        });
+
+        // Envio do filtro
+        $('#filter_form').submit(function(e) {
+            e.preventDefault(); // Evita reload
+
+            const queryString = $(this).serialize();
+
+            // Atualiza a URL no navegador
+            window.history.pushState({}, '', '?' + queryString);
+
+            // Atualiza tabela e links
+            tblPopulate();
+            atualizarLinksExportacao();
+        });
+
+        // Primeira carga
+        tblPopulate();
+        atualizarLinksExportacao();
+    });
+
+    function tblPopulate() {
+        let queryString = window.location.search;
+
         $.ajax({
-            url: "{{ route('cadastrodepedido.create') }}",
-            method: 'GET',
-            success: function(data) {
-                showModal(data); // Função padrão para abrir modal no seu sistema
+            url: "{{ route('cadastrodepedido.tabela') }}" + queryString,
+            method: "GET",
+            beforeSend: function() {
+                $("#divTable").html("Carregando...");
+            },
+            success: function(response) {
+                $("#divTable").html(response);
             },
             error: function() {
-                Swal.fire('Erro!', 'Não foi possível abrir o formulário.', 'error');
+                $("#divTable").html('Erro ao carregar dados');
             }
         });
-    });
-
-    // Primeira carga da tabela ao abrir a tela
-    tblPopulate();
-
-});
-
-// Função para popular a tabela de pedidos
-function tblPopulate() {
-    $.ajax({
-        url: "{{ route('cadastrodepedido.tabela') }}",
-        method: "GET",
-        beforeSend: function() {
-            $("#divTable").html("Carregando...");
-        },
-        success: function(response) {
-            $("#divTable").html(response);
-        },
-        error: function() {
-            $("#divTable").html('Erro ao carregar dados');
-        }
-    });
-}
-
-function showModal(content) {
-    if ($('#modalMain').length === 0) {
-        $('body').append(`
-            <div class="modal fade" id="modalMain" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <!-- Conteúdo AJAX vem aqui -->
-                    </div>
-                </div>
-            </div>
-        `);
     }
 
-    $('#modalMain .modal-content').html(content);
-    $('#modalMain').modal('show');
-}
+    function atualizarLinksExportacao() {
+        let query = window.location.search;
+        $('#btnExportExcel').attr('href', "{{ url('cadastrodepedido/export-excel') }}" + query);
+        $('#btnExportPdf').attr('href', "{{ url('cadastrodepedido/export-pdf') }}" + query);
+    }
 
-</script>
+    function showModal(content) {
+        if ($('#modalMain').length === 0) {
+            $('body').append(`
+                <div class="modal fade" id="modalMain" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        $('#modalMain .modal-content').html(content);
+        $('#modalMain').modal('show');
+    }
+    </script>
+
 @endsection
