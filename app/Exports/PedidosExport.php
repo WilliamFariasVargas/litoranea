@@ -36,7 +36,16 @@ class PedidosExport implements FromCollection, WithHeadings
             $query->whereYear('data_pedido', $this->request->ano);
         }
 
+                // Fazendo JOIN com as tabelas relacionadas
+        $query->join('clientes', 'clientes.id', '=', 'cadastrodepedido.cliente_id');
+        $query->join('representadas', 'representadas.id', '=', 'cadastrodepedido.representada_id');
+        $query->join('transportadoras', 'transportadoras.id', '=', 'cadastrodepedido.transportadora_id');
+
+        // Agora busca os campos corretos, renomeando para cliente, representada e transportadora
         return $query->get([
+            'clientes.razao_social as cliente',
+            'representadas.razao_social as representada',
+            'transportadoras.razao_social as transportadora',
             'data_pedido',
             'valor_pedido',
             'valor_faturado',
@@ -48,6 +57,9 @@ class PedidosExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
+            'Cliente',
+            'Representada',
+            'Transportadora',
             'Data do Pedido',
             'Valor Pedido',
             'Valor Faturado',
