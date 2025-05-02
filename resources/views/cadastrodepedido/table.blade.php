@@ -49,17 +49,19 @@
 
 <script>
     function editPedido(id) {
-        $.ajax({
-            url: "{{ url('cadastrodepedido') }}/" + id + "/edit",
-            method: 'GET',
-            success: function(data) {
-                showModal(data);
-            },
-            error: function() {
-                Swal.fire('Erro!', 'Não foi possível carregar o formulário de edição.', 'error');
-            }
-        });
-    }
+    event.preventDefault(); // <-- Isso impede o submit padrão
+    $.ajax({
+        url: "{{ url('cadastrodepedido') }}/" + id + "/edit",
+        method: 'GET',
+        success: function(data) {
+            showModal(data);
+        },
+        error: function() {
+            Swal.fire('Erro!', 'Não foi possível carregar o formulário de edição.', 'error');
+        }
+    });
+}
+
 
     function deletePedido(id) {
         Swal.fire({

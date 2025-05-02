@@ -83,6 +83,8 @@ $(document).ready(function() {
 
     $('.money').mask('000.000.000,00', { reverse: true });
 
+    calcularIndiceComissao();
+
     $('#cliente_id').select2({
         placeholder: 'Selecione um cliente',
         allowClear: true,
@@ -176,5 +178,14 @@ $(document).ready(function() {
             $('#valor_comissao_faturada').val(valorComissaoFaturada.toFixed(2).replace('.', ','));
         }
     }
+    function calcularIndiceComissao() {
+    let valorPedido = parseFloat($('#valor_pedido').val().replace(/\./g, '').replace(',', '.')) || 0;
+    let valorComissaoParcial = parseFloat($('#valor_comissao_parcial').val().replace(/\./g, '').replace(',', '.')) || 0;
+
+    if (valorPedido > 0 && valorComissaoParcial > 0) {
+        let indice = (valorComissaoParcial / valorPedido) * 100;
+        $('#indice_comissao').val(indice.toFixed(2).replace('.', ','));
+    }
+}
 });
 </script>
