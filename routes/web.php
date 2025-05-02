@@ -13,11 +13,17 @@ use App\Http\Controllers\{
     CadastroDePedidoController
 };
 
+// Página institucional de boas-vindas
+Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
+
+
 // Autenticação padrão
 Auth::routes();
 
 // Página principal (após login)
-Route::middleware('auth')->get('/', [UserController::class, 'logged'])->name('main.index');
+Route::middleware('auth')->get('/home', [UserController::class, 'logged'])->name('main.index');
 
 // Rotas protegidas
 Route::middleware('auth')->group(function () {

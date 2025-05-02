@@ -1,7 +1,17 @@
-@extends('layouts.master')
+
+
+<body>
+@include('layouts.masterhome')
 
 @section('content')
+<div class="container">
+    <div class="row justify-content-center">
 
-<div class="alert alert-success mx-2">Teste de integração</div>
+            <h1>Seja bem-vindo!</h1>
+            <p>Nosso sistema de gestão comercial</p>
+            <a href="{{ route('login') }}" class="btn btn-primary mt-4">Entrar</a>
+    </div>
+</div>
 
 @endsection
+
