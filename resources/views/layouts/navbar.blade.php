@@ -79,15 +79,13 @@
                     <li><a class="dropdown-item" href="{{ route('cadastrodepedido.index') }}">Novo Pedido</a></li>
                 </ul>
             </li>
-            <li class="nav-item dropdown">
-                <a style="color:#003162!important;font-weight:600;" class="nav-link dropdown-toggle" href="#" id="cadastroDropdown" role="button" data-bs-toggle="dropdown"
+            <li class="nav-item">
+                <a style="color:#003162!important;font-weight:600;" class="nav-link" href="{{ route('cadastrodepedido.dashboard') }}" role="button"
                     aria-expanded="false">
-                    Comissões
+                    Gráficos
                 </a>
 
-                <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
-                    <li><a class="dropdown-item" href="{{ route('comissoes.index') }}">Consultar Comissões</a></li>
-                </ul>
+
             </li>
         </ul>
         <!-- Botão de Logout à direita -->
