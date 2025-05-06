@@ -38,7 +38,7 @@
 <!-- NOME FANTASIA -->
 <div class="col-md-6 form-group mt-2">
     <label for="nome_fantasia" id="labelFantasia">Nome Fantasia: </label>
-    <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  value="{{ $transportadora != null ? $transportadora->nome_fantasia : '' }} ">
+    <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  required value="{{ $transportadora != null ? $transportadora->nome_fantasia : '' }} ">
 </div>
 
 <!-- INSCRIÇÃO ESTADUAL (aparece só para Jurídica) -->
@@ -96,13 +96,13 @@
 <!-- RUA -->
 <div class="col-md-6 form-group mt-2">
     <label for="rua">Rua:</label>
-    <input type="text" name="rua" id="rua" class="form-control" value="{{ $transportadora != null ? $transportadora->rua : '' }}"  >
+    <input type="text" name="rua" id="rua" class="form-control" value="{{ $transportadora != null ? $transportadora->rua : '' }}" required >
 </div>
 
 <!-- NÚMERO -->
 <div class="col-md-3 form-group mt-2">
     <label for="numero">Número:</label>
-    <input type="text" name="numero" id="numero" class="form-control" value="{{ $transportadora != null ? $transportadora->numero : '' }}"  >
+    <input type="text" name="numero" id="numero" class="form-control" value="{{ $transportadora != null ? $transportadora->numero : '' }}" required >
 </div>
 
 <!-- COMPLEMENTO -->
@@ -114,19 +114,19 @@
 <!-- BAIRRO -->
 <div class="col-md-3 form-group mt-2">
     <label for="bairro">Bairro:</label>
-    <input type="text" name="bairro" id="bairro" class="form-control" value="{{ $transportadora != null ? $transportadora->bairro : '' }}"  >
+    <input type="text" name="bairro" id="bairro" class="form-control" value="{{ $transportadora != null ? $transportadora->bairro : '' }}"  required>
 </div>
 
 <!-- CIDADE -->
 <div class="col-md-3 form-group mt-2">
     <label for="cidade">Cidade:</label>
-    <input type="text" name="cidade" id="cidade" class="form-control" value="{{ $transportadora != null ? $transportadora->cidade : '' }}"  >
+    <input type="text" name="cidade" id="cidade" class="form-control" value="{{ $transportadora != null ? $transportadora->cidade : '' }}"  required>
 </div>
 
 <!-- ESTADO -->
 <div class="col-md-3 form-group mt-2">
     <label for="uf">Estado:</label>
-    <select class="form-control select2" name="uf" id="uf" placeholder="Selecione"  >
+    <select class="form-control select2" name="uf" id="uf" placeholder="Selecione" required >
         <option value="">Selecione</option>
         <option value="AC" @if($transportadora != null && $transportadora->uf=='AC') selected="selected" @endif>Acre</option>
         <option value="AL" @if($transportadora != null && $transportadora->uf=='AL') selected="selected" @endif>Alagoas</option>
