@@ -38,7 +38,7 @@
 <!-- NOME FANTASIA -->
 <div class="col-md-6 form-group mt-2">
     <label for="nome_fantasia" id="labelFantasia">Nome Fantasia: </label>
-    <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  required value="{{ $transportadora != null ? $transportadora->nome_fantasia : '' }} ">
+    <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  value="{{ $transportadora != null ? $transportadora->nome_fantasia : '' }} ">
 </div>
 
 <!-- INSCRIÇÃO ESTADUAL (aparece só para Jurídica) -->
