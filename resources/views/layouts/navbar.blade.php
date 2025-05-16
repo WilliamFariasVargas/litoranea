@@ -11,6 +11,18 @@
             <li class="nav-item dropdown">
                 <a style="color:#003162!important;font-weight:600;"class="menutext nav-link dropdown-toggle" href="#" id="cadastroDropdown" role="button" data-bs-toggle="dropdown"
                 aria-expanded="false">
+                Home
+                </a>
+
+                <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
+                <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
+                <li><a class="dropdown-item" href="{{ route('admin.home.edit') }}">Editar</a></li>
+
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a style="color:#003162!important;font-weight:600;"class="menutext nav-link dropdown-toggle" href="#" id="cadastroDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
                 Usuário
                 </a>
 

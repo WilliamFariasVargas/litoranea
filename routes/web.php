@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExportacoesController;
+use App\Http\Controllers\HomeContentController;
 use App\Http\Controllers\{
     UserController,
     PedidoController,
@@ -166,6 +167,11 @@ Route::get('cadastrodepedido/export-pdf', [CadastroDePedidoController::class, 'e
 Route::get('/exportar-clientes', [ExportacoesController::class, 'exportarClientes'])->name('exportar.clientes');
 Route::get('/exportar-representadas', [ExportacoesController::class, 'exportarRepresentadas'])->name('exportar.representadas');
 Route::get('/exportar-transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/home', [HomeContentController::class, 'edit'])->name('admin.home.edit');
+    Route::post('/home', [HomeContentController::class, 'update'])->name('admin.home.update');
+});
 
 
 });
