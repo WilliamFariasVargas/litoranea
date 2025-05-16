@@ -31,20 +31,36 @@
             <tr>
                 <td><strong>Responsável:</strong> {{ $cliente->responsavel }}</td>
                 <td><strong>Email:</strong> {{ $cliente->email }}</td>
-                <td><strong>Email NF-e:</strong> {{ $cliente->email_nfe }}</td>
-                <td><strong>Telefone:</strong> {{ $cliente->fone }}</td>
+                <td><strong>Email:</strong> {{ $cliente->email_2 }}</td>
+                <td><strong>Email:</strong> {{ $cliente->email_3 }}</td>
             </tr>
             <tr>
+                <td><strong>Email:</strong> {{ $cliente->email_4 }}</td>
+                <td><strong>Email NF-e:</strong> {{ $cliente->email_nfe }}</td>
+                <td><strong>Telefone:</strong> {{ $cliente->fone }}</td>
+                <td><strong>Telefone 2:</strong> {{ $cliente->fone_2 }}</td>
+            </tr>
+            <tr>
+                <td><strong>Telefone 3:</strong> {{ $cliente->fone_3 }}</td>
                 <td><strong>Celular:</strong> {{ $cliente->celular }}</td>
+                <td><strong>Celular 2:</strong> {{ $cliente->celular_2 }}</td>
+                <td><strong>Celular 3:</strong> {{ $cliente->celular_3 }}</td>
+            </tr>
+            <tr>
                 <td><strong>CEP:</strong> {{ $cliente->cep }}</td>
                 <td><strong>Rua:</strong> {{ $cliente->rua }}</td>
                 <td><strong>Número:</strong> {{ $cliente->numero }}</td>
+                <td><strong>Complemento:</strong> {{ $cliente->complemento }}</td>
             </tr>
             <tr>
-                <td><strong>Complemento:</strong> {{ $cliente->complemento }}</td>
+
                 <td><strong>Bairro:</strong> {{ $cliente->bairro }}</td>
                 <td><strong>Cidade:</strong> {{ $cliente->cidade }}</td>
                 <td><strong>UF:</strong> {{ $cliente->uf }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><strong>Observações:</strong> {{ $cliente->observacoes }}</td>
             </tr>
         </table>
     </div>
