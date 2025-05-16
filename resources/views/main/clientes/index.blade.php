@@ -10,6 +10,10 @@
         </div>
 
         <div class="col-4 text-end">
+            <div class="mb-2">
+                <a href="{{ route('exportar.clientes') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-users mx-2"></i> Exportar Clientes
+                </a>
             <button style="background-color:#003162;" class="btn btn-primary" id="addNew"><i class="fa fa-plus mx-2"></i>Novo</button>
         </div>
         <br><br><hr>

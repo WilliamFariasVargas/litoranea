@@ -54,6 +54,15 @@
             @endforeach
         </select>
     </div>
+    {{-- Dia Início --}}
+    <div class="col-md-2">
+        <input type="date" name="data_inicial" class="form-control" value="{{ request('data_inicial') }}">
+    </div>
+
+    {{-- Dia Fim --}}
+    <div class="col-md-2">
+        <input type="date" name="data_final" class="form-control" value="{{ request('data_final') }}">
+    </div>
 
     {{-- Mês --}}
     <div class="col-md-1">

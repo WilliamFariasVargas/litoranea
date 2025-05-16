@@ -8,8 +8,8 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 4px 6px; text-align: left; vertical-align: top; }
         th { background-color: #f2f2f2; }
-        .representada { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px; }
-        .header-representada { font-weight: bold; font-size: 11px; margin-bottom: 8px; }
+        .registro { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px; }
+        .header-registro { font-weight: bold; font-size: 11px; margin-bottom: 8px; }
         h2 { text-align: center; margin-bottom: 20px; font-size: 16px; }
     </style>
 </head>
@@ -17,34 +17,49 @@
 
 <h2>Relatório de Representadas</h2>
 
-@foreach ($representadas as $representada)
-    <div class="representada">
-        <div class="header-representada">{{ $representada->razao_social }}</div>
+@foreach ($representadas as $r)
+    <div class="registro">
+        <div class="header-registro">{{ $r->razao_social }}</div>
 
         <table>
             <tr>
-                <td><strong>Nome Fantasia:</strong> {{ $representada->nome_fantasia }}</td>
-                <td><strong>Tipo Pessoa:</strong> {{ $representada->tipo_pessoa == 1 ? 'Jurídica' : 'Física' }}</td>
-                <td><strong>CPF/CNPJ:</strong> {{ $representada->cpf_cnpj }}</td>
-                <td><strong>Inscrição Estadual:</strong> {{ $representada->inscricao_estadual }}</td>
+                <td><strong>Nome Fantasia:</strong> {{ $r->nome_fantasia }}</td>
+                <td><strong>Tipo Pessoa:</strong> {{ $r->tipo_pessoa == 1 ? 'Jurídica' : 'Física' }}</td>
+                <td><strong>CPF/CNPJ:</strong> {{ $r->cpf_cnpj }}</td>
+                <td><strong>Inscrição Estadual:</strong> {{ $r->inscricao_estadual }}</td>
             </tr>
             <tr>
-                <td><strong>Responsável:</strong> {{ $representada->responsavel }}</td>
-                <td><strong>Email:</strong> {{ $representada->email }}</td>
-                <td><strong>Email NF-e:</strong> {{ $representada->email_nfe }}</td>
-                <td><strong>Telefone:</strong> {{ $representada->fone }}</td>
+                <td><strong>Responsável:</strong> {{ $r->responsavel }}</td>
+                <td><strong>Email:</strong> {{ $r->email }}</td>
+                <td><strong>Email 2:</strong> {{ $r->email_2 }}</td>
+                <td><strong>Email 3:</strong> {{ $r->email_3 }}</td>
             </tr>
             <tr>
-                <td><strong>Celular:</strong> {{ $representada->celular }}</td>
-                <td><strong>CEP:</strong> {{ $representada->cep }}</td>
-                <td><strong>Rua:</strong> {{ $representada->rua }}</td>
-                <td><strong>Número:</strong> {{ $representada->numero }}</td>
+                <td><strong>Email 4:</strong> {{ $r->email_4 }}</td>
+                <td><strong>Email NF-e:</strong> {{ $r->email_nfe }}</td>
+                <td><strong>Telefone:</strong> {{ $r->fone }}</td>
+                <td><strong>Telefone 2:</strong> {{ $r->fone_2 }}</td>
             </tr>
             <tr>
-                <td><strong>Complemento:</strong> {{ $representada->complemento }}</td>
-                <td><strong>Bairro:</strong> {{ $representada->bairro }}</td>
-                <td><strong>Cidade:</strong> {{ $representada->cidade }}</td>
-                <td><strong>UF:</strong> {{ $representada->uf }}</td>
+                <td><strong>Telefone 3:</strong> {{ $r->fone_3 }}</td>
+                <td><strong>Celular:</strong> {{ $r->celular }}</td>
+                <td><strong>Celular 2:</strong> {{ $r->celular_2 }}</td>
+                <td><strong>Celular 3:</strong> {{ $r->celular_3 }}</td>
+            </tr>
+            <tr>
+                <td><strong>CEP:</strong> {{ $r->cep }}</td>
+                <td><strong>Rua:</strong> {{ $r->rua }}</td>
+                <td><strong>Número:</strong> {{ $r->numero }}</td>
+                <td><strong>Complemento:</strong> {{ $r->complemento }}</td>
+            </tr>
+            <tr>
+                <td><strong>Bairro:</strong> {{ $r->bairro }}</td>
+                <td><strong>Cidade:</strong> {{ $r->cidade }}</td>
+                <td><strong>UF:</strong> {{ $r->uf }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4"><strong>Observações:</strong> {{ $r->observacoes }}</td>
             </tr>
         </table>
     </div>

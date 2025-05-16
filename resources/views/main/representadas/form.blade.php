@@ -1,255 +1,238 @@
 @extends('layouts.modal')
 
 @php
-    $title = "Cadastro de Representadas";
-    if($representada!= null) {
-        $title = 'Editando: '. $representada->id.' - '.$representada->razao_social;
-    }
+    $title = "Cadastro de Representada";
+    if($representada != null) $title = 'Editando: ' . $representada->id . ' - ' . $representada->razao_social;
 @endphp
 
 @section('modal_title') {{ $title }} @endsection
 
 @section('modal_content')
+<form id="create_edit">
+<section class="row col-md-12">
+    <div class="col-md-4 form-group mb-2">
+        <label for="tipo">Tipo</label>
+        <select name="tipo_pessoa" id="tipo_pessoa" class="form-control select2" required>
+            <option value="" {{ $representada == null || $representada->tipo_pessoa == null ? 'selected' : '' }}>Selecione</option>
+            <option value="1" {{ $representada != null && $representada->tipo_pessoa == 1 ? 'selected' : '' }}>Pessoa Jurídica</option>
+            <option value="2" {{ $representada != null && $representada->tipo_pessoa == 2 ? 'selected' : '' }}>Pessoa Física</option>
+        </select>
+    </div>
+    <div class="col-md-8 mt-12">
+        <label for="cpf_cnpj" id="labelCNPJ">CNPJ:</label>
+        <input type="text" maxlength="20" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="{{ $representada->cpf_cnpj ?? '' }}" />
+    </div>
+</section>
 
-<form id="create_edit" method="POST">
-    @csrf
-
-    <section id="div_tipo_pessoa" class="row col-md-12">
-        <div class="col-md-4 form-group mb-2">
-            <label for="tipo">Tipo</label>
-            <select name="tipo_pessoa" id="tipo_pessoa" class="form-control select2" required>
-                <option value="" {{ $representada == null || $representada->tipo_pessoa == null ? 'selected' : '' }}>Selecione</option>
-
-                <option {{ $representada != null ? ($representada->tipo_pessoa==1 ? 'selected' : '') : ''}} value="1" >Pessoa Jurídica</option>
-                <option {{ $representada != null ? ($representada->tipo_pessoa==2 ? 'selected' : '') : ''}} value="2">Pessoa Física</option>
-            </select>
-        </div>
-        <div class="col-md-8 mt-12">
-            <label for="cnpj" id="labelCNPJ">CNPJ:</label>
-            <input type="text" maxlength="20" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="{{ $representada != null ? $representada->cpf_cnpj : '' }}" />
-        </div>
-    </section>
-    <!-- EMPRESA -->
-
+<div class="row col-md-12">
     <div class="form-group col-md-6 mt-2">
-        <label for="empresa" id="labelNome">Razão Social:</label>
-        <input type="text" maxlength="250" name="razao_social" class="form-control" id="razao_social" value="{{ $representada != null ?  $representada->razao_social : '' }}"  />
+        <label id="labelNome">Razão Social:</label>
+        <input type="text" maxlength="250" name="razao_social" class="form-control" id="razao_social" value="{{ $representada->razao_social ?? '' }}" />
     </div>
-
-    <!-- CNPJ -->
-    <!-- NOME FANTASIA -->
     <div class="col-md-6 form-group mt-2">
-        <label for="nome_fantasia" id="labelFantasia">Nome Fantasia: </label>
-        <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  required value="{{ $representada != null ? $representada->nome_fantasia : '' }} ">
+        <label id="labelFantasia">Nome Fantasia:</label>
+        <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control" value="{{ $representada->nome_fantasia ?? '' }}">
     </div>
+</div>
 
-    <!-- INSCRIÇÃO ESTADUAL (aparece só para Jurídica) -->
-    <div class="col-md-4 form-group mt-2" id="div_inscricao_estadual" style="display: none;">
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2" id="div_inscricao_estadual">
         <label for="inscricao_estadual">Inscrição Estadual:</label>
-        <input type="text" maxlength="50" name="inscricao_estadual" id="inscricao_estadual" class="form-control" value="{{ $representada != null ? $representada->inscricao_estadual : '' }}">
+        <input type="text" maxlength="50" name="inscricao_estadual" id="inscricao_estadual" class="form-control" value="{{ $representada->inscricao_estadual ?? '' }}">
     </div>
+</div>
 
-
-    <!-- FONE -->
+<div class="row col-md-12">
     <div class="col-md-4 form-group mt-2">
-        <label for="fone">Telefone:</label>
-        <input type="tel" name="fone" id="fone" class="form-control" value="{{ $representada != null ? $representada->fone : '' }}" >
+        <label>Telefone:</label>
+        <input type="tel" name="fone" id="fone" class="form-control" value="{{ $representada->fone ?? '' }}">
     </div>
-
-    <!-- CELULAR -->
-    <div class="col-md-4  form-group  mt-2">
-        <label for="celular">Celular:</label>
-        <input type="tel" name="celular" id="celular" class="form-control" value="{{ $representada != null ? $representada->celular : '' }}" >
-    </div>
-
-
-    <!-- RESPONSÁVEL -->
     <div class="col-md-4 form-group mt-2">
-        <label for="email">Responsável:</label>
-        <input type="text" name="responsavel" id="responsavel" class="form-control" value="{{ $representada != null ? $representada->responsavel : '' }}" >
+        <label>Telefone 2:</label>
+        <input type="tel" name="fone_2" id="fone_2" class="form-control" value="{{ $representada->fone_2 ?? '' }}">
     </div>
-
-
-    <!-- EMAIL -->
     <div class="col-md-4 form-group mt-2">
-        <label for="email">E-mail:</label>
-        <input type="email" name="email" id="email" class="form-control" value="{{ $representada != null ? $representada->email : '' }}" >
+        <label>Telefone 3:</label>
+        <input type="tel" name="fone_3" id="fone_3" class="form-control" value="{{ $representada->fone_3 ?? '' }}">
     </div>
+</div>
 
-    <!-- E-MAIL PARA NOTA FISCAL -->
+<div class="row col-md-12">
     <div class="col-md-4 form-group mt-2">
-        <label for="email_nfe">E-mail para NFe:</label>
-        <input type="email" maxlength="120" name="email_nfe" id="email_nfe" class="form-control" value="{{ $representada != null ? $representada->email_nfe : '' }}">
+        <label>Celular:</label>
+        <input type="tel" name="celular" id="celular" class="form-control" value="{{ $representada->celular ?? '' }}">
     </div>
-
-
-
-    <div class="col-md-12 form-group mt-2 mt-3 ">
-        <div class="form-separator"><span>Endereço</span></div>
+    <div class="col-md-4 form-group mt-2">
+        <label>Celular 2:</label>
+        <input type="tel" name="celular_2" id="celular_2" class="form-control" value="{{ $representada->celular_2 ?? '' }}">
     </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>Celular 3:</label>
+        <input type="tel" name="celular_3" id="celular_3" class="form-control" value="{{ $representada->celular_3 ?? '' }}">
+    </div>
+</div>
 
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2">
+        <label>Responsável:</label>
+        <input type="text" name="responsavel" id="responsavel" class="form-control" value="{{ $representada->responsavel ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail:</label>
+        <input type="email" name="email" id="email" class="form-control" value="{{ $representada->email ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail 2:</label>
+        <input type="email" name="email_2" id="email_2" class="form-control" value="{{ $representada->email_2 ?? '' }}">
+    </div>
+</div>
+
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail 3:</label>
+        <input type="email" name="email_3" id="email_3" class="form-control" value="{{ $representada->email_3 ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail 4:</label>
+        <input type="email" name="email_4" id="email_4" class="form-control" value="{{ $representada->email_4 ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail NFe:</label>
+        <input type="email" name="email_nfe" id="email_nfe" class="form-control" value="{{ $representada->email_nfe ?? '' }}">
+    </div>
+</div>
+
+<div class="col-md-12 form-group mt-3">
+    <div class="form-separator"><span>Endereço</span></div>
+</div>
+
+<div class="row col-md-12">
     <div class="col-md-3 form-group mt-2">
-        <label for="cep">CEP:</label> &nbsp; <span style="color:red" id="CepAguarde"></span>
-        <input type="text" name="cep" id="cep" class="form-control" value="{{ $representada != null ? $representada->cep : '' }}"  >
+        <label>CEP:</label>
+        <input type="text" name="cep" id="cep" class="form-control" value="{{ $representada->cep ?? '' }}">
     </div>
-
     <div class="col-md-6 form-group mt-2">
-        <label for="rua">Rua:</label>
-        <input type="text" name="rua" id="rua" class="form-control" value="{{ $representada != null ? $representada->rua : '' }}" required >
+        <label>Rua:</label>
+        <input type="text" name="rua" id="rua" class="form-control" value="{{ $representada->rua ?? '' }}">
     </div>
-
     <div class="col-md-3 form-group mt-2">
-        <label for="numero">Número:</label>
-        <input type="text" name="numero" id="numero" class="form-control" value="{{ $representada != null ? $representada->numero : '' }}" required >
+        <label>Número:</label>
+        <input type="text" name="numero" id="numero" class="form-control" value="{{ $representada->numero ?? '' }}">
     </div>
-
     <div class="col-md-3 form-group mt-2">
-        <label for="complemento">Complemento:</label>
-        <input type="text" name="complemento" id="complemento" class="form-control" value="{{ $representada != null ? $representada->complemento : '' }}" >
+        <label>Complemento:</label>
+        <input type="text" name="complemento" id="complemento" class="form-control" value="{{ $representada->complemento ?? '' }}">
     </div>
-
     <div class="col-md-3 form-group mt-2">
-        <label for="bairro">Bairro:</label>
-        <input type="text" name="bairro" id="bairro" class="form-control" value="{{ $representada != null ? $representada->bairro : '' }}"  required>
+        <label>Bairro:</label>
+        <input type="text" name="bairro" id="bairro" class="form-control" value="{{ $representada->bairro ?? '' }}">
     </div>
-
     <div class="col-md-3 form-group mt-2">
-        <label for="cidade">Cidade:</label>
-        <input type="text" name="cidade" id="cidade" class="form-control" value="{{ $representada != null ? $representada->cidade : '' }}"  required>
+        <label>Cidade:</label>
+        <input type="text" name="cidade" id="cidade" class="form-control" value="{{ $representada->cidade ?? '' }}">
     </div>
-
     <div class="col-md-3 form-group mt-2">
-        <label for="uf">Estado:</label>
-        <select class="form-control select2" name="uf" id="uf" placeholder="Selecione" required >
+        <label>Estado:</label>
+        <select class="form-control select2" name="uf" id="uf">
             <option value="">Selecione</option>
             @foreach(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] as $estado)
-                <option value="{{ $estado }}" @if($representada != null && $representada->uf == $estado) selected @endif>{{ $estado }}</option>
+                <option value="{{ $estado }}" {{ ($representada && $representada->uf == $estado) ? 'selected' : '' }}>{{ $estado }}</option>
             @endforeach
         </select>
     </div>
-</form>
+</div>
+
+<div class="col-md-12 form-group mt-4">
+    <label>Observações:</label>
+    <textarea name="observacoes" id="observacoes" rows="3" class="form-control">{{ $representada->observacoes ?? '' }}</textarea>
+</div>
 
 <script>
-    $('#create_edit').on('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-        }
-    });
+@if(isset($representada))
+    var url_post = "{{ route('representadas.update', $representada->id) }}";
+@else
+    var url_post = "{{ route('representadas.store') }}";
+@endif
 
-    @if($representada!=null)
-        var url_post = "{{route('representadas.update',$representada->id)}}";
-        var tipo = $("#tipo_pessoa").val();
-        showTipo(tipo);
-    @else
-        var url_post = "{{route('representadas.store')}}";
-    @endif
+$("#tipo_pessoa").change(function () {
+    showTipo($(this).val());
+});
 
-    $("#tipo_pessoa").change(function(){
-        var tipo = $(this).val();
-        showTipo(tipo);
-    });
-
-    function showTipo(tipo){
-    if(tipo == 1){
-        $("#labelCNPJ").html("CNPJ:");
-        $("#labelNome").html("Razão Social:");
-        $("#labelFantasia").html("Nome Fantasia:");
-        $("#cpf_cnpj").mask('00.000.000/0000-00');
-        $("#div_inscricao_estadual").show(); // Mostra Inscrição Estadual para Jurídica
-    } else if(tipo == 2){
-        $("#labelCNPJ").html("CPF:");
-        $("#labelNome").html("Nome:");
-        $("#labelFantasia").html("Sobrenome:");
-        $("#cpf_cnpj").mask('000.000.000-00');
-        $("#div_inscricao_estadual").hide(); // Esconde Inscrição Estadual para Física
+function showTipo(tipo) {
+    if (tipo == 1) {
+        $("#labelCNPJ").text("CNPJ:");
+        $("#labelNome").text("Razão Social:");
+        $("#labelFantasia").text("Nome Fantasia:");
+        $("#cpf_cnpj").mask("00.000.000/0000-00");
+        $("#div_inscricao_estadual").show();
+    } else if (tipo == 2) {
+        $("#labelCNPJ").text("CPF:");
+        $("#labelNome").text("Nome:");
+        $("#labelFantasia").text("Sobrenome:");
+        $("#cpf_cnpj").mask("000.000.000-00");
+        $("#div_inscricao_estadual").hide();
     }
 }
 
+$(document).ready(function () {
+    if ($("#tipo_pessoa").val()) {
+        showTipo($("#tipo_pessoa").val());
+    }
 
-    $(document).ready(function() {
-        $('#create_edit').submit(function(e) {
-            e.preventDefault();
+    // Máscaras
+    $("#fone, #fone_2, #fone_3").mask("(00) 0000-0000");
+    $("#celular, #celular_2, #celular_3").mask("(00) 00000-0000");
+    $("#cep").mask("00.000-000");
 
-            var formData = $(this).serialize();
-
-            $.ajax({
-                url: url_post,
-                type: 'POST',
-                data: formData,
-                success: function(data) {
-                    Swal.fire({
-                        title: 'Sucesso!',
-                        text: data.message,
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(function(){
-                        tblPopulate()
-                    });
-                    $("#closeModal").trigger('click');
-                },
-                error: function(xhr) {
-                    var errorMessage = 'Erro ao registrar representada';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-
-                    Swal.fire({
-                        title: 'Erro!',
-                        text: errorMessage,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        });
-
-        $("#fone").mask('(00) 0000-0000');
-        $("#celular").mask('(00) 00000-0000');
-        $("#cep").mask('00.000-000');
-
-        $("#cpf_cnpj").blur(function(){
-            var tipo = $("#tipo_pessoa").val();
-            var cpf_cnpj = $("#cpf_cnpj").val().replace(/[^0-9]/g,'');
-            if(tipo==1){
-                if(TestaCNPJ(cpf_cnpj) == false){
-                    swal.fire("Atenção", "CNPJ inválido", "warning");
-                    $("#cpf_cnpj").val('');
-                }
-            }else{
-                if(TestaCPF(cpf_cnpj) == false){
-                    swal.fire("Atenção", "CPF inválido", "warning");
-                    $("#cpf_cnpj").val('');
-                }
-            }
-        });
-
-        $("#cep").change(function(){
-            var cep = $("#cep").val().replace(/[^0-9]/g,'');
-            var url = "https://viacep.com.br/ws/"+cep+"/json/";
-            $("#CepAguarde").html("Carregando...");
-            $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                success: function(data){
-                    $("#CepAguarde").html("");
-                    $("#rua").val(data.logradouro)
-                    $("#bairro").val(data.bairro)
-                    $("#cidade").val(data.localidade)
-                    selecionar(data.uf)
-                }
-            });
-        });
-
-        function selecionar(uf){
-            $('#uf option').each(function(e) {
-                if($(this).attr('value') == uf) {
-                    $(this).prop('selected', true);
-                    $("#select2-uf-container").html($(this).text())
-                }
-            });
+    // Validação CPF/CNPJ
+    $("#cpf_cnpj").blur(function () {
+        let tipo = $("#tipo_pessoa").val();
+        let valor = $(this).val().replace(/[^0-9]/g, '');
+        if (tipo == 1 && !TestaCNPJ(valor)) {
+            Swal.fire("Atenção", "CNPJ inválido", "warning");
+            $(this).val('');
+        } else if (tipo == 2 && !TestaCPF(valor)) {
+            Swal.fire("Atenção", "CPF inválido", "warning");
+            $(this).val('');
         }
     });
-</script>
 
+    // Busca CEP
+    $("#cep").change(function () {
+        let cep = $(this).val().replace(/[^0-9]/g, '');
+        if (cep.length != 8) return;
+        let url = `https://viacep.com.br/ws/${cep}/json/`;
+        $.getJSON(url, function (data) {
+            if (!("erro" in data)) {
+                $("#rua").val(data.logradouro);
+                $("#bairro").val(data.bairro);
+                $("#cidade").val(data.localidade);
+                $("#uf").val(data.uf).trigger("change");
+            }
+        });
+    });
+
+    // Submit AJAX
+    $("#create_edit").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: url_post,
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (data) {
+                Swal.fire("Sucesso!", data.message, "success").then(() => {
+                    tblPopulate();
+                    $("#closeModal").trigger("click");
+                });
+            },
+            error: function (xhr) {
+                let msg = xhr.responseJSON?.message || "Erro ao salvar registro";
+                Swal.fire("Erro!", msg, "error");
+            }
+        });
+    });
+});
+</script>
 @endsection
+
+

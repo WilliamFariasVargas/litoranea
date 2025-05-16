@@ -1,303 +1,239 @@
 @extends('layouts.modal')
 
 @php
-    $title = "Cadastro de Transportadoras";
-    if ($transportadora != null) {
-        $title = "Editando: " . $transportadora->razao_social;
-    }
+    $title = "Cadastro de Transportadora";
+    if($transportadora != null) $title = 'Editando: ' . $transportadora->id . ' - ' . $transportadora->razao_social;
 @endphp
-
 
 @section('modal_title') {{ $title }} @endsection
 
 @section('modal_content')
-
-
-<section id="div_tipo_pessoa" class="row col-md-12">
+<form id="create_edit">
+<section class="row col-md-12">
     <div class="col-md-4 form-group mb-2">
         <label for="tipo">Tipo</label>
         <select name="tipo_pessoa" id="tipo_pessoa" class="form-control select2" required>
             <option value="" {{ $transportadora == null || $transportadora->tipo_pessoa == null ? 'selected' : '' }}>Selecione</option>
-            <option {{ $transportadora != null ? ($transportadora->tipo_pessoa==1 ? 'selected' : '') : ''}} value="1" >Pessoa Jurídica</option>
-            <option {{ $transportadora != null ? ($transportadora->tipo_pessoa==2 ? 'selected' : '') : ''}} value="2">Pessoa Física</option>
+            <option value="1" {{ $transportadora != null && $transportadora->tipo_pessoa == 1 ? 'selected' : '' }}>Pessoa Jurídica</option>
+            <option value="2" {{ $transportadora != null && $transportadora->tipo_pessoa == 2 ? 'selected' : '' }}>Pessoa Física</option>
         </select>
     </div>
     <div class="col-md-8 mt-12">
-        <label for="cnpj" id="labelCNPJ">CNPJ:</label>
-        <input type="text" maxlength="20" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="{{ $transportadora != null ? $transportadora->cpf_cnpj : '' }}" />
+        <label for="cpf_cnpj" id="labelCNPJ">CNPJ:</label>
+        <input type="text" maxlength="20" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="{{ $transportadora->cpf_cnpj ?? '' }}" />
     </div>
 </section>
-<!-- EMPRESA -->
 
-<div class="form-group col-md-6 mt-2">
-    <label for="empresa" id="labelNome">Razão Social:</label>
-    <input type="text" maxlength="250" name="razao_social" class="form-control" id="razao_social" value="{{ $transportadora != null ?  $transportadora->razao_social : '' }}"  />
+<div class="row col-md-12">
+    <div class="form-group col-md-6 mt-2">
+        <label id="labelNome">Razão Social:</label>
+        <input type="text" maxlength="250" name="razao_social" class="form-control" id="razao_social" value="{{ $transportadora->razao_social ?? '' }}" />
+    </div>
+    <div class="col-md-6 form-group mt-2">
+        <label id="labelFantasia">Nome Fantasia:</label>
+        <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control" value="{{ $transportadora->nome_fantasia ?? '' }}">
+    </div>
 </div>
 
-<!-- CNPJ -->
-<!-- NOME FANTASIA -->
-<div class="col-md-6 form-group mt-2">
-    <label for="nome_fantasia" id="labelFantasia">Nome Fantasia: </label>
-    <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control"  required value="{{ $transportadora != null ? $transportadora->nome_fantasia : '' }} ">
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2" id="div_inscricao_estadual">
+        <label for="inscricao_estadual">Inscrição Estadual:</label>
+        <input type="text" maxlength="50" name="inscricao_estadual" id="inscricao_estadual" class="form-control" value="{{ $transportadora->inscricao_estadual ?? '' }}">
+    </div>
 </div>
 
-<!-- INSCRIÇÃO ESTADUAL (aparece só para Jurídica) -->
-<div class="col-md-4 form-group mt-2" id="div_inscricao_estadual" style="display: none;">
-    <label for="inscricao_estadual">Inscrição Estadual:</label>
-    <input type="text" maxlength="50" name="inscricao_estadual" id="inscricao_estadual" class="form-control" value="{{ $transportadora != null ? $transportadora->inscricao_estadual : '' }}">
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2">
+        <label>Telefone:</label>
+        <input type="tel" name="fone" id="fone" class="form-control" value="{{ $transportadora->fone ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>Telefone 2:</label>
+        <input type="tel" name="fone_2" id="fone_2" class="form-control" value="{{ $transportadora->fone_2 ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>Telefone 3:</label>
+        <input type="tel" name="fone_3" id="fone_3" class="form-control" value="{{ $transportadora->fone_3 ?? '' }}">
+    </div>
 </div>
 
-
-<!-- FONE -->
-<div class="col-md-4 form-group mt-2">
-    <label for="fone">Telefone:</label>
-    <input type="tel" name="fone" id="fone" class="form-control" value="{{ $transportadora != null ? $transportadora->fone : '' }}" >
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2">
+        <label>Celular:</label>
+        <input type="tel" name="celular" id="celular" class="form-control" value="{{ $transportadora->celular ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>Celular 2:</label>
+        <input type="tel" name="celular_2" id="celular_2" class="form-control" value="{{ $transportadora->celular_2 ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>Celular 3:</label>
+        <input type="tel" name="celular_3" id="celular_3" class="form-control" value="{{ $transportadora->celular_3 ?? '' }}">
+    </div>
 </div>
 
-<!-- CELULAR -->
-<div class="col-md-4  form-group  mt-2">
-    <label for="celular">Celular:</label>
-    <input type="tel" name="celular" id="celular" class="form-control" value="{{ $transportadora != null ? $transportadora->celular : '' }}" >
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2">
+        <label>Responsável:</label>
+        <input type="text" name="responsavel" id="responsavel" class="form-control" value="{{ $transportadora->responsavel ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail:</label>
+        <input type="email" name="email" id="email" class="form-control" value="{{ $transportadora->email ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail 2:</label>
+        <input type="email" name="email_2" id="email_2" class="form-control" value="{{ $transportadora->email_2 ?? '' }}">
+    </div>
 </div>
 
-
-<!-- RESPONSÁVEL -->
-<div class="col-md-4 form-group mt-2">
-    <label for="email">Responsável:</label>
-    <input type="text" name="responsavel" id="responsavel" class="form-control" value="{{ $transportadora != null ? $transportadora->responsavel : '' }}" >
+<div class="row col-md-12">
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail 3:</label>
+        <input type="email" name="email_3" id="email_3" class="form-control" value="{{ $transportadora->email_3 ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail 4:</label>
+        <input type="email" name="email_4" id="email_4" class="form-control" value="{{ $transportadora->email_4 ?? '' }}">
+    </div>
+    <div class="col-md-4 form-group mt-2">
+        <label>E-mail NFe:</label>
+        <input type="email" name="email_nfe" id="email_nfe" class="form-control" value="{{ $transportadora->email_nfe ?? '' }}">
+    </div>
 </div>
 
-
-<!-- EMAIL -->
-<div class="col-md-4 form-group mt-2">
-    <label for="email">E-mail:</label>
-    <input type="email" name="email" id="email" class="form-control" value="{{ $transportadora != null ? $transportadora->email : '' }}" >
-</div>
-
-<!-- E-MAIL PARA NOTA FISCAL -->
-<div class="col-md-4 form-group mt-2">
-    <label for="email_nfe">E-mail para NFe:</label>
-    <input type="email" maxlength="120" name="email_nfe" id="email_nfe" class="form-control" value="{{ $transportadora != null ? $transportadora->email_nfe : '' }}">
-</div>
-
-
-
-<!-- ENDEREÇO -->
-<div class="col-md-12 form-group mt-2 mt-3 ">
+<div class="col-md-12 form-group mt-3">
     <div class="form-separator"><span>Endereço</span></div>
 </div>
 
-<!-- CEP -->
-<div class="col-md-3 form-group mt-2">
-    <label for="cep">CEP:</label> &nbsp; <span style="color:red" id="CepAguarde"></span>
-    <input type="text" name="cep" id="cep" class="form-control" value="{{ $transportadora != null ? $transportadora->cep : '' }}"  >
+<div class="row col-md-12">
+    <div class="col-md-3 form-group mt-2">
+        <label>CEP:</label>
+        <input type="text" name="cep" id="cep" class="form-control" value="{{ $transportadora->cep ?? '' }}">
+    </div>
+    <div class="col-md-6 form-group mt-2">
+        <label>Rua:</label>
+        <input type="text" name="rua" id="rua" class="form-control" value="{{ $transportadora->rua ?? '' }}">
+    </div>
+    <div class="col-md-3 form-group mt-2">
+        <label>Número:</label>
+        <input type="text" name="numero" id="numero" class="form-control" value="{{ $transportadora->numero ?? '' }}">
+    </div>
+    <div class="col-md-3 form-group mt-2">
+        <label>Complemento:</label>
+        <input type="text" name="complemento" id="complemento" class="form-control" value="{{ $transportadora->complemento ?? '' }}">
+    </div>
+    <div class="col-md-3 form-group mt-2">
+        <label>Bairro:</label>
+        <input type="text" name="bairro" id="bairro" class="form-control" value="{{ $transportadora->bairro ?? '' }}">
+    </div>
+    <div class="col-md-3 form-group mt-2">
+        <label>Cidade:</label>
+        <input type="text" name="cidade" id="cidade" class="form-control" value="{{ $transportadora->cidade ?? '' }}">
+    </div>
+    <div class="col-md-3 form-group mt-2">
+        <label>Estado:</label>
+        <select class="form-control select2" name="uf" id="uf">
+            <option value="">Selecione</option>
+            @foreach(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'] as $estado)
+                <option value="{{ $estado }}" {{ ($transportadora && $transportadora->uf == $estado) ? 'selected' : '' }}>{{ $estado }}</option>
+            @endforeach
+        </select>
+    </div>
 </div>
 
-<!-- RUA -->
-<div class="col-md-6 form-group mt-2">
-    <label for="rua">Rua:</label>
-    <input type="text" name="rua" id="rua" class="form-control" value="{{ $transportadora != null ? $transportadora->rua : '' }}" required >
-</div>
-
-<!-- NÚMERO -->
-<div class="col-md-3 form-group mt-2">
-    <label for="numero">Número:</label>
-    <input type="text" name="numero" id="numero" class="form-control" value="{{ $transportadora != null ? $transportadora->numero : '' }}" required >
-</div>
-
-<!-- COMPLEMENTO -->
-<div class="col-md-3 form-group mt-2">
-    <label for="complemento">Complemento:</label>
-    <input type="text" name="complemento" id="complemento" class="form-control" value="{{ $transportadora != null ? $transportadora->complemento : '' }}" >
-</div>
-
-<!-- BAIRRO -->
-<div class="col-md-3 form-group mt-2">
-    <label for="bairro">Bairro:</label>
-    <input type="text" name="bairro" id="bairro" class="form-control" value="{{ $transportadora != null ? $transportadora->bairro : '' }}"  required>
-</div>
-
-<!-- CIDADE -->
-<div class="col-md-3 form-group mt-2">
-    <label for="cidade">Cidade:</label>
-    <input type="text" name="cidade" id="cidade" class="form-control" value="{{ $transportadora != null ? $transportadora->cidade : '' }}"  required>
-</div>
-
-<!-- ESTADO -->
-<div class="col-md-3 form-group mt-2">
-    <label for="uf">Estado:</label>
-    <select class="form-control select2" name="uf" id="uf" placeholder="Selecione" required >
-        <option value="">Selecione</option>
-        <option value="AC" @if($transportadora != null && $transportadora->uf=='AC') selected="selected" @endif>Acre</option>
-        <option value="AL" @if($transportadora != null && $transportadora->uf=='AL') selected="selected" @endif>Alagoas</option>
-        <option value="AP" @if($transportadora != null && $transportadora->uf=='AP') selected="selected" @endif>Amapá</option>
-        <option value="AM" @if($transportadora != null && $transportadora->uf=='AM') selected="selected" @endif>Amazonas</option>
-        <option value="BA" @if($transportadora != null && $transportadora->uf=='BA') selected="selected" @endif>Bahia</option>
-        <option value="CE" @if($transportadora != null && $transportadora->uf=='CE') selected="selected" @endif>Ceará</option>
-        <option value="DF" @if($transportadora != null && $transportadora->uf=='DF') selected="selected" @endif>Distrito Federal</option>
-        <option value="ES" @if($transportadora != null && $transportadora->uf=='ES') selected="selected" @endif>Espírito Santo</option>
-        <option value="GO" @if($transportadora != null && $transportadora->uf=='GO') selected="selected" @endif>Goiás</option>
-        <option value="MA" @if($transportadora != null && $transportadora->uf=='MA') selected="selected" @endif>Maranhão</option>
-        <option value="MT" @if($transportadora != null && $transportadora->uf=='MT') selected="selected" @endif>Mato Grosso</option>
-        <option value="MS" @if($transportadora != null && $transportadora->uf=='MS') selected="selected" @endif>Mato Grosso do Sul</option>
-        <option value="MG" @if($transportadora != null && $transportadora->uf=='MG') selected="selected" @endif>Minas Gerais</option>
-        <option value="PA" @if($transportadora != null && $transportadora->uf=='PA') selected="selected" @endif>Pará</option>
-        <option value="PB" @if($transportadora != null && $transportadora->uf=='PB') selected="selected" @endif>Paraíba</option>
-        <option value="PR" @if($transportadora != null && $transportadora->uf=='PR') selected="selected" @endif>Paraná</option>
-        <option value="PE" @if($transportadora != null && $transportadora->uf=='PE') selected="selected" @endif>Pernambuco</option>
-        <option value="PI" @if($transportadora != null && $transportadora->uf=='PI') selected="selected" @endif>Piauí</option>
-        <option value="RJ" @if($transportadora != null && $transportadora->uf=='RJ') selected="selected" @endif>Rio de Janeiro</option>
-        <option value="RN" @if($transportadora != null && $transportadora->uf=='RN') selected="selected" @endif>Rio Grande do Norte</option>
-        <option value="RS" @if($transportadora != null && $transportadora->uf=='RS') selected="selected" @endif>Rio Grande do Sul</option>
-        <option value="RO" @if($transportadora != null && $transportadora->uf=='RO') selected="selected" @endif>Rondônia</option>
-        <option value="RR" @if($transportadora != null && $transportadora->uf=='RR') selected="selected" @endif>Roraima</option>
-        <option value="SC" @if($transportadora != null && $transportadora->uf=='SC') selected="selected" @endif>Santa Catarina</option>
-        <option value="SP" @if($transportadora != null && $transportadora->uf=='SP') selected="selected" @endif>São Paulo</option>
-        <option value="SE" @if($transportadora != null && $transportadora->uf=='SE') selected="selected" @endif>Sergipe</option>
-        <option value="TO" @if($transportadora != null && $transportadora->uf=='TO') selected="selected" @endif>Tocantins</option>
-    </select>
+<div class="col-md-12 form-group mt-4">
+    <label>Observações:</label>
+    <textarea name="observacoes" id="observacoes" rows="3" class="form-control">{{ $transportadora->observacoes ?? '' }}</textarea>
 </div>
 
 
 <script>
-$('#create_edit').on('keydown', function (e) {
-    if (e.key === 'Enter') {
-        // Impede o comportamento padrão da tecla Enter
-        e.preventDefault();
-    }
-});
-
-
-@if($transportadora!=null)
-    var url_post = "{{route('transportadoras.update',$transportadora->id)}}";
-    var tipo = $("#tipo_pessoa").val();
-    showTipo(tipo);
+@if(isset($transportadora))
+    var url_post = "{{ route('transportadoras.update', $transportadora->id) }}";
 @else
-    var url_post = "{{route('transportadoras.store')}}";
+    var url_post = "{{ route('transportadoras.store') }}";
 @endif
 
-
-$("#tipo_pessoa").change(function(){
-    var tipo = $(this).val();
-    showTipo(tipo);
+$("#tipo_pessoa").change(function () {
+    showTipo($(this).val());
 });
 
-
-function showTipo(tipo){
-    if(tipo == 1){
-        $("#labelCNPJ").html("CNPJ:");
-        $("#labelNome").html("Razão Social:");
-        $("#labelFantasia").html("Nome Fantasia:");
-        $("#cpf_cnpj").mask('00.000.000/0000-00');
-        $("#div_inscricao_estadual").show(); // Mostra Inscrição Estadual para Jurídica
-    } else if(tipo == 2){
-        $("#labelCNPJ").html("CPF:");
-        $("#labelNome").html("Nome:");
-        $("#labelFantasia").html("Sobrenome:");
-        $("#cpf_cnpj").mask('000.000.000-00');
-        $("#div_inscricao_estadual").hide(); // Esconde Inscrição Estadual para Física
+function showTipo(tipo) {
+    if (tipo == 1) {
+        $("#labelCNPJ").text("CNPJ:");
+        $("#labelNome").text("Razão Social:");
+        $("#labelFantasia").text("Nome Fantasia:");
+        $("#cpf_cnpj").mask("00.000.000/0000-00");
+        $("#div_inscricao_estadual").show();
+    } else if (tipo == 2) {
+        $("#labelCNPJ").text("CPF:");
+        $("#labelNome").text("Nome:");
+        $("#labelFantasia").text("Sobrenome:");
+        $("#cpf_cnpj").mask("000.000.000-00");
+        $("#div_inscricao_estadual").hide();
     }
 }
 
-
-$(document).ready(function() {
-    // Captura o envio do formulário ou outro evento desejado
-    $('#create_edit').submit(function(e) {
-        e.preventDefault();
-
-        var formData = $(this).serialize();
-
-        $.ajax({
-            url: url_post,
-            type: 'POST',
-            data: formData,
-            success: function(data) {
-                Swal.fire({
-                    title: 'Sucesso!',
-                    text: data.message,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(function(){
-                    tblPopulate()
-                });
-                $("#closeModal").trigger('click');
-            },
-            error: function(xhr) {
-                var errorMessage = 'Erro ao registrar transportadora';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                }
-
-                Swal.fire({
-                    title: 'Erro!',
-                    text: errorMessage,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        });
-    });
-
-
-    $("#fone").mask('(00) 0000-0000');
-    $("#celular").mask('(00) 00000-0000');
-    $("#cep").mask('00.000-000');
-
-    //VALIDA CNPJ
-    $("#cpf_cnpj").blur(function(){
-
-        var tipo = $("#tipo_pessoa").val();
-        var cpf_cnpj = $("#cpf_cnpj").val();
-        cpf_cnpj = cpf_cnpj.replace(/[^0-9]/g,'');
-        if(tipo==1){
-            if(TestaCNPJ(cpf_cnpj) == false){
-                swal.fire("Atenção", "CNPJ inválido", "warning");
-                $("#cpf_cnpj").val('');
-            }
-        }else{
-            if(TestaCPF(cpf_cnpj) == false){
-                swal.fire("Atenção", "CPF inválido", "warning");
-                $("#cpf_cnpj").val('');
-            }
-        }
-
-    });
-
-    //-------------------------------------
-
-    //CEP
-    $("#cep").change(function(){
-        var cep = $("#cep").val();
-        cep = cep.replace(/[^0-9]/g,'');
-        var url = "https://viacep.com.br/ws/"+cep+"/json/";
-        $("#CepAguarde").html("Carregando...");
-        $.ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            success: function(data){
-                $("#CepAguarde").html("");
-                $("#rua").val(data.logradouro)
-                $("#bairro").val(data.bairro)
-                $("#cidade").val(data.localidade)
-
-                selecionar(data.uf)
-            }
-        });
-    });
-
-    // SELECIONAR O ESTADO E ALTERAR O SELECT2
-    function selecionar(uf){
-        $('#uf option').each(function(e) {
-            // se localizar a frase, define o atributo selected
-            if($(this).attr('value') == uf) {
-                $(this).prop('selected', true);
-                $("#select2-uf-container").html($(this).text())
-
-            }
-        });
+$(document).ready(function () {
+    if ($("#tipo_pessoa").val()) {
+        showTipo($("#tipo_pessoa").val());
     }
 
+    // Máscaras
+    $("#fone, #fone_2, #fone_3").mask("(00) 0000-0000");
+    $("#celular, #celular_2, #celular_3").mask("(00) 00000-0000");
+    $("#cep").mask("00.000-000");
+
+    // Validação CPF/CNPJ
+    $("#cpf_cnpj").blur(function () {
+        let tipo = $("#tipo_pessoa").val();
+        let valor = $(this).val().replace(/[^0-9]/g, '');
+        if (tipo == 1 && !TestaCNPJ(valor)) {
+            Swal.fire("Atenção", "CNPJ inválido", "warning");
+            $(this).val('');
+        } else if (tipo == 2 && !TestaCPF(valor)) {
+            Swal.fire("Atenção", "CPF inválido", "warning");
+            $(this).val('');
+        }
+    });
+
+    // Busca CEP
+    $("#cep").change(function () {
+        let cep = $(this).val().replace(/[^0-9]/g, '');
+        if (cep.length != 8) return;
+        let url = `https://viacep.com.br/ws/${cep}/json/`;
+        $.getJSON(url, function (data) {
+            if (!("erro" in data)) {
+                $("#rua").val(data.logradouro);
+                $("#bairro").val(data.bairro);
+                $("#cidade").val(data.localidade);
+                $("#uf").val(data.uf).trigger("change");
+            }
+        });
+    });
+
+    // Submit AJAX
+    $("#create_edit").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: url_post,
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function (data) {
+                Swal.fire("Sucesso!", data.message, "success").then(() => {
+                    tblPopulate();
+                    $("#closeModal").trigger("click");
+                });
+            },
+            error: function (xhr) {
+                let msg = xhr.responseJSON?.message || "Erro ao salvar registro";
+                Swal.fire("Erro!", msg, "error");
+            }
+        });
+    });
 });
 </script>
+
+
 @endsection

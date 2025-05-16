@@ -9,8 +9,13 @@
             </h4>
         </div>
         <div class="col-4 text-end">
+            <div class="mb-2">
+            <a href="{{ route('exportar.representadas') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-user-tie mx-2"></i> Exportar Representadas
+            </a>
+
             <button style="background-color:#003162;" class="btn btn-primary" id="addNew"><i class="fa fa-plus mx-2"></i>Novo</button>
-        </div>
+        </div><div>
         <br><br><hr>
     </div>
 </section>

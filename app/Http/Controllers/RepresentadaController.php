@@ -12,142 +12,104 @@ class RepresentadaController extends Controller
         return view('main.representadas.index');
     }
 
-    /**
-     * Exibe o formulário de criação/edição de representadas.
-     */
     public function form(Request $request, $id = '')
     {
         $representada = Representada::find($id);
         return view('main.representadas.form', compact('representada'));
     }
 
-    /**
-     * Exibe a tabela de representadas ordenada por razão social.
-     */
     public function show()
     {
         $representadas = Representada::orderBy('razao_social', 'asc')->get();
         return view('main.representadas.table', compact('representadas'));
     }
 
-    /**
-     * Armazena uma nova representada.
-     */
     public function store(Request $request)
     {
         try {
             $this->validate($request, [
                 'razao_social' => 'required|string|max:255',
-                'cpf_cnpj'     => 'required|string|unique:representadas,cpf_cnpj',
-                'email'        => 'required|email|unique:representadas,email',
+                'cpf_cnpj'     => 'required|string',
+                'email'        => 'nullable|email',
+                'email_2'      => 'nullable|email',
+                'email_3'      => 'nullable|email',
+                'email_4'      => 'nullable|email',
             ]);
 
             $representada = Representada::create($request->all());
 
             return response()->json([
-                'id_representada' => $representada->id,
-                'message'         => "Registro salvo com sucesso"
+                'id' => $representada->id,
+                'message' => 'Registro salvo com sucesso'
             ], 201);
         } catch (\Exception $ex) {
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
 
-    /**
-     * Atualiza uma representada existente.
-     */
     public function update(Request $request, $id = '')
     {
         try {
             $representada = Representada::find($id);
             if (!$representada) {
-                return response()->json(['message' => "Registro não encontrado"], 404);
+                return response()->json(['message' => 'Registro não encontrado'], 404);
             }
 
-            // Verifica duplicidade para CPF/CNPJ e e-mail
-            if (isset($request->cpf_cnpj)) {
-                $exists = Representada::where('id', '!=', $id)
-                    ->where('cpf_cnpj', $request->cpf_cnpj)
-                    ->first();
-                if ($exists) {
-                    throw new \Exception("CPF/CNPJ já cadastrado. ID: " . $exists->id);
-                }
-            }
-
-            if (isset($request->email)) {
-                $exists = Representada::where('id', '!=', $id)
-                    ->where('email', $request->email)
-                    ->first();
-                if ($exists) {
-                    throw new \Exception("E-mail já cadastrado. ID: " . $exists->id);
-                }
-            }
+            $this->validate($request, [
+                'razao_social' => 'required|string|max:255',
+                'cpf_cnpj'     => 'required|string',
+                'email'        => 'nullable|email',
+                'email_2'      => 'nullable|email',
+                'email_3'      => 'nullable|email',
+                'email_4'      => 'nullable|email',
+            ]);
 
             $representada->update($request->all());
 
             return response()->json([
-                'id_representada' => $id,
-                'message'         => "Registro atualizado com sucesso"
+                'id' => $id,
+                'message' => 'Registro atualizado com sucesso'
             ], 200);
         } catch (\Exception $ex) {
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
 
-    /**
-     * Exclui uma representada.
-     */
     public function delete(Request $request, $id = '')
     {
         try {
             $representada = Representada::find($id);
             if (!$representada) {
-                return response()->json(['message' => "Registro não encontrado"], 404);
+                return response()->json(['message' => 'Registro não encontrado'], 404);
             }
 
             $representada->delete();
 
-            return response()->json(['message' => "Registro excluído com sucesso"], 200);
+            return response()->json(['message' => 'Registro excluído com sucesso'], 200);
         } catch (\Exception $ex) {
             return response()->json(['message' => $ex->getMessage()], 500);
         }
     }
 
-
     public function search(Request $request)
     {
         $search = $request->q;
-
-        $query = \App\Models\Representada::query();
+        $query = Representada::query();
 
         if (!empty($search)) {
-            // Verifica se existe coluna 'nome'
-            $columns = \Schema::getColumnListing('representadas');
-
-            if (in_array('nome', $columns)) {
-                $query->where('nome', 'like', "%{$search}%");
-            } elseif (in_array('razao_social', $columns)) {
-                $query->where('razao_social', 'like', "%{$search}%");
-            } else {
-                return response()->json(['results' => []]);
-            }
+            $query->where('razao_social', 'like', "%{$search}%");
         }
 
-        $representadas = $query->orderBy('id')->limit(20)->get();
+        $representadas = $query->orderBy('razao_social')->limit(20)->get();
 
         $results = [];
-
         foreach ($representadas as $item) {
             $results[] = [
-                'id' => $item->id,
-                'text' => $item->nome ?? $item->razao_social, // Pega o que existir
+                'id'   => $item->id,
+                'text' => $item->razao_social,
             ];
         }
 
         return response()->json(['results' => $results]);
     }
-
-
-
-
 }
