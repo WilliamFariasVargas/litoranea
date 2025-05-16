@@ -17,9 +17,16 @@ class Representada extends Model
         'nome_fantasia',
         'responsavel',
         'email',
+        'email_2',
+        'email_3',
+        'email_4',
         'email_nfe',
         'fone',
+        'fone_2',
+        'fone_3',
         'celular',
+        'celular_2',
+        'celular_3',
         'cep',
         'rua',
         'numero',
@@ -27,6 +34,7 @@ class Representada extends Model
         'bairro',
         'cidade',
         'uf',
+        'observacoes',
     ];
 
     public static $tipos = [

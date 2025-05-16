@@ -7,8 +7,13 @@
             <h4 style="color:#003162;" class="title mt-2"><i class="fa fa-truck mx-2"></i>Cadastro de Transportadoras</h4>
         </div>
         <div class="col-4 text-end">
+            <div class="mb-2">
+            <a href="{{ route('exportar.transportadoras') }}" class="btn btn-outline-success">
+                <i class="fas fa-truck mx-2"></i> Exportar Transportadoras
+            </a>
+
             <button style="background-color:#003162;" class="btn btn-primary" id="addNew"><i class="fa fa-plus mx-2"></i>Novo</button>
-        </div>
+        </div></div>
         <br><br><hr>
     </div>
 </section>
