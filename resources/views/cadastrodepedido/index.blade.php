@@ -37,7 +37,7 @@
 
 
 <form method="GET" action="{{ route('cadastrodepedido.index') }}" id="filter_form" class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <label>Cliente:</label>
         <select name="cliente_id" class="form-control select2">
             <option value="">Selecione</option>
@@ -49,7 +49,7 @@
         </select>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <label>Representada:</label>
         <select name="representada_id" class="form-control select2">
             <option value="">Selecione</option>
@@ -61,7 +61,7 @@
         </select>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <label>Transportadora:</label>
         <select name="transportadora_id" class="form-control select2">
             <option value="">Selecione</option>
@@ -72,13 +72,21 @@
             @endforeach
         </select>
     </div>
+    <div class="col-md-3">
+        <label>Data Inicial:</label>
+        <input type="date" name="data_inicial" class="form-control" value="{{ request('data_inicial') }}" class="form-control">
+    </div>
 
-    <div class="col-md-1">
+    <div class="col-md-3">
+        <label>Data Final:</label>
+        <input type="date" name="data_final" class="form-control" value="{{ request('data_final') }}" class="form-control">
+    </div>
+    <div class="col-md-3">
         <label>Mês:</label>
         <input type="number" name="mes" min="1" max="12" value="{{ request('mes') }}" class="form-control">
     </div>
 
-    <div class="col-md-1">
+    <div class="col-md-3">
         <label>Ano:</label>
         <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
     </div>
