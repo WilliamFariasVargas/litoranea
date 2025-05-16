@@ -44,7 +44,8 @@
 <body>
 
     @include('layouts.layouthome')
-    <div style="position: relative; background: url('{{ asset('assets/images/whitebg.jpg') }}') no-repeat center center; background-size: cover; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+
+    <div style="position: relative; background: url('{{ asset('assets/images/whitebg.jpg') }}') no-repeat center center; background-size: cover; min-height: 60vh; display: flex; align-items: center; justify-content: center;">
 
         <!-- Conteúdo acima da imagem -->
         <div class="container text-center position-relative" style="z-index: 2;">
@@ -53,6 +54,27 @@
             <h3 class="text-dark">Seja bem-vindo!</h3>
         </div>
     </div>
+    <section style="max-height:40vh;"class="container my-5">
+        <h2 class="text-center mb-4">Nossos Parceiros</h2>
+
+        <div class="logos-carousel overflow-hidden">
+          <div class="logos-track d-flex">
+            <div class="logo-item"><img src="assets/images/logos/1.png" class="img-fluid" alt="Logo 1"></div>
+            <div class="logo-item"><img src="assets/images/logos/2.png" class="img-fluid" alt="Logo 2"></div>
+            <div class="logo-item"><img src="assets/images/logos/3.png" class="img-fluid" alt="Logo 3"></div>
+            <div class="logo-item"><img src="assets/images/logos/4.png" class="img-fluid" alt="Logo 4"></div>
+            <div class="logo-item"><img src="assets/images/logos/5.png" class="img-fluid" alt="Logo 5"></div>
+            <div class="logo-item"><img src="assets/images/logos/6.png" class="img-fluid" alt="Logo 6"></div>
+            <div class="logo-item"><img src="assets/images/logos/7.png" class="img-fluid" alt="Logo 7"></div>
+            <div class="logo-item"><img src="assets/images/logos/8.png" class="img-fluid" alt="Logo 8"></div>
+            <div class="logo-item"><img src="assets/images/logos/9.png" class="img-fluid" alt="Logo 9"></div>
+            <div class="logo-item"><img src="assets/images/logos/10.png" class="img-fluid" alt="Logo 10"></div>
+            <!-- DUPLICAÇÃO para looping infinito -->
+            <div class="logo-item"><img src="assets/images/logos/1.png" class="img-fluid" alt="Logo 1"></div>
+            <div class="logo-item"><img src="assets/images/logos/2.png" class="img-fluid" alt="Logo 2"></div>
+          </div>
+        </div>
+      </section>
 
 
 
@@ -98,27 +120,7 @@
 
 
 
-    <section class="container my-5">
-        <h2 class="text-center mb-4">Nossos Parceiros</h2>
 
-        <div class="logos-carousel overflow-hidden">
-          <div class="logos-track d-flex">
-            <div class="logo-item"><img src="assets/images/logos/1.png" class="img-fluid" alt="Logo 1"></div>
-            <div class="logo-item"><img src="assets/images/logos/2.png" class="img-fluid" alt="Logo 2"></div>
-            <div class="logo-item"><img src="assets/images/logos/3.png" class="img-fluid" alt="Logo 3"></div>
-            <div class="logo-item"><img src="assets/images/logos/4.png" class="img-fluid" alt="Logo 4"></div>
-            <div class="logo-item"><img src="assets/images/logos/5.png" class="img-fluid" alt="Logo 5"></div>
-            <div class="logo-item"><img src="assets/images/logos/6.png" class="img-fluid" alt="Logo 6"></div>
-            <div class="logo-item"><img src="assets/images/logos/7.png" class="img-fluid" alt="Logo 7"></div>
-            <div class="logo-item"><img src="assets/images/logos/8.png" class="img-fluid" alt="Logo 8"></div>
-            <div class="logo-item"><img src="assets/images/logos/9.png" class="img-fluid" alt="Logo 9"></div>
-            <div class="logo-item"><img src="assets/images/logos/10.png" class="img-fluid" alt="Logo 10"></div>
-            <!-- DUPLICAÇÃO para looping infinito -->
-            <div class="logo-item"><img src="assets/images/logos/1.png" class="img-fluid" alt="Logo 1"></div>
-            <div class="logo-item"><img src="assets/images/logos/2.png" class="img-fluid" alt="Logo 2"></div>
-          </div>
-        </div>
-      </section>
 
       <style>
         .logos-carousel {
