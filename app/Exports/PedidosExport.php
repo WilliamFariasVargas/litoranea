@@ -3,11 +3,11 @@
 namespace App\Exports;
 
 use App\Models\CadastroDePedido;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Http\Request;
 
-class PedidosExport implements FromCollection, WithHeadings
+class PedidosExport implements FromQuery, WithHeadings
 {
     protected $request;
 
@@ -16,55 +16,54 @@ class PedidosExport implements FromCollection, WithHeadings
         $this->request = $request;
     }
 
-    public function collection()
+    public function query()
     {
         $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
 
-        if ($this->request->cliente_id) {
+        if ($this->request->filled('cliente_id')) {
             $query->where('cliente_id', $this->request->cliente_id);
         }
-        if ($this->request->representada_id) {
+        if ($this->request->filled('representada_id')) {
             $query->where('representada_id', $this->request->representada_id);
         }
-        if ($this->request->transportadora_id) {
+        if ($this->request->filled('transportadora_id')) {
             $query->where('transportadora_id', $this->request->transportadora_id);
         }
-        if ($this->request->mes) {
-            $query->whereMonth('data_pedido', $this->request->mes);
+        if ($this->request->filled('data_inicial') && $this->request->filled('data_final')) {
+            $query->whereBetween('data_pedido', [$this->request->data_inicial, $this->request->data_final]);
+        } else {
+            if ($this->request->filled('mes')) {
+                $query->whereMonth('data_pedido', $this->request->mes);
+            }
+            if ($this->request->filled('ano')) {
+                $query->whereYear('data_pedido', $this->request->ano);
+            }
         }
-        if ($this->request->ano) {
-            $query->whereYear('data_pedido', $this->request->ano);
+        if ($this->request->filled('status')) {
+            if ($this->request->status === 'pendente') {
+                $query->whereBetween('valor_faturado', [0, 1]);
+            } elseif ($this->request->status === 'baixado') {
+                $query->where('valor_faturado', '>', 1);
+            }
         }
 
-                // Fazendo JOIN com as tabelas relacionadas
-        $query->join('clientes', 'clientes.id', '=', 'cadastrodepedido.cliente_id');
-        $query->join('representadas', 'representadas.id', '=', 'cadastrodepedido.representada_id');
-        $query->join('transportadoras', 'transportadoras.id', '=', 'cadastrodepedido.transportadora_id');
-
-        // Agora busca os campos corretos, renomeando para cliente, representada e transportadora
-        return $query->get([
-            'clientes.razao_social as cliente',
-            'representadas.razao_social as representada',
-            'transportadoras.razao_social as transportadora',
-            'data_pedido',
-            'valor_pedido',
-            'valor_faturado',
-            'valor_comissao_parcial',
-            'valor_comissao_faturada',
-        ]);
+        return $query;
     }
 
     public function headings(): array
     {
         return [
+            'ID',
+            'Data do Pedido',
             'Cliente',
             'Representada',
             'Transportadora',
-            'Data do Pedido',
             'Valor Pedido',
             'Valor Faturado',
-            'Valor Comissão Parcial',
-            'Valor Comissão Faturada',
+            'Data Faturamento',
+            'Comissão Parcial',
+            'Comissão Faturada',
+            // adicione outras colunas que quiser exportar
         ];
     }
 }

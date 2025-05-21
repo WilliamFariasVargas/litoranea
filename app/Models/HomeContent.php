@@ -8,13 +8,12 @@ class HomeContent extends Model
 {
     protected $fillable = [
         'logo',
+        'foto_sobre',
         'clientes',
         'anos_experiencia',
         'parceiros',
-        'estados_atendidos',
-        'sobre',
-        'foto_sobre',
+        'estados',
+        'texto_sobre',
         'whatsapp',
     ];
 }
-

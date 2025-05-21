@@ -2,7 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExportacoesController;
-use App\Http\Controllers\HomeContentController;
+use App\Http\Controllers\Admin\HomeContentController;
+use App\Http\Controllers\Admin\LogoParceiroController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ContatoController;
+
 use App\Http\Controllers\{
     UserController,
     PedidoController,
@@ -14,10 +18,12 @@ use App\Http\Controllers\{
     CadastroDePedidoController
 };
 
+
+Route::post('/contato/enviar', [ContatoController::class, 'enviar'])->name('contato.enviar');
+
+
 // Página institucional de boas-vindas
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
 
 // Autenticação padrão
@@ -162,16 +168,32 @@ Route::resource('cadastrodepedido', CadastroDePedidoController::class)->except([
 Route::get('cadastrodepedido/export-pdf', [CadastroDePedidoController::class, 'exportPdf'])->name('cadastrodepedido.export.pdf');
 
 
+Route::get('/exportar/clientes', [ExportacoesController::class, 'exportarClientes'])->name('exportar.clientes');
+Route::get('/exportar/representadas', [ExportacoesController::class, 'exportarRepresentadas'])->name('exportar.representadas');
+Route::get('/exportar/transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
 
 
-Route::get('/exportar-clientes', [ExportacoesController::class, 'exportarClientes'])->name('exportar.clientes');
-Route::get('/exportar-representadas', [ExportacoesController::class, 'exportarRepresentadas'])->name('exportar.representadas');
-Route::get('/exportar-transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('/home', [HomeContentController::class, 'edit'])->name('admin.home.edit');
-    Route::post('/home', [HomeContentController::class, 'update'])->name('admin.home.update');
+
+
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/home/edit', [HomeContentController::class, 'edit'])->name('home.edit');
+    Route::post('/home/update', [HomeContentController::class, 'update'])->name('home.update');
 });
 
 
+
+
+
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+    Route::get('/parceiros/logos', [LogoParceiroController::class, 'index'])->name('parceiros.logos.index');
+    Route::post('/parceiros/logos', [LogoParceiroController::class, 'store'])->name('parceiros.logos.store');
+    Route::delete('/parceiros/logos/{id}', [LogoParceiroController::class, 'destroy'])->name('parceiros.logos.destroy');
 });
+
+
+
+
+});
+
