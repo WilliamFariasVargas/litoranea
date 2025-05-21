@@ -163,6 +163,17 @@ class CadastroDePedidoController extends Controller
             }
         }
 
+        // Definindo ordenação segura
+        $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado'];
+        $orderBy = $request->get('order', 'data_pedido');
+        $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        if (!in_array($orderBy, $allowedOrders)) {
+            $orderBy = 'data_pedido';
+        }
+
+        $query->orderBy($orderBy, $dir);
+
         $pedidos = $query->get();
 
         $valor_total = $pedidos->sum('valor_pedido');
@@ -175,7 +186,9 @@ class CadastroDePedidoController extends Controller
             'valor_total',
             'valor_total_faturado',
             'valor_total_comissao_parcial',
-            'valor_total_comissao_faturada'
+            'valor_total_comissao_faturada',
+            'orderBy',
+            'dir'
         ));
     }
 

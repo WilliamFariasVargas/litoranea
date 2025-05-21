@@ -9,8 +9,6 @@
             </h4>
         </div>
 
-
-
         <div class="col-4 text-end">
             <button type="button" style="background-color:#003162;" class="btn btn-primary" id="novoPedidoBtn">
                 <i class="fa fa-plus mx-2"></i> Novo
@@ -21,9 +19,6 @@
     </div>
 </section>
 
-
-
-
 <form method="GET" action="{{ route('cadastrodepedido.index') }}" id="filter_form" class="row g-3 mb-4">
     <div class="col-md-3">
         <label>Status:</label>
@@ -33,6 +28,7 @@
             <option value="baixado" {{ request('status') == 'baixado' ? 'selected' : '' }}>Baixado</option>
         </select>
     </div>
+
     <div class="col-md-3">
         <label>Cliente:</label>
         <select name="cliente_id" class="form-control select2">
@@ -68,15 +64,17 @@
             @endforeach
         </select>
     </div>
+
     <div class="col-md-3">
         <label>Data Inicial:</label>
-        <input type="date" name="data_inicial" class="form-control" value="{{ request('data_inicial') }}" class="form-control">
+        <input type="date" name="data_inicial" class="form-control" value="{{ request('data_inicial') }}">
     </div>
 
     <div class="col-md-3">
         <label>Data Final:</label>
-        <input type="date" name="data_final" class="form-control" value="{{ request('data_final') }}" class="form-control">
+        <input type="date" name="data_final" class="form-control" value="{{ request('data_final') }}">
     </div>
+
     <div class="col-md-3">
         <label>Mês:</label>
         <input type="number" name="mes" min="1" max="12" value="{{ request('mes') }}" class="form-control">
@@ -87,9 +85,27 @@
         <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
     </div>
 
-    <div class="col-md-4 d-flex">
-        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    {{-- Inputs escondidos para ordenação --}}
+    <input type="hidden" name="order" id="order" value="{{ request('order', '') }}">
+    <input type="hidden" name="dir" id="dir" value="{{ request('dir', '') }}">
+
+    <div class="col-md-4 d-flex align-items-center gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
+
+        <button type="button" class="btn btn-outline-secondary" id="btnOrdenarData">
+            Ordenar Data do Pedido
+            <span id="setaOrdenacao">
+                @if(request('order') === 'data_pedido')
+                    @if(request('dir') === 'asc')
+                        ▲
+                    @else
+                        ▼
+                    @endif
+                @endif
+            </span>
+        </button>
     </div>
+
     <div class="col-md-8 text-end">
         <a id="btnExportExcel" href="#" class="btn btn-success">
             <i class="fas fa-file-excel mx-2"></i> Exportar Excel
@@ -101,25 +117,20 @@
     </div>
 </form>
 
-{{-- Botões de Exportação --}}
-
-
-
-{{-- Área para carregar a tabela --}}
 <section class="col-md-12 mt-2 container-fluid" id="divTable">
-    {{-- A tabela vai ser carregada via AJAX aqui --}}
+    {{-- Tabela será carregada aqui via AJAX --}}
 </section>
 
 <script>
     $(document).ready(function() {
-        // Inicializa os selects
+        // Inicializa Select2
         $('.select2').select2({
             placeholder: 'Selecione',
             allowClear: true,
             width: '100%'
         });
 
-        // Botão Novo Pedido - abre modal
+        // Botão novo pedido
         $('#novoPedidoBtn').click(function() {
             $.ajax({
                 url: "{{ route('cadastrodepedido.create') }}",
@@ -133,16 +144,27 @@
             });
         });
 
-        // Envio do filtro
+        // Botão ordenar data - alterna asc/desc e submete
+        $('#btnOrdenarData').click(function() {
+            $('#order').val('data_pedido');
+
+            let dirAtual = $('#dir').val();
+            let novoDir = (dirAtual === 'asc') ? 'desc' : 'asc';
+            $('#dir').val(novoDir);
+
+            $('#setaOrdenacao').html(novoDir === 'asc' ? '▲' : '▼');
+
+            $('#filter_form').submit();
+        });
+
+        // Submit do filtro com AJAX
         $('#filter_form').submit(function(e) {
-            e.preventDefault(); // Evita reload
+            e.preventDefault();
 
-            const queryString = $(this).serialize();
+            let queryString = $(this).serialize();
 
-            // Atualiza a URL no navegador
             window.history.pushState({}, '', '?' + queryString);
 
-            // Atualiza tabela e links
             tblPopulate();
             atualizarLinksExportacao();
         });
@@ -181,16 +203,13 @@
             $('body').append(`
                 <div class="modal fade" id="modalMain" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                        </div>
+                        <div class="modal-content"></div>
                     </div>
                 </div>
             `);
         }
-
         $('#modalMain .modal-content').html(content);
         $('#modalMain').modal('show');
     }
-    </script>
-
+</script>
 @endsection
