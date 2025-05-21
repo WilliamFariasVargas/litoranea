@@ -76,6 +76,37 @@
     </div>
 </section>
 
+<section class="container my-5">
+    <h2 class="text-center mb-4">Envie uma mensagem</h2>
+
+    @if(session('success'))
+        <div class="alert alert-success text-center">{{ session('success') }}</div>
+    @endif
+
+    <form action="{{ route('contato.enviar') }}" method="POST" class="row g-3">
+        @csrf
+
+        <div class="col-md-6">
+            <input type="text" name="nome" class="form-control" placeholder="Seu nome" required>
+        </div>
+        <div class="col-md-6">
+            <input type="email" name="email" class="form-control" placeholder="Seu e-mail" required>
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="telefone" class="form-control" placeholder="Seu telefone (opcional)">
+        </div>
+        <div class="col-md-12">
+            <textarea name="mensagem" rows="5" class="form-control" placeholder="Sua mensagem" required></textarea>
+        </div>
+        <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary px-5">
+                <i class="fa fa-paper-plane"></i> Enviar
+            </button>
+        </div>
+    </form>
+</section>
+
+
 <section class="container my-5 text-center">
     <h2 class="mb-4">Fale comigo</h2>
     @if($conteudo->whatsapp)

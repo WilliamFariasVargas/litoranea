@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportacoesController;
 use App\Http\Controllers\Admin\HomeContentController;
 use App\Http\Controllers\Admin\LogoParceiroController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ContatoController;
 
 use App\Http\Controllers\{
     UserController,
@@ -16,6 +17,10 @@ use App\Http\Controllers\{
     TransportadoraController,
     CadastroDePedidoController
 };
+
+
+Route::post('/contato/enviar', [ContatoController::class, 'enviar'])->name('contato.enviar');
+
 
 // Página institucional de boas-vindas
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
