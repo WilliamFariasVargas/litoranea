@@ -163,6 +163,16 @@ class CadastroDePedidoController extends Controller
             'valor_total_comissao_faturada'
         ));
     }
+    public function search(Request $request)
+    {
+        $term = $request->get('q', '');
+        $results = Cliente::select('id', 'razao_social')
+            ->where('razao_social', 'like', "%{$term}%")
+            ->limit(20)
+            ->get();
+
+        return response()->json($results); // Retorna array puro
+    }
 
     public function showTabela()
     {
