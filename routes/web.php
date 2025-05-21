@@ -162,11 +162,10 @@ Route::resource('cadastrodepedido', CadastroDePedidoController::class)->except([
 Route::get('cadastrodepedido/export-pdf', [CadastroDePedidoController::class, 'exportPdf'])->name('cadastrodepedido.export.pdf');
 
 
+Route::get('/exportar/clientes', [ExportacoesController::class, 'exportarClientes'])->name('exportar.clientes');
+Route::get('/exportar/representadas', [ExportacoesController::class, 'exportarRepresentadas'])->name('exportar.representadas');
+Route::get('/exportar/transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
 
-
-Route::get('/exportar-clientes', [ExportacoesController::class, 'exportarClientes'])->name('exportar.clientes');
-Route::get('/exportar-representadas', [ExportacoesController::class, 'exportarRepresentadas'])->name('exportar.representadas');
-Route::get('/exportar-transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/home', [HomeContentController::class, 'edit'])->name('admin.home.edit');
