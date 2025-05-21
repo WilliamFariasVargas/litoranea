@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExportacoesController;
-use App\Http\Controllers\HomeContentController;
+use App\Http\Controllers\Admin\HomeContentController;
 use App\Http\Controllers\{
     UserController,
     PedidoController,
@@ -167,10 +167,10 @@ Route::get('/exportar/representadas', [ExportacoesController::class, 'exportarRe
 Route::get('/exportar/transportadoras', [ExportacoesController::class, 'exportarTransportadoras'])->name('exportar.transportadoras');
 
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('/home', [HomeContentController::class, 'edit'])->name('admin.home.edit');
-    Route::post('/home', [HomeContentController::class, 'update'])->name('admin.home.update');
-});
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/home/edit', [HomeContentController::class, 'edit'])->name('home.edit');
+    Route::post('/home/update', [HomeContentController::class, 'update'])->name('home.update');
+});
 
 });

@@ -18,6 +18,7 @@
                 <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
                 <li><a class="dropdown-item" href="{{ route('admin.home.edit') }}">Editar</a></li>
 
+
                 </ul>
             </li>
             <li class="nav-item dropdown">
