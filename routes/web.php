@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExportacoesController;
 use App\Http\Controllers\Admin\HomeContentController;
+use App\Http\Controllers\Admin\LogoParceiroController;
 
 use App\Http\Controllers\{
     UserController,
@@ -175,6 +176,16 @@ Route::get('/exportar/transportadoras', [ExportacoesController::class, 'exportar
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/home/edit', [HomeContentController::class, 'edit'])->name('home.edit');
     Route::post('/home/update', [HomeContentController::class, 'update'])->name('home.update');
+});
+
+
+
+
+
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+    Route::get('/parceiros/logos', [LogoParceiroController::class, 'index'])->name('parceiros.logos.index');
+    Route::post('/parceiros/logos', [LogoParceiroController::class, 'store'])->name('parceiros.logos.store');
+    Route::delete('/parceiros/logos/{id}', [LogoParceiroController::class, 'destroy'])->name('parceiros.logos.destroy');
 });
 
 
