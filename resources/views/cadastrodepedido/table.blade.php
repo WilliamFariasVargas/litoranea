@@ -26,10 +26,15 @@
             <td>{{ \Carbon\Carbon::parse($pedido->data_pedido)->format('d/m/Y') }}</td>
             <td>
                 <div class="d-flex gap-1">
-                    <button onclick="editPedido({{ $pedido->id }})" class="btn btn-sm btn-warning">Editar</button>
+                    <div class="d-flex gap-1">
+                        <button type="button" onclick="editPedido({{ $pedido->id }})" class="btn btn-sm btn-warning">
+                            Editar
+                        </button>
 
-                    <button onclick="deletePedido({{ $pedido->id }})" class="btn btn-sm btn-danger">Excluir</button>
-
+                        <button type="button" onclick="deletePedido({{ $pedido->id }})" class="btn btn-sm btn-danger">
+                            Excluir
+                        </button>
+                    </div>
                 </div>
             </td>
         </tr>
