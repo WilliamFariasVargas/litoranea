@@ -11,7 +11,7 @@
 
 
 
-        <div class="col-2 text-end">
+        <div class="col-4 text-end">
             <button type="button" style="background-color:#003162;" class="btn btn-primary" id="novoPedidoBtn">
                 <i class="fa fa-plus mx-2"></i> Novo
             </button>
@@ -21,19 +21,7 @@
     </div>
 </section>
 
-<div class="d-flex gap-2 mb-4">
-    <a href="{{ route('exportar.clientes') }}" class="btn btn-outline-primary">
-        <i class="fas fa-users mx-2"></i> Exportar Clientes
-    </a>
 
-    <a href="{{ route('exportar.representadas') }}" class="btn btn-outline-secondary">
-        <i class="fas fa-user-tie mx-2"></i> Exportar Representadas
-    </a>
-
-    <a href="{{ route('exportar.transportadoras') }}" class="btn btn-outline-success">
-        <i class="fas fa-truck mx-2"></i> Exportar Transportadoras
-    </a>
-</div>
 
 
 <form method="GET" action="{{ route('cadastrodepedido.index') }}" id="filter_form" class="row g-3 mb-4">
@@ -91,21 +79,22 @@
         <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
     </div>
 
-    <div class="col-md-1 d-flex align-items-end">
+    <div class="col-md-4 d-flex">
         <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+    <div class="col-md-8 text-end">
+        <a id="btnExportExcel" href="#" class="btn btn-success">
+            <i class="fas fa-file-excel mx-2"></i> Exportar Excel
+        </a>
+
+        <a id="btnExportPdf" href="#" class="btn btn-danger">
+            <i class="fas fa-file-pdf mx-2"></i> Exportar PDF
+        </a>
     </div>
 </form>
 
 {{-- Botões de Exportação --}}
-<div class="d-flex gap-2 mb-4">
-    <a id="btnExportExcel" href="#" class="btn btn-success">
-        <i class="fas fa-file-excel mx-2"></i> Exportar Excel
-    </a>
 
-    <a id="btnExportPdf" href="#" class="btn btn-danger">
-        <i class="fas fa-file-pdf mx-2"></i> Exportar PDF
-    </a>
-</div>
 
 
 {{-- Área para carregar a tabela --}}
