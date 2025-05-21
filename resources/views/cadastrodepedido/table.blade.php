@@ -6,6 +6,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Status</th> {{-- nova coluna --}}
             <th>Cliente</th>
             <th>Representada</th>
             <th>Transportadora</th>
@@ -18,6 +19,13 @@
     <tbody>
         @foreach ($pedidos as $pedido)
         <tr>
+            <td>
+                @if($pedido->valor_faturado > 1)
+                    <span class="badge bg-success">Baixado</span>
+                @else
+                    <span class="badge bg-warning text-dark">Pendente</span>
+                @endif
+            </td>
             <td>{{ $pedido->cliente->razao_social ?? '-' }}</td>
             <td>{{ $pedido->representada->razao_social ?? '-' }}</td>
             <td>{{ $pedido->transportadora->razao_social ?? '-' }}</td>
@@ -26,15 +34,8 @@
             <td>{{ \Carbon\Carbon::parse($pedido->data_pedido)->format('d/m/Y') }}</td>
             <td>
                 <div class="d-flex gap-1">
-                    <div class="d-flex gap-1">
-                        <button type="button" onclick="editPedido({{ $pedido->id }})" class="btn btn-sm btn-warning">
-                            Editar
-                        </button>
-
-                        <button type="button" onclick="deletePedido({{ $pedido->id }})" class="btn btn-sm btn-danger">
-                            Excluir
-                        </button>
-                    </div>
+                    <button type="button" onclick="editPedido({{ $pedido->id }})" class="btn btn-sm btn-warning">Editar</button>
+                    <button type="button" onclick="deletePedido({{ $pedido->id }})" class="btn btn-sm btn-danger">Excluir</button>
                 </div>
             </td>
         </tr>

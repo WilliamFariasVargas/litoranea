@@ -25,7 +25,15 @@
 
 
 <form method="GET" action="{{ route('cadastrodepedido.index') }}" id="filter_form" class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
+        <label>Status:</label>
+        <select name="status" class="form-control select2">
+            <option value="">Todos</option>
+            <option value="pendente" {{ request('status') == 'pendente' ? 'selected' : '' }}>Pendente</option>
+            <option value="baixado" {{ request('status') == 'baixado' ? 'selected' : '' }}>Baixado</option>
+        </select>
+    </div>
+    <div class="col-md-3">
         <label>Cliente:</label>
         <select name="cliente_id" class="form-control select2">
             <option value="">Selecione</option>
@@ -37,7 +45,7 @@
         </select>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <label>Representada:</label>
         <select name="representada_id" class="form-control select2">
             <option value="">Selecione</option>
@@ -49,7 +57,7 @@
         </select>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <label>Transportadora:</label>
         <select name="transportadora_id" class="form-control select2">
             <option value="">Selecione</option>
