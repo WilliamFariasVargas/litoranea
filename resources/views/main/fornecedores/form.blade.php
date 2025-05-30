@@ -1,7 +1,7 @@
 @extends('layouts.modal')
 
 @php
-    $title  = "Cadastro de Fornecedores" ;
+    $title  = "Cadastro de Representantes" ;
     if($fornecedor!= null) $title = 'Editando: '. $fornecedor->id.' - '.$fornecedor->razao_social;
 
 @endphp
