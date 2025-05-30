@@ -1,4 +1,4 @@
-{{-- Inclua logo após o jQuery, antes do seu script --}}
+{{-- Inclua este script logo após o jQuery, no seu layout principal --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
 
 <div class="modal-header">
@@ -12,8 +12,7 @@
 
     <div class="col-md-6">
       <label for="data_pedido" class="form-label obrigatorio">Data do Pedido:</label>
-      <input type="date" name="data_pedido" id="data_pedido"
-             class="form-control" required>
+      <input type="date" name="data_pedido" id="data_pedido" class="form-control" required>
     </div>
 
     <div class="col-md-6">
@@ -67,7 +66,8 @@
     <div class="col-md-6">
       <label for="indice_comissao" class="form-label obrigatorio">Índice de Comissão (%):</label>
       <input type="text" name="indice_comissao" id="indice_comissao"
-             class="form-control money">
+             class="form-control"
+             placeholder="Ex: 10" required>
     </div>
 
     <div class="col-md-6">
@@ -98,14 +98,13 @@
 </div>
 
 <script>
-  // Quando o modal abrir
+  // Quando o modal for exibido...
   $(document).on('shown.bs.modal', '#modalMain', function() {
     const $m = $(this);
 
-    // Aplica maskMoney em .money e formata valor inicial (vazio aqui)
+    // 1) Aplica maskMoney nos campos de valor
     $m.find('.money').each(function() {
-      const $el = $(this);
-      $el
+      $(this)
         .maskMoney({
           thousands: '.',
           decimal: ',',
@@ -115,25 +114,34 @@
         .maskMoney('mask');
     });
 
-    // Se sair do campo sem vírgula, completa com ,00
+    // 2) No blur, se faltar vírgula completa com ,00
     $m.find('.money').on('blur', function() {
       let v = $(this).val();
       if (v && !v.includes(',')) {
-        $(this).val(v + ',00')
-               .maskMoney('mask');
+        $(this).val(v + ',00').maskMoney('mask');
       }
     });
 
-    // Cálculo dinâmico de comissão
+    // 3) Índice de comissão: apenas dígitos inteiros
+    $m.find('#indice_comissao')
+      .off('input').on('input', function() {
+        this.value = this.value.replace(/\D/g,'');
+        // dispara recalculo
+        $m.find('#valor_pedido, #valor_faturado, #indice_comissao').trigger('input');
+      });
+
+    // 4) Conversão de string money → número
     function toNum(str) {
       return parseFloat(str.replace(/\./g,'').replace(',','.')) || 0;
     }
+
+    // 5) Recalcula comissão parcial e faturada
     $m.find('#valor_pedido, #valor_faturado, #indice_comissao')
       .off('input')
       .on('input', function() {
         const vp = toNum($m.find('#valor_pedido').val());
         const vf = toNum($m.find('#valor_faturado').val());
-        const ic = toNum($m.find('#indice_comissao').val());
+        const ic = parseFloat($m.find('#indice_comissao').val()) || 0;
         $m.find('#valor_comissao_parcial').val(
           ((vp * ic) / 100).toFixed(2).replace('.', ',')
         );
@@ -142,16 +150,16 @@
         );
       });
 
-    // Inicializa Select2
+    // 6) Inicializa Select2 nos selects
     $m.find('#cliente_id, #representada_id, #transportadora_id').select2({
       dropdownParent: $m,
-      placeholder: function() { return $(this).data('placeholder'); },
+      placeholder: function(){ return $(this).data('placeholder'); },
       allowClear: true,
       width: '100%'
     });
   });
 
-  // Submissão do formulário de criação
+  // Submissão do formulário via AJAX
   $(document).ready(function() {
     $('#create_pedido_form').submit(function(e) {
       e.preventDefault();
@@ -167,11 +175,7 @@
             });
         },
         error: xhr => {
-          Swal.fire(
-            'Erro!',
-            xhr.responseJSON?.message || 'Erro ao salvar pedido.',
-            'error'
-          );
+          Swal.fire('Erro!', xhr.responseJSON?.message || 'Erro ao salvar pedido.', 'error');
         }
       });
     });
