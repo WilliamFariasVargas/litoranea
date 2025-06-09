@@ -31,9 +31,11 @@ class HomeContentController extends Controller
             'clientes' => 'required|string',
             'anos_experiencia' => 'required|string',
             'parceiros' => 'required|string',
+            'eventos' => 'required|string',
             'estados' => 'required|string',
             'texto_sobre' => 'required|string',
             'whatsapp' => 'nullable|string|max:255',
+
         ]);
 
         if ($request->hasFile('logo')) {

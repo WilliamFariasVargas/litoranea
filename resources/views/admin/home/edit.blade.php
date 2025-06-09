@@ -53,21 +53,25 @@
         </div>
 
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md">
                 <label for="clientes">Clientes:</label>
                 <input type="text" name="clientes" class="form-control" value="{{ old('clientes', $conteudo->clientes) }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md">
                 <label for="anos_experiencia">Anos de Experiência:</label>
                 <input type="text" name="anos_experiencia" class="form-control" value="{{ old('anos_experiencia', $conteudo->anos_experiencia) }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md">
                 <label for="parceiros">Parceiros:</label>
                 <input type="text" name="parceiros" class="form-control" value="{{ old('parceiros', $conteudo->parceiros) }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md">
                 <label for="estados">Estados Atendidos:</label>
                 <input type="text" name="estados" class="form-control" value="{{ old('estados', $conteudo->estados) }}">
+            </div>
+            <div class="col-md">
+                <label for="eventos">Número de Eventos:</label>
+                <input type="text" name="eventos" class="form-control" value="{{ old('eventos', $conteudo->eventos) }}">
             </div>
         </div>
 

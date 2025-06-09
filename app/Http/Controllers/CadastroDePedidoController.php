@@ -81,6 +81,7 @@ class CadastroDePedidoController extends Controller
             'data_faturamento'        => $request->data_faturamento,
             'valor_comissao_parcial'  => $convertDecimal($request->valor_comissao_parcial),
             'valor_comissao_faturada' => $convertDecimal($request->valor_comissao_faturada),
+            'indice_comissao'         => $convertDecimal($request->indice_comissao),
         ]);
 
         return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
@@ -112,6 +113,7 @@ class CadastroDePedidoController extends Controller
                 'data_faturamento'        => $request->data_faturamento,
                 'valor_comissao_parcial'  => $convertDecimal($request->valor_comissao_parcial),
                 'valor_comissao_faturada' => $convertDecimal($request->valor_comissao_faturada),
+                'indice_comissao' => $convertDecimal($request->indice_comissao),
             ]);
 
             return response()->json(['message' => 'Pedido atualizado com sucesso!']);

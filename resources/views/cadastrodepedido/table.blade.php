@@ -13,6 +13,7 @@
             <th>Valor Pedido</th>
             <th>Valor Faturado</th>
             <th>Data Pedido</th>
+            <th>Indíce de Comissão</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -32,6 +33,7 @@
             <td>R$ {{ number_format($pedido->valor_pedido, 2, ',', '.') }}</td>
             <td>R$ {{ number_format($pedido->valor_faturado, 2, ',', '.') }}</td>
             <td>{{ \Carbon\Carbon::parse($pedido->data_pedido)->format('d/m/Y') }}</td>
+            <td>{{$pedido->indice_comissao ?? '-'}} %</td>
             <td>
                 <div class="d-flex gap-1">
                     <button type="button" onclick="editPedido({{ $pedido->id }})" class="btn btn-sm btn-warning">Editar</button>

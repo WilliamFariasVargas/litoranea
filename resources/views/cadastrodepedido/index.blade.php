@@ -64,26 +64,29 @@
             @endforeach
         </select>
     </div>
-
-    <div class="col-md-3">
+<div class="row" style="padding-top:10px;">
+    <div class="col-md">
         <label>Data Inicial:</label>
         <input type="date" name="data_inicial" class="form-control" value="{{ request('data_inicial') }}">
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md">
         <label>Data Final:</label>
         <input type="date" name="data_final" class="form-control" value="{{ request('data_final') }}">
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md">
         <label>Mês:</label>
         <input type="number" name="mes" min="1" max="12" value="{{ request('mes') }}" class="form-control">
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md">
         <label>Ano:</label>
         <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
     </div>
+
+
+</div>
 
     {{-- Inputs escondidos para ordenação --}}
     <input type="hidden" name="order" id="order" value="{{ request('order', '') }}">
@@ -157,6 +160,18 @@
             $('#filter_form').submit();
         });
 
+        // Filtro "Ordenar por" (cliente A-Z/Z-A, valor faturado)
+        $('#ordenarPor').change(function() {
+            const val = $(this).val();
+
+            if (val.includes('_')) {
+                const [campo, direcao] = val.split('_');
+                $('#order').val(campo);
+                $('#dir').val(direcao);
+                $('#filter_form').submit();
+            }
+        });
+
         // Submit do filtro com AJAX
         $('#filter_form').submit(function(e) {
             e.preventDefault();
@@ -212,4 +227,5 @@
         $('#modalMain').modal('show');
     }
 </script>
+
 @endsection

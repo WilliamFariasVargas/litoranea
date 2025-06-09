@@ -11,16 +11,17 @@ class CadastroDePedido extends Model
 
     protected $table = 'cadastrodepedido'; // <- importante mudar aqui!
 
-    protected $fillable = [
-        'data_pedido',
-        'cliente_id',
-        'representada_id',
-        'transportadora_id',
-        'valor_pedido',
-        'valor_faturado',
-        'data_faturamento',
-        'valor_comissao_parcial',
-        'valor_comissao_faturada',
+   protected $fillable = [
+    'data_pedido',
+    'cliente_id',
+    'representada_id',
+    'transportadora_id',
+    'valor_pedido',
+    'valor_faturado',
+    'indice_comissao', // ✅ este precisa estar aqui
+    'data_faturamento',
+    'valor_comissao_parcial',
+    'valor_comissao_faturada'
     ];
 
     public function cliente()
