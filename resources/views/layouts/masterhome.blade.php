@@ -34,28 +34,34 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row text-center">
-            <div class="col-md-3 mb-3">
+            <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
                     <h2><span>+</span><span class="counter" data-target="{{ $conteudo->clientes ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Clientes</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
                     <h2><span>+</span><span class="counter" data-target="{{ $conteudo->anos_experiencia ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Anos de experiência</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
                     <h2><span>+</span><span class="counter" data-target="{{ $conteudo->parceiros ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Parceiros</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
                     <h2><span>+</span><span class="counter" data-target="{{ $conteudo->estados ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Estados atendidos</p>
+                </div>
+            </div>
+            <div class="col-md mb-3">
+                <div class="card shadow-sm border-0 p-4">
+                    <h2><span>+</span><span class="counter" data-target="{{ $conteudo->eventos ?? 0 }}">0</span></h2>
+                    <p class="mt-2 mb-0">Eventos</p>
                 </div>
             </div>
         </div>

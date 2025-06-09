@@ -78,10 +78,12 @@
     </div>
 
     <div class="col-md-6">
+
       <label for="indice_comissao" class="form-label obrigatorio">Índice de Comissão (%):</label>
       <input type="text" name="indice_comissao" id="indice_comissao"
-             class="form-control money"
-             value="{{ number_format($pedido->indice_comissao ?? 0, 2, ',', '.') }}">
+       class="form-control"
+       value="{{ number_format($pedido->indice_comissao ?? 0, 2, ',', '.') }}"
+       placeholder="Ex: 10" required>
     </div>
 
     <div class="col-md-6">
@@ -122,39 +124,44 @@
     // Aplica maskMoney em todos os .money
     $m.find('.money').each(function() {
       const $el = $(this);
-      $el
-        .maskMoney({
-          thousands: '.',
-          decimal: ',',
-          allowZero: true,
-          precision: 2
-        })
-        // formata valor já existente
-        .maskMoney('mask');
+      $el.maskMoney({
+        thousands: '.',
+        decimal: ',',
+        allowZero: true,
+        precision: 2
+      }).maskMoney('mask');
     });
 
     // Se sair do campo sem vírgula, completa com ,00
     $m.find('.money').on('blur', function() {
       let v = $(this).val();
       if (v && !v.includes(',')) {
-        $(this).val(v + ',00')
-               .maskMoney('mask');
+        $(this).val(v + ',00').maskMoney('mask');
       }
+    });
+
+    // Apenas números no índice de comissão
+    $m.find('#indice_comissao').off('input').on('input', function() {
+      this.value = this.value.replace(/\D/g, '');
+      $m.find('#valor_pedido, #valor_faturado, #indice_comissao').trigger('input');
     });
 
     // Cálculo de comissão
     function toNum(str) {
-      return parseFloat(str.replace(/\./g,'').replace(',','.')) || 0;
+      return parseFloat(str.replace(/\./g,'').replace(',', '.')) || 0;
     }
+
     $m.find('#valor_pedido, #valor_faturado, #indice_comissao')
       .off('input')
       .on('input', function() {
         const vp = toNum($m.find('#valor_pedido').val());
         const vf = toNum($m.find('#valor_faturado').val());
         const ic = toNum($m.find('#indice_comissao').val());
+
         $m.find('#valor_comissao_parcial').val(
           ((vp * ic) / 100).toFixed(2).replace('.', ',')
         );
+
         $m.find('#valor_comissao_faturada').val(
           ((vf * ic) / 100).toFixed(2).replace('.', ',')
         );

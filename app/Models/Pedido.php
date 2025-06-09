@@ -9,13 +9,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Pedido extends Model
 {
     protected $fillable = [
-        'numero_pedido',
-        'representada_id',
+        'data_pedido',
         'cliente_id',
-        'fornecedores_id',
+        'representada_id',
         'transportadora_id',
-        'valor_total',
-    ];
+        'valor_pedido',
+        'valor_faturado',
+        'indice_comissao', // ✅ este precisa estar aqui
+        'data_faturamento',
+        'valor_comissao_parcial',
+        'valor_comissao_faturada'
+        ];
 
 
     public function itens() {

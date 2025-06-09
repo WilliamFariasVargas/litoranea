@@ -12,6 +12,7 @@ class HomeContent extends Model
         'clientes',
         'anos_experiencia',
         'parceiros',
+        'eventos',
         'estados',
         'texto_sobre',
         'whatsapp',
