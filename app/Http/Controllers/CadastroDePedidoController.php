@@ -65,27 +65,23 @@ class CadastroDePedidoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $convertDecimal = function ($value) {
-            if (!$value) return null;
-            return str_replace(',', '.', str_replace('.', '', $value));
-        };
+{
+    CadastroDePedido::create([
+        'data_pedido'             => $request->data_pedido,
+        'cliente_id'              => $request->cliente_id,
+        'representada_id'         => $request->representada_id,
+        'transportadora_id'       => $request->transportadora_id,
+        'valor_pedido'            => (float) $request->valor_pedido,
+        'valor_faturado'          => (float) $request->valor_faturado,
+        'data_faturamento'        => $request->data_faturamento,
+        'valor_comissao_parcial'  => (float) $request->valor_comissao_parcial,
+        'valor_comissao_faturada' => (float) $request->valor_comissao_faturada,
+        'indice_comissao'         => (float) $request->indice_comissao,
+    ]);
 
-        CadastroDePedido::create([
-            'data_pedido'             => $request->data_pedido,
-            'cliente_id'              => $request->cliente_id,
-            'representada_id'         => $request->representada_id,
-            'transportadora_id'       => $request->transportadora_id,
-            'valor_pedido'            => $convertDecimal($request->valor_pedido),
-            'valor_faturado'          => $convertDecimal($request->valor_faturado),
-            'data_faturamento'        => $request->data_faturamento,
-            'valor_comissao_parcial'  => $convertDecimal($request->valor_comissao_parcial),
-            'valor_comissao_faturada' => $convertDecimal($request->valor_comissao_faturada),
-            'indice_comissao'         => $convertDecimal($request->indice_comissao),
-        ]);
+    return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
+}
 
-        return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
-    }
 
     public function edit($id)
     {
@@ -108,12 +104,12 @@ class CadastroDePedidoController extends Controller
                 'cliente_id'              => $request->cliente_id,
                 'representada_id'         => $request->representada_id,
                 'transportadora_id'       => $request->transportadora_id,
-                'valor_pedido'            => $convertDecimal($request->valor_pedido),
-                'valor_faturado'          => $convertDecimal($request->valor_faturado),
+                'valor_pedido'            => (float) $request->valor_pedido,
+                'valor_faturado'          => (float) $request->valor_faturado,
                 'data_faturamento'        => $request->data_faturamento,
-                'valor_comissao_parcial'  => $convertDecimal($request->valor_comissao_parcial),
-                'valor_comissao_faturada' => $convertDecimal($request->valor_comissao_faturada),
-                'indice_comissao' => $convertDecimal($request->indice_comissao),
+                'valor_comissao_parcial'  => (float) $request->valor_comissao_parcial,
+                'valor_comissao_faturada' => (float) $request->valor_comissao_faturada,
+                'indice_comissao'         => (float) $request->indice_comissao,
             ]);
 
             return response()->json(['message' => 'Pedido atualizado com sucesso!']);
