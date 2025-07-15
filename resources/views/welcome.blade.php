@@ -36,35 +36,66 @@
         <div class="row text-center">
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span>+</span><span class="counter" data-target="{{ $conteudo->clientes ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo->clientes ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Clientes</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span>+</span><span class="counter" data-target="{{ $conteudo->anos_experiencia ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo->anos_experiencia ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Anos de experiência</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span>+</span><span class="counter" data-target="{{ $conteudo->parceiros ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo->parceiros ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Parceiros</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span>+</span><span class="counter" data-target="{{ $conteudo->estados ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo->estados ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Estados atendidos</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span>+</span><span class="counter" data-target="{{ $conteudo->eventos ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo->eventos ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Eventos</p>
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<section class="py-5 bg-white">
+    <div class="container">
+        <h2 class="text-center mb-5">Últimos Eventos</h2>
+
+        @if($eventos->count())
+            @foreach($eventos as $evento)
+                <div class="mb-5">
+                    <div class="mb-3 text-center">
+                        <h4 class="mb-1">{{ $evento->nome }}</h4>
+                        <p class="text-muted mb-0">{{ $evento->local }} – {{ $evento->mes }}/{{ $evento->ano }}</p>
+                    </div>
+
+                    @if($evento->fotos->count())
+                        <div class="row g-3 justify-content-center">
+                            @foreach($evento->fotos as $foto)
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                    <img src="{{ asset('storage/' . $foto->imagem) }}" class="img-fluid rounded shadow-sm" alt="Foto do Evento">
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-center text-muted">Nenhuma foto disponível para este evento.</p>
+                    @endif
+                </div>
+            @endforeach
+        @else
+            <p class="text-center text-muted">Nenhum evento cadastrado ainda.</p>
+        @endif
     </div>
 </section>
 

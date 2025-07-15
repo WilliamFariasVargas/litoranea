@@ -18,6 +18,7 @@
                 <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
                 <li><a class="dropdown-item" href="{{ route('admin.home.edit') }}">Editar Informações</a></li>
                 <li><a class="dropdown-item" href="{{ route('admin.parceiros.logos.index') }}">Editar Parceiros</a></li>
+                <li><a class="dropdown-item" href="{{ route('admin.eventos.index') }}">Editar Eventos</a></li>
 
                 </ul>
             </li>

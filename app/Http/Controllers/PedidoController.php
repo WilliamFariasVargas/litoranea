@@ -89,41 +89,55 @@ class PedidoController extends Controller
     ));
 }
 
-    public function store(Request $request)
-    {
-        $pedido = Pedido::create([
-            'numero_pedido'     => uniqid('PED'),
-            'representada_id'   => $request->representada_id,
-            'cliente_id'        => $request->cliente_id,
-            'fornecedores_id'     => $request->fornecedor_id,
-            'transportadora_id' => $request->transportadora_id,
-            'valor_total'       => 0,
-        ]);
+  public function store(Request $request)
+{
+    $pedido = Pedido::create([
+        'numero_pedido'     => uniqid('PED'),
+        'representada_id'   => $request->representada_id,
+        'cliente_id'        => $request->cliente_id,
+        'fornecedores_id'   => $request->fornecedor_id,
+        'transportadora_id' => $request->transportadora_id,
+        'data_pedido'       => $request->data_pedido,
+        'data_faturamento'  => $request->data_faturamento,
+        'valor_pedido'      => floatval($request->valor_pedido),
+        'valor_faturado'    => floatval($request->valor_faturado),
+        'indice_comissao'   => floatval($request->indice_comissao),
+        'valor_comissao_parcial' => floatval($request->valor_comissao_parcial),
+        'valor_comissao_faturada' => floatval($request->valor_comissao_faturada),
+        'valor_total'       => 0,
+    ]);
 
-        $totalGeral = 0;
+    $totalGeral = 0;
 
-
-
-
+    if (is_array($request->itens)) {
         foreach ($request->itens as $item) {
-            $total = $item['quantidade'] * $item['valor_unitario'];
+            $valorUnitario = floatval($item['valor_unitario']);
+            $valorDesconto = isset($item['valor_com_desconto']) ? floatval($item['valor_com_desconto']) : $valorUnitario;
+
+            $total = $item['quantidade'] * $valorUnitario;
+
             PedidoItem::create([
                 'pedido_id'           => $pedido->id,
                 'item'                => $item['item'],
                 'codigo'              => $item['codigo'],
                 'descricao'           => $item['descricao'],
                 'quantidade'          => $item['quantidade'],
-                'valor_unitario'      => $item['valor_unitario'],
-                'valor_com_desconto'  => $item['valor_com_desconto'] ?? $item['valor_unitario'],
+                'valor_unitario'      => $valorUnitario,
+                'valor_com_desconto'  => $valorDesconto,
                 'total'               => $total,
             ]);
+
             $totalGeral += $total;
         }
-
-        $pedido->update(['valor_total' => $totalGeral]);
-
-        return redirect()->route('pedidos.index')->with('success', 'Pedido criado com sucesso!');
     }
+
+    $pedido->update(['valor_total' => $totalGeral]);
+
+    return response()->json(['message' => 'Pedido criado com sucesso!']);
+}
+
+
+
 
 
     public function imprimir(Pedido $pedido)
