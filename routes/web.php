@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\HomeContentController;
 use App\Http\Controllers\Admin\LogoParceiroController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ContatoController;
+use App\Http\Controllers\Admin\EventoController;
 
 use App\Http\Controllers\{
     UserController,
@@ -17,6 +18,7 @@ use App\Http\Controllers\{
     TransportadoraController,
     CadastroDePedidoController
 };
+
 
 
 Route::post('/contato/enviar', [ContatoController::class, 'enviar'])->name('contato.enviar');
@@ -197,3 +199,11 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 
 });
 
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('eventos', [EventoController::class, 'index'])->name('eventos.index');
+    Route::post('eventos', [EventoController::class, 'store'])->name('eventos.store');
+    Route::post('eventos/{evento}/fotos', [EventoController::class, 'uploadFotos'])->name('eventos.fotos.upload');
+    Route::delete('eventos/foto/{foto}', [EventoController::class, 'destroyFoto'])->name('eventos.fotos.destroy');
+    Route::delete('eventos/{evento}', [EventoController::class, 'destroy'])->name('eventos.destroy');
+
+});
