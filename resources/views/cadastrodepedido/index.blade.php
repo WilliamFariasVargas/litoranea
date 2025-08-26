@@ -113,8 +113,8 @@
     <div class="col-md-4 d-flex align-items-center gap-2">
         <select name="ordenarPor" id="ordenarPor" class="form-control select2">
             <option value="">Nenhum</option>
-            <option value="cliente_asc">Cliente (A-Z)</option>
-            <option value="cliente_desc">Cliente (Z-A)</option>
+            <option value="cliente_asc">Cliente (Z-A)</option>
+            <option value="cliente_desc">Cliente (A-Z)</option>
         </select>
     </div>
 
