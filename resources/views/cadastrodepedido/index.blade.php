@@ -113,8 +113,8 @@
     <div class="col-md-4 d-flex align-items-center gap-2">
         <select name="ordenarPor" id="ordenarPor" class="form-control select2">
             <option value="">Nenhum</option>
-            <option value="cliente_asc" {{ request('order') == 'cliente_id' && request('dir') == 'asc' ? 'selected' : '' }}>Cliente (A-Z)</option>
-            <option value="cliente_desc" {{ request('order') == 'cliente_id' && request('dir') == 'desc' ? 'selected' : '' }}>Cliente (Z-A)</option>
+            <option value="cliente_id_asc" {{ request('order') == 'cliente_id' && request('dir') == 'asc' ? 'selected' : '' }}>Cliente (A-Z)</option>
+            <option value="cliente_id_desc" {{ request('order') == 'cliente_id' && request('dir') == 'desc' ? 'selected' : '' }}>Cliente (Z-A)</option>
             <option value="valor_faturado_asc" {{ request('order') == 'valor_faturado' && request('dir') == 'asc' ? 'selected' : '' }}>Valor Faturado (Crescente)</option>
             <option value="valor_faturado_desc" {{ request('order') == 'valor_faturado' && request('dir') == 'desc' ? 'selected' : '' }}>Valor Faturado (Decrescente)</option>
         </select>
