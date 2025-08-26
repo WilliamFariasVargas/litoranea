@@ -3,12 +3,12 @@
 @section('page-content')
 <section class="container">
     <div class="row" style="padding-top:60px;">
-        <div class="col-6" style="vertical-align: middle">
+        <div class="col-4" style="vertical-align: middle">
             <h4 style="color:#003162;" class="title mt-2">
                 <i class="fa fa-users mx-2"></i>Cadastro de Cliente
             </h4>
         </div>
-        <div class="col-6 text-end">
+        <div class="col-8 text-end">
             @php
                 $cidades = \App\Models\Cliente::select('cidade')
                     ->distinct()
