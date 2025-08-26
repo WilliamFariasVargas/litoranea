@@ -7,7 +7,8 @@ use App\Models\CadastroDePedido;
 use App\Models\Cliente;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PedidosExport;
-use PDF; // para o dompdf
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CadastroDePedidoController extends Controller
 {
@@ -170,8 +171,9 @@ class CadastroDePedidoController extends Controller
         }
 
         if ($orderBy === 'cliente_id') {
+            // Alteração principal: Usar DB::raw com LOWER() para ordenação insensível a maiúsculas/minúsculas
             $query->join('clientes', 'cadastro_de_pedidos.cliente_id', '=', 'clientes.id')
-                  ->orderBy('clientes.razao_social', $dir)
+                  ->orderBy(DB::raw('LOWER(clientes.razao_social)'), $dir)
                   ->select('cadastro_de_pedidos.*');
         } else {
             $query->orderBy($orderBy, $dir);
@@ -243,7 +245,6 @@ class CadastroDePedidoController extends Controller
             }
         }
 
-        // --- INÍCIO DA LÓGICA DE ORDENAÇÃO PARA EXPORTAÇÃO ---
         $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
         $orderBy = $request->get('order', 'data_pedido');
         $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
@@ -253,13 +254,13 @@ class CadastroDePedidoController extends Controller
         }
 
         if ($orderBy === 'cliente_id') {
+            // Lógica de ordenação para a exportação de PDF
             $query->join('clientes', 'cadastro_de_pedidos.cliente_id', '=', 'clientes.id')
-                  ->orderBy('clientes.razao_social', $dir)
+                  ->orderBy(DB::raw('LOWER(clientes.razao_social)'), $dir)
                   ->select('cadastro_de_pedidos.*');
         } else {
             $query->orderBy($orderBy, $dir);
         }
-        // --- FIM DA LÓGICA DE ORDENAÇÃO PARA EXPORTAÇÃO ---
 
         $pedidos = $query->get();
 
