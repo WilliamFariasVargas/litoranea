@@ -29,7 +29,7 @@
       <select id="cliente_id" name="cliente_id" class="form-control select2" data-placeholder="Selecione um cliente">
         <option value="">Selecione</option>
         @foreach(\App\Models\Cliente::all() as $cliente)
-          <option value="{{ $cliente->id }}">{{ $cliente->razao_social }}</option>
+          <option value="{{ $cliente->id }}">{{ $cliente->razao_social . ' - ' . $cliente->cidade }}</option>
         @endforeach
       </select>
     </div>
