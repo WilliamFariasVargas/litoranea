@@ -27,7 +27,7 @@
                 </select>
 
                 <select name="cidade" id="cidadeSelect" class="form-select form-select-sm" style="width: 180px; display: none;">
-                    <option value="">Selecione a cidade</option>
+                    <option value="">Todas as cidades</option> {{-- Adicionei esta linha --}}
                     @foreach($cidades as $cidade)
                         <option value="{{ $cidade }}" {{ request('cidade') == $cidade ? 'selected' : '' }}>
                             {{ $cidade }}
@@ -54,7 +54,7 @@
                     function toggleCidadeSelect() {
                         if (orderBySelect.value === 'cidade') {
                             cidadeSelect.style.display  = 'inline-block';
-                            cidadeSelect.required       = true;
+                            cidadeSelect.required       = false; // Removi a validação para permitir "Todas as cidades"
                         } else {
                             cidadeSelect.style.display  = 'none';
                             cidadeSelect.required       = false;
