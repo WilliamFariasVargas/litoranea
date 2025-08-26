@@ -89,8 +89,8 @@
 </div>
 
     {{-- Inputs escondidos para ordenação --}}
-    <input type="hidden" name="order" id="order" value="{{ request('order', '') }}">
-    <input type="hidden" name="dir" id="dir" value="{{ request('dir', '') }}">
+    <input type="hidden" name="order" id="order" value="{{ request('order', 'data_pedido') }}">
+    <input type="hidden" name="dir" id="dir" value="{{ request('dir', 'desc') }}">
 
     <div class="col-md-4 d-flex align-items-center gap-2">
         <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
@@ -113,8 +113,10 @@
     <div class="col-md-4 d-flex align-items-center gap-2">
         <select name="ordenarPor" id="ordenarPor" class="form-control select2">
             <option value="">Nenhum</option>
-            <option value="cliente_asc">Cliente (Z-A)</option>
-            <option value="cliente_desc">Cliente (A-Z)</option>
+            <option value="cliente_asc" {{ request('order') == 'cliente_id' && request('dir') == 'asc' ? 'selected' : '' }}>Cliente (A-Z)</option>
+            <option value="cliente_desc" {{ request('order') == 'cliente_id' && request('dir') == 'desc' ? 'selected' : '' }}>Cliente (Z-A)</option>
+            <option value="valor_faturado_asc" {{ request('order') == 'valor_faturado' && request('dir') == 'asc' ? 'selected' : '' }}>Valor Faturado (Crescente)</option>
+            <option value="valor_faturado_desc" {{ request('order') == 'valor_faturado' && request('dir') == 'desc' ? 'selected' : '' }}>Valor Faturado (Decrescente)</option>
         </select>
     </div>
 
@@ -166,6 +168,10 @@
             let novoDir = (dirAtual === 'asc') ? 'desc' : 'asc';
             $('#dir').val(novoDir);
 
+            // Reseta o select de ordenação
+            $('#ordenarPor').val('').trigger('change.select2');
+
+            // Atualiza a seta de ordenação
             $('#setaOrdenacao').html(novoDir === 'asc' ? '▲' : '▼');
 
             $('#filter_form').submit();
@@ -179,13 +185,14 @@
                 const [campo, direcao] = val.split('_');
                 $('#order').val(campo);
                 $('#dir').val(direcao);
-                $('#filter_form').submit();
             } else {
                 // If the user selects "None," clear the sorting
-                $('#order').val('');
-                $('#dir').val('');
-                $('#filter_form').submit();
+                $('#order').val('data_pedido');
+                $('#dir').val('desc');
             }
+
+            // Submete o formulário
+            $('#filter_form').submit();
         });
 
         // Submit do filtro com AJAX
