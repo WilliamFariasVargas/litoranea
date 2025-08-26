@@ -162,18 +162,19 @@
 
         // Botão ordenar data - alterna asc/desc e submete
         $('#btnOrdenarData').click(function() {
-            $('#order').val('data_pedido');
+            // Oculta o select de ordenação
+            $('#ordenarPor').val('').trigger('change.select2');
 
+            // Define os valores de ordenação
+            $('#order').val('data_pedido');
             let dirAtual = $('#dir').val();
             let novoDir = (dirAtual === 'asc') ? 'desc' : 'asc';
             $('#dir').val(novoDir);
 
-            // Reseta o select de ordenação
-            $('#ordenarPor').val('').trigger('change.select2');
-
             // Atualiza a seta de ordenação
             $('#setaOrdenacao').html(novoDir === 'asc' ? '▲' : '▼');
 
+            // Submete o formulário
             $('#filter_form').submit();
         });
 
@@ -186,7 +187,7 @@
                 $('#order').val(campo);
                 $('#dir').val(direcao);
             } else {
-                // If the user selects "None," clear the sorting
+                // Se a opção "Nenhum" for selecionada
                 $('#order').val('data_pedido');
                 $('#dir').val('desc');
             }
