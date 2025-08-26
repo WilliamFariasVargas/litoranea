@@ -161,8 +161,7 @@ class CadastroDePedidoController extends Controller
             }
         }
 
-        // Definindo ordenação segura
-        $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado'];
+        $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
         $orderBy = $request->get('order', 'data_pedido');
         $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
 
@@ -170,7 +169,13 @@ class CadastroDePedidoController extends Controller
             $orderBy = 'data_pedido';
         }
 
-        $query->orderBy($orderBy, $dir);
+        if ($orderBy === 'cliente_id') {
+            $query->join('clientes', 'cadastro_de_pedidos.cliente_id', '=', 'clientes.id')
+                  ->orderBy('clientes.razao_social', $dir)
+                  ->select('cadastro_de_pedidos.*');
+        } else {
+            $query->orderBy($orderBy, $dir);
+        }
 
         $pedidos = $query->get();
 
@@ -237,6 +242,24 @@ class CadastroDePedidoController extends Controller
                 $query->where('valor_faturado', '>', 1);
             }
         }
+
+        // --- INÍCIO DA LÓGICA DE ORDENAÇÃO PARA EXPORTAÇÃO ---
+        $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
+        $orderBy = $request->get('order', 'data_pedido');
+        $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+        if (!in_array($orderBy, $allowedOrders)) {
+            $orderBy = 'data_pedido';
+        }
+
+        if ($orderBy === 'cliente_id') {
+            $query->join('clientes', 'cadastro_de_pedidos.cliente_id', '=', 'clientes.id')
+                  ->orderBy('clientes.razao_social', $dir)
+                  ->select('cadastro_de_pedidos.*');
+        } else {
+            $query->orderBy($orderBy, $dir);
+        }
+        // --- FIM DA LÓGICA DE ORDENAÇÃO PARA EXPORTAÇÃO ---
 
         $pedidos = $query->get();
 

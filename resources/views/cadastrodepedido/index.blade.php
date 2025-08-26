@@ -107,9 +107,20 @@
                 @endif
             </span>
         </button>
+
+
+    </div>
+    <div class="col-md-4 d-flex align-items-center gap-2">
+        <select name="ordenarPor" id="ordenarPor" class="form-control select2">
+            <option value="">Nenhum</option>
+            <option value="cliente_asc">Cliente (A-Z)</option>
+            <option value="cliente_desc">Cliente (Z-A)</option>
+        </select>
     </div>
 
-    <div class="col-md-8 text-end">
+
+
+    <div class="col-md-4 text-end">
         <a id="btnExportExcel" href="#" class="btn btn-success">
             <i class="fas fa-file-excel mx-2"></i> Exportar Excel
         </a>
@@ -168,6 +179,11 @@
                 const [campo, direcao] = val.split('_');
                 $('#order').val(campo);
                 $('#dir').val(direcao);
+                $('#filter_form').submit();
+            } else {
+                // If the user selects "None," clear the sorting
+                $('#order').val('');
+                $('#dir').val('');
                 $('#filter_form').submit();
             }
         });
