@@ -19,7 +19,7 @@
 
 @foreach ($clientes as $cliente)
     <div class="cliente">
-        <div class="header-cliente">{{ $cliente->razao_social }}</div>
+        <div class="header-cliente">{{ $cliente->id }} - {{ $cliente->razao_social }}</div>
 
         <table>
             <tr>

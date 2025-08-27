@@ -44,6 +44,23 @@ class CadastroDePedidoController extends Controller
             }
         }
 
+        // Ordenação
+       $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
+$orderBy = $request->get('order', 'data_pedido');
+$dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+if (!in_array($orderBy, $allowedOrders)) {
+    $orderBy = 'data_pedido';
+}
+
+if ($orderBy === 'cliente_id') {
+    $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
+          ->orderBy('clientes.razao_social', $dir)
+          ->addSelect('cadastrodepedido.*');
+} else {
+    $query->orderBy($orderBy, $dir);
+}
+
         $pedidos = $query->get();
 
         $valor_total = $pedidos->sum('valor_pedido');
@@ -66,23 +83,22 @@ class CadastroDePedidoController extends Controller
     }
 
     public function store(Request $request)
-{
-    CadastroDePedido::create([
-        'data_pedido'             => $request->data_pedido,
-        'cliente_id'              => $request->cliente_id,
-        'representada_id'         => $request->representada_id,
-        'transportadora_id'       => $request->transportadora_id,
-        'valor_pedido'            => (float) $request->valor_pedido,
-        'valor_faturado'          => (float) $request->valor_faturado,
-        'data_faturamento'        => $request->data_faturamento,
-        'valor_comissao_parcial'  => (float) $request->valor_comissao_parcial,
-        'valor_comissao_faturada' => (float) $request->valor_comissao_faturada,
-        'indice_comissao'         => (float) $request->indice_comissao,
-    ]);
+    {
+        CadastroDePedido::create([
+            'data_pedido'               => $request->data_pedido,
+            'cliente_id'                => $request->cliente_id,
+            'representada_id'           => $request->representada_id,
+            'transportadora_id'         => $request->transportadora_id,
+            'valor_pedido'              => (float) $request->valor_pedido,
+            'valor_faturado'            => (float) $request->valor_faturado,
+            'data_faturamento'          => $request->data_faturamento,
+            'valor_comissao_parcial'    => (float) $request->valor_comissao_parcial,
+            'valor_comissao_faturada'   => (float) $request->valor_comissao_faturada,
+            'indice_comissao'           => (float) $request->indice_comissao,
+        ]);
 
-    return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
-}
-
+        return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
+    }
 
     public function edit($id)
     {
@@ -101,16 +117,16 @@ class CadastroDePedidoController extends Controller
             };
 
             $pedido->update([
-                'data_pedido'             => $request->data_pedido,
-                'cliente_id'              => $request->cliente_id,
-                'representada_id'         => $request->representada_id,
-                'transportadora_id'       => $request->transportadora_id,
-                'valor_pedido'            => (float) $request->valor_pedido,
-                'valor_faturado'          => (float) $request->valor_faturado,
-                'data_faturamento'        => $request->data_faturamento,
-                'valor_comissao_parcial'  => (float) $request->valor_comissao_parcial,
-                'valor_comissao_faturada' => (float) $request->valor_comissao_faturada,
-                'indice_comissao'         => (float) $request->indice_comissao,
+                'data_pedido'               => $request->data_pedido,
+                'cliente_id'                => $request->cliente_id,
+                'representada_id'           => $request->representada_id,
+                'transportadora_id'         => $request->transportadora_id,
+                'valor_pedido'              => (float) $request->valor_pedido,
+                'valor_faturado'            => (float) $request->valor_faturado,
+                'data_faturamento'          => $request->data_faturamento,
+                'valor_comissao_parcial'    => (float) $request->valor_comissao_parcial,
+                'valor_comissao_faturada'   => (float) $request->valor_comissao_faturada,
+                'indice_comissao'           => (float) $request->indice_comissao,
             ]);
 
             return response()->json(['message' => 'Pedido atualizado com sucesso!']);
@@ -163,21 +179,20 @@ class CadastroDePedidoController extends Controller
         }
 
         $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
-        $orderBy = $request->get('order', 'data_pedido');
-        $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+$orderBy = $request->get('order', 'data_pedido');
+$dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
 
-        if (!in_array($orderBy, $allowedOrders)) {
-            $orderBy = 'data_pedido';
-        }
+if (!in_array($orderBy, $allowedOrders)) {
+    $orderBy = 'data_pedido';
+}
 
-        if ($orderBy === 'cliente_id') {
-            // Alteração principal: Usar DB::raw com LOWER() para ordenação insensível a maiúsculas/minúsculas
-            $query->join('clientes', 'cadastro_de_pedidos.cliente_id', '=', 'clientes.id')
-                  ->orderBy(DB::raw('LOWER(clientes.razao_social)'), $dir)
-                  ->select('cadastro_de_pedidos.*');
-        } else {
-            $query->orderBy($orderBy, $dir);
-        }
+if ($orderBy === 'cliente_id') {
+    $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
+          ->orderBy('clientes.razao_social', $dir)
+          ->addSelect('cadastrodepedido.*');
+} else {
+    $query->orderBy($orderBy, $dir);
+}
 
         $pedidos = $query->get();
 
@@ -246,21 +261,20 @@ class CadastroDePedidoController extends Controller
         }
 
         $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
-        $orderBy = $request->get('order', 'data_pedido');
-        $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+$orderBy = $request->get('order', 'data_pedido');
+$dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
 
-        if (!in_array($orderBy, $allowedOrders)) {
-            $orderBy = 'data_pedido';
-        }
+if (!in_array($orderBy, $allowedOrders)) {
+    $orderBy = 'data_pedido';
+}
 
-        if ($orderBy === 'cliente_id') {
-            // Lógica de ordenação para a exportação de PDF
-            $query->join('clientes', 'cadastro_de_pedidos.cliente_id', '=', 'clientes.id')
-                  ->orderBy(DB::raw('LOWER(clientes.razao_social)'), $dir)
-                  ->select('cadastro_de_pedidos.*');
-        } else {
-            $query->orderBy($orderBy, $dir);
-        }
+if ($orderBy === 'cliente_id') {
+    $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
+          ->orderBy('clientes.razao_social', $dir)
+          ->addSelect('cadastrodepedido.*');
+} else {
+    $query->orderBy($orderBy, $dir);
+}
 
         $pedidos = $query->get();
 
@@ -334,11 +348,11 @@ class CadastroDePedidoController extends Controller
         }
 
         $pedidosAgrupados = $graficoQuery->selectRaw('YEAR(data_pedido) as ano, MONTH(data_pedido) as mes,
-                            SUM(valor_pedido) as total_pedido,
-                            SUM(valor_faturado) as total_faturado')
-                        ->groupByRaw('YEAR(data_pedido), MONTH(data_pedido)')
-                        ->orderByRaw('YEAR(data_pedido), MONTH(data_pedido)')
-                        ->get();
+                                 SUM(valor_pedido) as total_pedido,
+                                 SUM(valor_faturado) as total_faturado')
+                                 ->groupByRaw('YEAR(data_pedido), MONTH(data_pedido)')
+                                 ->orderByRaw('YEAR(data_pedido), MONTH(data_pedido)')
+                                 ->get();
 
         $labels = [];
         $valoresPedidos = [];

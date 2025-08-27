@@ -10,6 +10,7 @@ use PDF;
 class ExportacoesController extends Controller
 {
     private $columns = [
+        'id',
         'tipo_pessoa',
         'cpf_cnpj',
         'inscricao_estadual',
