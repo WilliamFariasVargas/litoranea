@@ -64,69 +64,50 @@
             @endforeach
         </select>
     </div>
-<div class="row" style="padding-top:10px;">
-    <div class="col-md">
+
+    <div class="col-md-3">
         <label>Data Inicial:</label>
         <input type="date" name="data_inicial" class="form-control" value="{{ request('data_inicial') }}">
     </div>
 
-    <div class="col-md">
+    <div class="col-md-3">
         <label>Data Final:</label>
         <input type="date" name="data_final" class="form-control" value="{{ request('data_final') }}">
     </div>
 
-    <div class="col-md">
+    <div class="col-md-3">
         <label>Mês:</label>
         <input type="number" name="mes" min="1" max="12" value="{{ request('mes') }}" class="form-control">
     </div>
 
-    <div class="col-md">
+    <div class="col-md-3">
         <label>Ano:</label>
         <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
     </div>
-
-
-</div>
 
     {{-- Inputs escondidos para ordenação --}}
     <input type="hidden" name="order" id="order" value="{{ request('order', 'data_pedido') }}">
     <input type="hidden" name="dir" id="dir" value="{{ request('dir', 'desc') }}">
 
-    <div class="col-md-4 d-flex align-items-center gap-2">
-        <button type="submit" class="btn btn-primary flex-grow-1">Filtrar</button>
-
-        <button type="button" class="btn btn-outline-secondary" id="btnOrdenarData">
-            Ordenar Data do Pedido
-            <span id="setaOrdenacao">
-                @if(request('order') === 'data_pedido')
-                    @if(request('dir') === 'asc')
-                        ▲
-                    @else
-                        ▼
-                    @endif
-                @endif
-            </span>
+    <div class="col-md-12 d-flex align-items-end gap-2 mt-2">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <button type="button" class="btn btn-secondary" onclick="limparFiltros()">Limpar Filtros</button>
+        <button type="button" class="btn btn-outline-secondary btn-order" data-order="data_pedido" data-dir="desc">
+            Data Pedido
+            <i class="fas fa-sort{{ request('order') === 'data_pedido' ? (request('dir') === 'asc' ? '-up' : '-down') : '' }}"></i>
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-order" data-order="cliente_id" data-dir="desc">
+            Cliente
+            <i class="fas fa-sort{{ request('order') === 'cliente_id' ? (request('dir') === 'asc' ? '-up' : '-down') : '' }}"></i>
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-order" data-order="valor_faturado" data-dir="desc">
+            Valor Faturado
+            <i class="fas fa-sort{{ request('order') === 'valor_faturado' ? (request('dir') === 'asc' ? '-up' : '-down') : '' }}"></i>
         </button>
 
-
-    </div>
-    <div class="col-md-4 d-flex align-items-center gap-2">
-        <select name="ordenarPor" id="ordenarPor" class="form-control select2">
-            <option value="">Nenhum</option>
-            <option value="cliente_id_asc" {{ request('order') == 'cliente_id' && request('dir') == 'asc' ? 'selected' : '' }}>Cliente (A-Z)</option>
-            <option value="cliente_id_desc" {{ request('order') == 'cliente_id' && request('dir') == 'desc' ? 'selected' : '' }}>Cliente (Z-A)</option>
-            <option value="valor_faturado_asc" {{ request('order') == 'valor_faturado' && request('dir') == 'asc' ? 'selected' : '' }}>Valor Faturado (Crescente)</option>
-            <option value="valor_faturado_desc" {{ request('order') == 'valor_faturado' && request('dir') == 'desc' ? 'selected' : '' }}>Valor Faturado (Decrescente)</option>
-        </select>
-    </div>
-
-
-
-    <div class="col-md-4 text-end">
-        <a id="btnExportExcel" href="#" class="btn btn-success">
+        <a id="btnExportExcel" href="#" class="btn btn-success ms-auto">
             <i class="fas fa-file-excel mx-2"></i> Exportar Excel
         </a>
-
         <a id="btnExportPdf" href="#" class="btn btn-danger">
             <i class="fas fa-file-pdf mx-2"></i> Exportar PDF
         </a>
@@ -146,6 +127,21 @@
             width: '100%'
         });
 
+        // Evento de clique nos botões de ordenação
+        $('.btn-order').on('click', function() {
+            const orderBy = $(this).data('order');
+            let newDir = $(this).data('dir');
+
+            if ($('#order').val() === orderBy) {
+                newDir = $('#dir').val() === 'asc' ? 'desc' : 'asc';
+            }
+
+            $('#order').val(orderBy);
+            $('#dir').val(newDir);
+
+            $('#filter_form').submit();
+        });
+
         // Botão novo pedido
         $('#novoPedidoBtn').click(function() {
             $.ajax({
@@ -160,50 +156,11 @@
             });
         });
 
-        // Botão ordenar data - alterna asc/desc e submete
-        $('#btnOrdenarData').click(function() {
-            // Oculta o select de ordenação
-            $('#ordenarPor').val('').trigger('change.select2');
-
-            // Define os valores de ordenação
-            $('#order').val('data_pedido');
-            let dirAtual = $('#dir').val();
-            let novoDir = (dirAtual === 'asc') ? 'desc' : 'asc';
-            $('#dir').val(novoDir);
-
-            // Atualiza a seta de ordenação
-            $('#setaOrdenacao').html(novoDir === 'asc' ? '▲' : '▼');
-
-            // Submete o formulário
-            $('#filter_form').submit();
-        });
-
-        // Filtro "Ordenar por" (cliente A-Z/Z-A, valor faturado)
-        $('#ordenarPor').change(function() {
-            const val = $(this).val();
-
-            if (val.includes('_')) {
-                const [campo, direcao] = val.split('_');
-                $('#order').val(campo);
-                $('#dir').val(direcao);
-            } else {
-                // Se a opção "Nenhum" for selecionada
-                $('#order').val('data_pedido');
-                $('#dir').val('desc');
-            }
-
-            // Submete o formulário
-            $('#filter_form').submit();
-        });
-
         // Submit do filtro com AJAX
         $('#filter_form').submit(function(e) {
             e.preventDefault();
-
             let queryString = $(this).serialize();
-
             window.history.pushState({}, '', '?' + queryString);
-
             tblPopulate();
             atualizarLinksExportacao();
         });
@@ -213,20 +170,20 @@
         atualizarLinksExportacao();
     });
 
+    // Funções globais para serem usadas na tabela
     function tblPopulate() {
         let queryString = window.location.search;
-
         $.ajax({
             url: "{{ route('cadastrodepedido.tabela') }}" + queryString,
             method: "GET",
             beforeSend: function() {
-                $("#divTable").html("Carregando...");
+                $("#divTable").html("<div class='text-center p-5'><i class='fas fa-spinner fa-spin fa-2x'></i><br>Carregando...</div>");
             },
             success: function(response) {
                 $("#divTable").html(response);
             },
             error: function() {
-                $("#divTable").html('Erro ao carregar dados');
+                $("#divTable").html('<div class="alert alert-danger">Erro ao carregar dados</div>');
             }
         });
     }
@@ -235,6 +192,10 @@
         let query = window.location.search;
         $('#btnExportExcel').attr('href', "{{ url('cadastrodepedido/export-excel') }}" + query);
         $('#btnExportPdf').attr('href', "{{ url('cadastrodepedido/export-pdf') }}" + query);
+    }
+
+    function limparFiltros() {
+        window.location.href = "{{ route('cadastrodepedido.index') }}";
     }
 
     function showModal(content) {
@@ -251,5 +212,4 @@
         $('#modalMain').modal('show');
     }
 </script>
-
 @endsection

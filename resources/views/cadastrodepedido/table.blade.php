@@ -1,4 +1,4 @@
-<form method="GET" action="{{ route('cadastrodepedido.index') }}" id="filter_form" class="row g-3 mb-4">
+
 
 
 
