@@ -230,6 +230,9 @@ if ($orderBy === 'cliente_id') {
 
     public function exportPdf(Request $request)
     {
+        set_time_limit(120);
+        ini_set('memory_limit', '256M');
+
         $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
 
         if ($request->filled('cliente_id')) {
@@ -276,6 +279,13 @@ if ($orderBy === 'cliente_id') {
     $query->orderBy($orderBy, $dir);
 }
 
+        $temFiltro = $request->filled('cliente_id') || $request->filled('representada_id') || $request->filled('transportadora_id')
+            || $request->filled('data_inicial') || $request->filled('data_final') || $request->filled('mes') || $request->filled('ano') || $request->filled('status');
+
+        if (!$temFiltro) {
+            $query->limit(3000);
+        }
+
         $pedidos = $query->get();
 
         $total_pedidos = $pedidos->sum('valor_pedido');
@@ -291,22 +301,30 @@ if ($orderBy === 'cliente_id') {
         $data_inicial = $request->data_inicial;
         $data_final = $request->data_final;
 
-        $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(
-            'pedidos',
-            'total_pedidos',
-            'total_faturado',
-            'total_comissao_parcial',
-            'total_comissao_faturada',
-            'cliente',
-            'representada',
-            'transportadora',
-            'mes',
-            'ano',
-            'data_inicial',
-            'data_final'
-        ));
+        $limitouRegistros = !$temFiltro && $pedidos->count() >= 3000;
 
-        return $pdf->download('relatorio_pedidos.pdf');
+        try {
+            $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(
+                'pedidos',
+                'total_pedidos',
+                'total_faturado',
+                'total_comissao_parcial',
+                'total_comissao_faturada',
+                'cliente',
+                'representada',
+                'transportadora',
+                'mes',
+                'ano',
+                'data_inicial',
+                'data_final',
+                'limitouRegistros'
+            ));
+
+            return $pdf->download('relatorio_pedidos.pdf');
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->back()->with('error', 'Erro ao gerar PDF. Tente filtrar por cliente, data ou outro critério para reduzir a quantidade de registros.');
+        }
     }
 
     public function exportExcel(Request $request)

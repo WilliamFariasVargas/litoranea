@@ -114,6 +114,13 @@
     </div>
 </form>
 
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+    </div>
+@endif
+
 <section class="col-md-12 mt-2 container-fluid" id="divTable">
     {{-- Tabela será carregada aqui via AJAX --}}
 </section>

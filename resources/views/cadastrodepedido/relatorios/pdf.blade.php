@@ -14,10 +14,18 @@
 <body>
 
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="{{ public_path('assets/images/logo.png') }}" alt="Logo do Sistema" style="max-height: 80px;">
+        @if(file_exists(public_path('assets/images/logo.png')))
+            <img src="{{ public_path('assets/images/logo.png') }}" alt="Logo do Sistema" style="max-height: 80px;">
+        @endif
     </div>
 
     <h3 style="text-align: center;">Relatório de Pedidos</h3>
+
+    @if(isset($limitouRegistros) && $limitouRegistros)
+        <p style="text-align: center; color: #856404; background: #fff3cd; padding: 10px; margin: 10px 0;">
+            <strong>Atenção:</strong> Sem filtros aplicados, o relatório foi limitado a 3.000 registros. Use filtros para exportar períodos ou clientes específicos.
+        </p>
+    @endif
 
     @if($cliente || $representada || $transportadora || $mes || $ano)
         <h4 style="text-align: center; margin-bottom: 20px;">Filtros Aplicados:</h4>
