@@ -21,12 +21,6 @@
 
     <h3 style="text-align: center;">Relatório de Pedidos</h3>
 
-    @if(isset($limitouRegistros) && $limitouRegistros)
-        <p style="text-align: center; color: #856404; background: #fff3cd; padding: 10px; margin: 10px 0;">
-            <strong>Atenção:</strong> A tabela exibe até 500 registros. Os totais abaixo referem-se ao resultado completo do filtro. Use Exportar Excel para todos os dados.
-        </p>
-    @endif
-
     @if($cliente || $representada || $transportadora || $mes || $ano)
         <h4 style="text-align: center; margin-bottom: 20px;">Filtros Aplicados:</h4>
         <table style="margin: 0 auto 20px auto; width: 60%;">

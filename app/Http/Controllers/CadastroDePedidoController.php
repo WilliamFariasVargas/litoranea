@@ -230,8 +230,8 @@ if ($orderBy === 'cliente_id') {
 
     public function exportPdf(Request $request)
     {
-        set_time_limit(120);
-        ini_set('memory_limit', '256M');
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
 
         $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
 
@@ -284,13 +284,12 @@ if ($orderBy === 'cliente_id') {
             $query->orderBy('data_pedido', 'desc');
         }
 
-        $limitePdf = 500;
         $total_pedidos = (clone $query)->sum('valor_pedido');
         $total_faturado = (clone $query)->sum('valor_faturado');
         $total_comissao_parcial = (clone $query)->sum('valor_comissao_parcial');
         $total_comissao_faturada = (clone $query)->sum('valor_comissao_faturada');
 
-        $pedidos = $query->limit($limitePdf)->get();
+        $pedidos = $query->get();
 
         $cliente = $request->filled('cliente_id') ? Cliente::find($request->cliente_id) : null;
         $representada = $request->filled('representada_id') ? \App\Models\Representada::find($request->representada_id) : null;
@@ -299,8 +298,6 @@ if ($orderBy === 'cliente_id') {
         $ano = $request->ano;
         $data_inicial = $request->data_inicial;
         $data_final = $request->data_final;
-
-        $limitouRegistros = $pedidos->count() >= $limitePdf;
 
         try {
             $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(
@@ -315,8 +312,7 @@ if ($orderBy === 'cliente_id') {
                 'mes',
                 'ano',
                 'data_inicial',
-                'data_final',
-                'limitouRegistros'
+                'data_final'
             ));
 
             return $pdf->download('relatorio_pedidos.pdf');
