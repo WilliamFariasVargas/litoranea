@@ -263,35 +263,34 @@ if ($orderBy === 'cliente_id') {
             }
         }
 
-        $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
-$orderBy = $request->get('order', 'data_pedido');
-$dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
-
-if (!in_array($orderBy, $allowedOrders)) {
-    $orderBy = 'data_pedido';
-}
-
-if ($orderBy === 'cliente_id') {
-    $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
-          ->orderBy('clientes.razao_social', $dir)
-          ->addSelect('cadastrodepedido.*');
-} else {
-    $query->orderBy($orderBy, $dir);
-}
-
         $temFiltro = $request->filled('cliente_id') || $request->filled('representada_id') || $request->filled('transportadora_id')
             || $request->filled('data_inicial') || $request->filled('data_final') || $request->filled('mes') || $request->filled('ano') || $request->filled('status');
 
-        if (!$temFiltro) {
-            $query->limit(3000);
+        if ($temFiltro) {
+            $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
+            $orderBy = $request->get('order', 'data_pedido');
+            $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            if (!in_array($orderBy, $allowedOrders)) {
+                $orderBy = 'data_pedido';
+            }
+            if ($orderBy === 'cliente_id') {
+                $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
+                      ->orderBy('clientes.razao_social', $dir)
+                      ->addSelect('cadastrodepedido.*');
+            } else {
+                $query->orderBy($orderBy, $dir);
+            }
+        } else {
+            $query->orderBy('data_pedido', 'desc');
         }
 
-        $pedidos = $query->get();
+        $limitePdf = 500;
+        $total_pedidos = (clone $query)->sum('valor_pedido');
+        $total_faturado = (clone $query)->sum('valor_faturado');
+        $total_comissao_parcial = (clone $query)->sum('valor_comissao_parcial');
+        $total_comissao_faturada = (clone $query)->sum('valor_comissao_faturada');
 
-        $total_pedidos = $pedidos->sum('valor_pedido');
-        $total_faturado = $pedidos->sum('valor_faturado');
-        $total_comissao_parcial = $pedidos->sum('valor_comissao_parcial');
-        $total_comissao_faturada = $pedidos->sum('valor_comissao_faturada');
+        $pedidos = $query->limit($limitePdf)->get();
 
         $cliente = $request->filled('cliente_id') ? Cliente::find($request->cliente_id) : null;
         $representada = $request->filled('representada_id') ? \App\Models\Representada::find($request->representada_id) : null;
@@ -301,7 +300,7 @@ if ($orderBy === 'cliente_id') {
         $data_inicial = $request->data_inicial;
         $data_final = $request->data_final;
 
-        $limitouRegistros = !$temFiltro && $pedidos->count() >= 3000;
+        $limitouRegistros = $pedidos->count() >= $limitePdf;
 
         try {
             $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(

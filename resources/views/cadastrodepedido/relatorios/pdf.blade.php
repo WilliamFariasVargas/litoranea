@@ -23,7 +23,7 @@
 
     @if(isset($limitouRegistros) && $limitouRegistros)
         <p style="text-align: center; color: #856404; background: #fff3cd; padding: 10px; margin: 10px 0;">
-            <strong>Atenção:</strong> Sem filtros aplicados, o relatório foi limitado a 3.000 registros. Use filtros para exportar períodos ou clientes específicos.
+            <strong>Atenção:</strong> A tabela exibe até 500 registros. Os totais abaixo referem-se ao resultado completo do filtro. Use Exportar Excel para todos os dados.
         </p>
     @endif
 
