@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\Representada;
 use App\Models\Transportadora;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ExportacoesController extends Controller
 {
@@ -32,6 +32,9 @@ class ExportacoesController extends Controller
 
     public function exportarClientes(\Illuminate\Http\Request $request)
     {
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+
         $orderBy = $request->query('orderBy', 'razao_social');
         $cidadeFiltro = $request->query('cidade', null);
 
@@ -49,13 +52,16 @@ class ExportacoesController extends Controller
 
         $clientes = $query->get();
 
-        $pdf = PDF::loadView('exportacoes.clientes', compact('clientes'));
+        $pdf = Pdf::loadView('exportacoes.clientes', compact('clientes'));
 
         return $pdf->download('clientes.pdf');
     }
 
     public function exportarRepresentadas(\Illuminate\Http\Request $request)
     {
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+
         $orderBy = $request->query('orderBy', 'razao_social');
         $cidadeFiltro = $request->query('cidade', null);
 
@@ -73,13 +79,16 @@ class ExportacoesController extends Controller
 
         $representadas = $query->get();
 
-        $pdf = PDF::loadView('exportacoes.representadas', compact('representadas'));
+        $pdf = Pdf::loadView('exportacoes.representadas', compact('representadas'));
 
         return $pdf->download('representadas.pdf');
     }
 
     public function exportarTransportadoras(\Illuminate\Http\Request $request)
     {
+        set_time_limit(300);
+        ini_set('memory_limit', '512M');
+
         $orderBy = $request->query('orderBy', 'razao_social');
         $cidadeFiltro = $request->query('cidade', null);
 
@@ -97,7 +106,7 @@ class ExportacoesController extends Controller
 
         $transportadoras = $query->get();
 
-        $pdf = PDF::loadView('exportacoes.transportadoras', compact('transportadoras'));
+        $pdf = Pdf::loadView('exportacoes.transportadoras', compact('transportadoras'));
 
         return $pdf->download('transportadoras.pdf');
     }
