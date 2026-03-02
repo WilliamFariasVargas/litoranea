@@ -36,7 +36,7 @@
         <div class="row text-center">
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span></span><span class="counter" data-target="{{ $conteudo->clientes ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo?->clientes ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Clientes</p>
                 </div>
             </div>

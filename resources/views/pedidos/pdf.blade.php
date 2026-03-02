@@ -47,7 +47,9 @@
 <body>
 
     <div class="text-center">
-        <img src="{{ public_path('assets/images/logo.png') }}" alt="Logo" style="max-height: 80px;">
+        @if(file_exists(public_path('assets/images/logo.png')))
+            <img src="{{ public_path('assets/images/logo.png') }}" alt="Logo" style="max-height: 80px;">
+        @endif
         <h2>Pedido Nº {{ $pedido->numero_pedido }}</h2>
     </div>
 

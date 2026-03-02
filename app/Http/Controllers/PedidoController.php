@@ -148,7 +148,7 @@ class PedidoController extends Controller
 
     public function gerarPdf(Pedido $pedido)
     {
-        $pedido->load('representada', 'cliente', 'fornecedor', 'transportadora', 'representante', 'itens');
+        $pedido->load('representada', 'cliente', 'fornecedor', 'transportadora', 'itens');
         $pdf = Pdf::loadView('pedidos.pdf', compact('pedido'));
         return $pdf->download("pedido-{$pedido->numero_pedido}.pdf");
     }

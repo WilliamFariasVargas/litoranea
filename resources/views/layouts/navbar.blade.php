@@ -30,7 +30,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                 <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                <li><a class="dropdown-item" href="{{ route('users.index') }}">Cadastrar</a></li>
+                <li><a class="dropdown-item" href="{{ route('users.index') }}">Entrar</a></li>
 
                 </ul>
             </li>
@@ -43,7 +43,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                 <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Cadastrar</a></li>
+                <li><a class="dropdown-item" href="{{ route('clientes.index') }}">Entrar</a></li>
                 </ul>
             </li>
 
@@ -55,7 +55,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                     <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                    <li><a class="dropdown-item" href="{{ route('fornecedores.index') }}">Cadastrar</a></li>
+                    <li><a class="dropdown-item" href="{{ route('fornecedores.index') }}">Entrar</a></li>
                 </ul>
             </li>
 
@@ -67,7 +67,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                     <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                    <li><a class="dropdown-item" href="{{ route('transportadoras.index') }}">Cadastrar</a></li>
+                    <li><a class="dropdown-item" href="{{ route('transportadoras.index') }}">Entrar</a></li>
                 </ul>
             </li>
 
@@ -79,7 +79,7 @@
 
                 <ul class="dropdown-menu" aria-labelledby="cadastroDropdown">
                     <!-- Altere a rota abaixo para a rota que direciona para o cadastro de usuário -->
-                    <li><a class="dropdown-item" href="{{ route('representadas.index') }}">Cadastrar</a></li>
+                    <li><a class="dropdown-item" href="{{ route('representadas.index') }}">Entrar</a></li>
                 </ul>
             </li>
             <li class="nav-item dropdown">
