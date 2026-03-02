@@ -32,29 +32,33 @@ class ExportacoesController extends Controller
 
     public function exportarClientes(\Illuminate\Http\Request $request)
     {
-        set_time_limit(300);
-        ini_set('memory_limit', '512M');
+        try {
+            set_time_limit(300);
+            ini_set('memory_limit', '512M');
 
-        $orderBy = $request->query('orderBy', 'razao_social');
-        $cidadeFiltro = $request->query('cidade', null);
+            $orderBy = $request->query('orderBy', 'razao_social');
+            $cidadeFiltro = $request->query('cidade', null);
 
-        if (!in_array($orderBy, ['razao_social', 'cidade', 'id'])) {
-            $orderBy = 'razao_social';
+            if (!in_array($orderBy, ['razao_social', 'cidade', 'id'])) {
+                $orderBy = 'razao_social';
+            }
+
+            $query = Cliente::query();
+
+            if ($cidadeFiltro) {
+                $query->where('cidade', $cidadeFiltro);
+            }
+
+            $query->orderBy($orderBy);
+
+            $clientes = $query->get();
+
+            $pdf = Pdf::loadView('exportacoes.clientes', compact('clientes'));
+            return $pdf->download('clientes.pdf');
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->route('clientes.index')->with('error', 'Erro ao exportar PDF: ' . $e->getMessage());
         }
-
-        $query = Cliente::select($this->columns);
-
-        if ($cidadeFiltro) {
-            $query->where('cidade', $cidadeFiltro);
-        }
-
-        $query->orderBy($orderBy);
-
-        $clientes = $query->get();
-
-        $pdf = Pdf::loadView('exportacoes.clientes', compact('clientes'));
-
-        return $pdf->download('clientes.pdf');
     }
 
     public function exportarRepresentadas(\Illuminate\Http\Request $request)
