@@ -172,22 +172,23 @@ function baixarExportacaoComLoading(url, filename, tipoLabel) {
             'Accept': 'application/octet-stream, application/json',
         },
     })
-        .then(function (response) {
-            const contentType = response.headers.get('Content-Type') || '';
+        .then(async function (response) {
+            const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
 
-            if (!response.ok) {
-                if (contentType.includes('application/json')) {
-                    return response.json().then(function (data) {
-                        throw new Error(data.message || 'Não foi possível gerar o arquivo.');
-                    });
-                }
-                throw new Error('Não foi possível gerar o arquivo. Tente usar filtros para reduzir os registros.');
+            if (contentType.includes('application/json') || contentType.includes('text/json')) {
+                const data = await response.json();
+                throw new Error(data.message || data.detail || 'Não foi possível gerar o arquivo.');
             }
 
-            if (contentType.includes('application/json')) {
-                return response.json().then(function (data) {
-                    throw new Error(data.message || 'Resposta inválida do servidor.');
-                });
+            if (!response.ok) {
+                if (contentType.includes('text/html')) {
+                    throw new Error('O servidor retornou erro ao gerar o arquivo. Verifique o limite de tempo do PHP/hospedagem ou tente novamente em instantes.');
+                }
+                throw new Error('Não foi possível gerar o arquivo (HTTP ' + response.status + ').');
+            }
+
+            if (contentType.includes('text/html')) {
+                throw new Error('Resposta inválida do servidor. Atualize a página, faça login novamente e tente de novo.');
             }
 
             return response.blob();
@@ -220,7 +221,7 @@ function baixarExportacaoComLoading(url, filename, tipoLabel) {
             Swal.fire({
                 icon: 'error',
                 title: 'Erro na exportação',
-                text: error.message || 'Tente novamente com filtros mais específicos.',
+                text: error.message || 'Não foi possível concluir a exportação. Tente novamente.',
             });
         });
 }

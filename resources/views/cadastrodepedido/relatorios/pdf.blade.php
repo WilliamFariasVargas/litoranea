@@ -5,10 +5,11 @@
 
     <title>Relatório de Pedidos</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; }
+        body { font-family: Arial, sans-serif; font-size: 9px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         table, th, td { border: 1px solid black; }
-        th, td { padding: 5px; text-align: center; }
+        th, td { padding: 3px; text-align: center; word-wrap: break-word; }
+        td.cliente, td.representada, td.transportadora { text-align: left; font-size: 8px; }
     </style>
 </head>
 <body>
@@ -73,9 +74,9 @@
         @foreach($pedidos as $pedido)
             <tr>
                 <td>{{ \Carbon\Carbon::parse($pedido->data_pedido)->format('d/m/Y') }}</td>
-                <td>{{ $pedido->cliente->razao_social ?? '-' }}</td>
-                <td>{{ $pedido->representada->razao_social ?? '-' }}</td>
-                <td>{{ $pedido->transportadora->razao_social ?? '-' }}</td>
+                <td class="cliente">{{ $pedido->cliente->razao_social ?? '-' }}</td>
+                <td class="representada">{{ $pedido->representada->razao_social ?? '-' }}</td>
+                <td class="transportadora">{{ $pedido->transportadora->razao_social ?? '-' }}</td>
                 <td>R$ {{ number_format($pedido->valor_pedido, 2, ',', '.') }}</td>
                 <td>R$ {{ number_format($pedido->valor_faturado, 2, ',', '.') }}</td>
             </tr>
