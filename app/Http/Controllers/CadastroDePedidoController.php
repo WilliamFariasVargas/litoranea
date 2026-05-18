@@ -7,426 +7,341 @@ use App\Models\CadastroDePedido;
 use App\Models\Cliente;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PedidosExport;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class CadastroDePedidoController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
+  private const PER_PAGE_DEFAULT = 25;
 
-        if ($request->cliente_id) {
-            $query->where('cliente_id', $request->cliente_id);
-        }
-        if ($request->representada_id) {
-            $query->where('representada_id', $request->representada_id);
-        }
-        if ($request->transportadora_id) {
-            $query->where('transportadora_id', $request->transportadora_id);
-        }
+  public function index(Request $request)
+  {
+    return view('cadastrodepedido.index');
+  }
 
-        if ($request->filled('data_inicial') && $request->filled('data_final')) {
-            $query->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
-        } else {
-            if ($request->mes) {
-                $query->whereMonth('data_pedido', $request->mes);
-            }
-            if ($request->ano) {
-                $query->whereYear('data_pedido', $request->ano);
-            }
-        }
-        if ($request->filled('status')) {
-            if ($request->status === 'pendente') {
-                $query->whereBetween('valor_faturado', [0, 1]);
-            } elseif ($request->status === 'baixado') {
-                $query->where('valor_faturado', '>', 1);
-            }
-        }
+  public function create()
+  {
+    return view('cadastrodepedido.create');
+  }
 
-        // Ordenação
-       $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
-$orderBy = $request->get('order', 'data_pedido');
-$dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+  public function store(Request $request)
+  {
+    CadastroDePedido::create([
+      'data_pedido'               => $request->data_pedido,
+      'cliente_id'                => $request->cliente_id,
+      'representada_id'           => $request->representada_id,
+      'transportadora_id'         => $request->transportadora_id,
+      'valor_pedido'              => (float) $request->valor_pedido,
+      'valor_faturado'            => (float) $request->valor_faturado,
+      'data_faturamento'          => $request->data_faturamento,
+      'valor_comissao_parcial'    => (float) $request->valor_comissao_parcial,
+      'valor_comissao_faturada'   => (float) $request->valor_comissao_faturada,
+      'indice_comissao'           => (float) $request->indice_comissao,
+    ]);
 
-if (!in_array($orderBy, $allowedOrders)) {
-    $orderBy = 'data_pedido';
-}
+    return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
+  }
 
-if ($orderBy === 'cliente_id') {
-    $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
-          ->orderBy('clientes.razao_social', $dir)
-          ->addSelect('cadastrodepedido.*');
-} else {
-    $query->orderBy($orderBy, $dir);
-}
+  public function edit($id)
+  {
+    $pedido = CadastroDePedido::with(['cliente', 'representada', 'transportadora'])->findOrFail($id);
+    return view('cadastrodepedido.edit', compact('pedido'));
+  }
 
-        $pedidos = $query->get();
+  public function update(Request $request, $id)
+  {
+    try {
+      $pedido = CadastroDePedido::findOrFail($id);
 
-        $valor_total = $pedidos->sum('valor_pedido');
-        $valor_total_faturado = $pedidos->sum('valor_faturado');
-        $valor_total_comissao_parcial = $pedidos->sum('valor_comissao_parcial');
-        $valor_total_comissao_faturada = $pedidos->sum('valor_comissao_faturada');
+      $pedido->update([
+        'data_pedido'               => $request->data_pedido,
+        'cliente_id'                => $request->cliente_id,
+        'representada_id'           => $request->representada_id,
+        'transportadora_id'         => $request->transportadora_id,
+        'valor_pedido'              => (float) $request->valor_pedido,
+        'valor_faturado'            => (float) $request->valor_faturado,
+        'data_faturamento'          => $request->data_faturamento,
+        'valor_comissao_parcial'    => (float) $request->valor_comissao_parcial,
+        'valor_comissao_faturada'   => (float) $request->valor_comissao_faturada,
+        'indice_comissao'           => (float) $request->indice_comissao,
+      ]);
 
-        return view('cadastrodepedido.index', compact(
-            'pedidos',
-            'valor_total',
-            'valor_total_faturado',
-            'valor_total_comissao_parcial',
-            'valor_total_comissao_faturada'
-        ));
+      return response()->json(['message' => 'Pedido atualizado com sucesso!']);
+    } catch (\Exception $e) {
+      return response()->json([
+        'message' => 'Erro ao atualizar',
+        'error' => $e->getMessage()
+      ], 500);
+    }
+  }
+
+  public function destroy($id)
+  {
+    $pedido = CadastroDePedido::findOrFail($id);
+    $pedido->delete();
+
+    return response()->json(['message' => 'Pedido excluído com sucesso!']);
+  }
+
+  public function show(Request $request)
+  {
+    $baseQuery = $this->buildFilteredQuery($request);
+
+    $valor_total = (clone $baseQuery)->sum('valor_pedido');
+    $valor_total_faturado = (clone $baseQuery)->sum('valor_faturado');
+    $valor_total_comissao_parcial = (clone $baseQuery)->sum('valor_comissao_parcial');
+    $valor_total_comissao_faturada = (clone $baseQuery)->sum('valor_comissao_faturada');
+
+    $perPage = $this->resolvePerPage($request);
+    $orderedQuery = $this->applyOrder(clone $baseQuery, $request);
+
+    $pedidos = $orderedQuery
+      ->paginate($perPage)
+      ->withQueryString()
+      ->setPath(route('cadastrodepedido.index'));
+
+    return view('cadastrodepedido.table', compact(
+      'pedidos',
+      'valor_total',
+      'valor_total_faturado',
+      'valor_total_comissao_parcial',
+      'valor_total_comissao_faturada',
+      'perPage'
+    ));
+  }
+
+  public function search(Request $request)
+  {
+    $term = $request->get('q', '');
+    $results = Cliente::select('id', 'razao_social')
+      ->where('razao_social', 'like', "%{$term}%")
+      ->limit(20)
+      ->get();
+
+    return response()->json($results);
+  }
+
+  public function showTabela(Request $request)
+  {
+    return $this->show($request);
+  }
+
+  public function exportPdf(Request $request)
+  {
+    set_time_limit(300);
+    ini_set('memory_limit', '512M');
+
+    $query = $this->applyOrder($this->buildFilteredQuery($request), $request);
+
+    $total_pedidos = (clone $query)->sum('valor_pedido');
+    $total_faturado = (clone $query)->sum('valor_faturado');
+    $total_comissao_parcial = (clone $query)->sum('valor_comissao_parcial');
+    $total_comissao_faturada = (clone $query)->sum('valor_comissao_faturada');
+
+    $pedidos = $query->get();
+
+    $cliente = $request->filled('cliente_id') ? Cliente::find($request->cliente_id) : null;
+    $representada = $request->filled('representada_id') ? \App\Models\Representada::find($request->representada_id) : null;
+    $transportadora = $request->filled('transportadora_id') ? \App\Models\Transportadora::find($request->transportadora_id) : null;
+    $mes = $request->mes;
+    $ano = $request->ano;
+    $data_inicial = $request->data_inicial;
+    $data_final = $request->data_final;
+
+    try {
+      $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(
+        'pedidos',
+        'total_pedidos',
+        'total_faturado',
+        'total_comissao_parcial',
+        'total_comissao_faturada',
+        'cliente',
+        'representada',
+        'transportadora',
+        'mes',
+        'ano',
+        'data_inicial',
+        'data_final'
+      ));
+
+      return $pdf->download('relatorio_pedidos.pdf');
+    } catch (\Throwable $e) {
+      report($e);
+      return redirect()->back()->with('error', 'Erro ao gerar PDF. Tente filtrar por cliente, data ou outro critério para reduzir a quantidade de registros.');
+    }
+  }
+
+  public function exportExcel(Request $request)
+  {
+    return Excel::download(new PedidosExport($request), 'pedidos.xlsx');
+  }
+
+  public function dashboard(Request $request)
+  {
+    $graficoQuery = CadastroDePedido::query();
+
+    if ($request->filled('data_inicial') && $request->filled('data_final')) {
+      $graficoQuery->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
+    } else {
+      if ($request->mes) {
+        $graficoQuery->whereMonth('data_pedido', $request->mes);
+      }
+      if ($request->ano) {
+        $graficoQuery->whereYear('data_pedido', $request->ano);
+      }
     }
 
-    public function create()
-    {
-        return view('cadastrodepedido.create');
+    if ($request->filled('status')) {
+      if ($request->status === 'pendente') {
+        $graficoQuery->whereBetween('valor_faturado', [0, 1]);
+      } elseif ($request->status === 'baixado') {
+        $graficoQuery->where('valor_faturado', '>', 1);
+      }
     }
 
-    public function store(Request $request)
-    {
-        CadastroDePedido::create([
-            'data_pedido'               => $request->data_pedido,
-            'cliente_id'                => $request->cliente_id,
-            'representada_id'           => $request->representada_id,
-            'transportadora_id'         => $request->transportadora_id,
-            'valor_pedido'              => (float) $request->valor_pedido,
-            'valor_faturado'            => (float) $request->valor_faturado,
-            'data_faturamento'          => $request->data_faturamento,
-            'valor_comissao_parcial'    => (float) $request->valor_comissao_parcial,
-            'valor_comissao_faturada'   => (float) $request->valor_comissao_faturada,
-            'indice_comissao'           => (float) $request->indice_comissao,
-        ]);
-
-        return response()->json(['message' => 'Pedido cadastrado com sucesso!']);
+    if ($request->cliente_id) {
+      $graficoQuery->where('cliente_id', $request->cliente_id);
+    }
+    if ($request->representada_id) {
+      $graficoQuery->where('representada_id', $request->representada_id);
+    }
+    if ($request->transportadora_id) {
+      $graficoQuery->where('transportadora_id', $request->transportadora_id);
     }
 
-    public function edit($id)
-    {
-        $pedido = CadastroDePedido::with(['cliente', 'representada', 'transportadora'])->findOrFail($id);
-        return view('cadastrodepedido.edit', compact('pedido'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        try {
-            $pedido = CadastroDePedido::findOrFail($id);
-
-            $convertDecimal = function ($value) {
-                if (is_null($value)) return null;
-                return str_replace(',', '.', str_replace('.', '', $value));
-            };
-
-            $pedido->update([
-                'data_pedido'               => $request->data_pedido,
-                'cliente_id'                => $request->cliente_id,
-                'representada_id'           => $request->representada_id,
-                'transportadora_id'         => $request->transportadora_id,
-                'valor_pedido'              => (float) $request->valor_pedido,
-                'valor_faturado'            => (float) $request->valor_faturado,
-                'data_faturamento'          => $request->data_faturamento,
-                'valor_comissao_parcial'    => (float) $request->valor_comissao_parcial,
-                'valor_comissao_faturada'   => (float) $request->valor_comissao_faturada,
-                'indice_comissao'           => (float) $request->indice_comissao,
-            ]);
-
-            return response()->json(['message' => 'Pedido atualizado com sucesso!']);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Erro ao atualizar',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function destroy($id)
-    {
-        $pedido = CadastroDePedido::findOrFail($id);
-        $pedido->delete();
-
-        return response()->json(['message' => 'Pedido excluído com sucesso!']);
-    }
-
-    public function show(Request $request)
-    {
-        $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
-
-        if ($request->cliente_id) {
-            $query->where('cliente_id', $request->cliente_id);
-        }
-        if ($request->representada_id) {
-            $query->where('representada_id', $request->representada_id);
-        }
-        if ($request->transportadora_id) {
-            $query->where('transportadora_id', $request->transportadora_id);
-        }
-
-        if ($request->filled('data_inicial') && $request->filled('data_final')) {
-            $query->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
-        } else {
-            if ($request->mes) {
-                $query->whereMonth('data_pedido', $request->mes);
-            }
-            if ($request->ano) {
-                $query->whereYear('data_pedido', $request->ano);
-            }
-        }
-        if ($request->filled('status')) {
-            if ($request->status === 'pendente') {
-                $query->whereBetween('valor_faturado', [0, 1]);
-            } elseif ($request->status === 'baixado') {
-                $query->where('valor_faturado', '>', 1);
-            }
-        }
-
-        $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
-$orderBy = $request->get('order', 'data_pedido');
-$dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
-
-if (!in_array($orderBy, $allowedOrders)) {
-    $orderBy = 'data_pedido';
-}
-
-if ($orderBy === 'cliente_id') {
-    $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
-          ->orderBy('clientes.razao_social', $dir)
-          ->addSelect('cadastrodepedido.*');
-} else {
-    $query->orderBy($orderBy, $dir);
-}
-
-        $pedidos = $query->get();
-
-        $valor_total = $pedidos->sum('valor_pedido');
-        $valor_total_faturado = $pedidos->sum('valor_faturado');
-        $valor_total_comissao_parcial = $pedidos->sum('valor_comissao_parcial');
-        $valor_total_comissao_faturada = $pedidos->sum('valor_comissao_faturada');
-
-        return view('cadastrodepedido.table', compact(
-            'pedidos',
-            'valor_total',
-            'valor_total_faturado',
-            'valor_total_comissao_parcial',
-            'valor_total_comissao_faturada',
-            'orderBy',
-            'dir'
-        ));
-    }
-
-    public function search(Request $request)
-    {
-        $term = $request->get('q', '');
-        $results = Cliente::select('id', 'razao_social')
-            ->where('razao_social', 'like', "%{$term}%")
-            ->limit(20)
-            ->get();
-
-        return response()->json($results);
-    }
-
-    public function showTabela(Request $request)
-    {
-        return $this->show($request);
-    }
-
-    public function exportPdf(Request $request)
-    {
-        set_time_limit(300);
-        ini_set('memory_limit', '512M');
-
-        $query = CadastroDePedido::with(['cliente', 'representada', 'transportadora']);
-
-        if ($request->filled('cliente_id')) {
-            $query->where('cliente_id', $request->cliente_id);
-        }
-        if ($request->filled('representada_id')) {
-            $query->where('representada_id', $request->representada_id);
-        }
-        if ($request->filled('transportadora_id')) {
-            $query->where('transportadora_id', $request->transportadora_id);
-        }
-
-        if ($request->filled('data_inicial') && $request->filled('data_final')) {
-            $query->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
-        } else {
-            if ($request->filled('mes')) {
-                $query->whereMonth('data_pedido', $request->mes);
-            }
-            if ($request->filled('ano')) {
-                $query->whereYear('data_pedido', $request->ano);
-            }
-        }
-        if ($request->filled('status')) {
-            if ($request->status === 'pendente') {
-                $query->whereBetween('valor_faturado', [0, 1]);
-            } elseif ($request->status === 'baixado') {
-                $query->where('valor_faturado', '>', 1);
-            }
-        }
-
-        $temFiltro = $request->filled('cliente_id') || $request->filled('representada_id') || $request->filled('transportadora_id')
-            || $request->filled('data_inicial') || $request->filled('data_final') || $request->filled('mes') || $request->filled('ano') || $request->filled('status');
-
-        if ($temFiltro) {
-            $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
-            $orderBy = $request->get('order', 'data_pedido');
-            $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
-            if (!in_array($orderBy, $allowedOrders)) {
-                $orderBy = 'data_pedido';
-            }
-            if ($orderBy === 'cliente_id') {
-                $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
-                      ->orderBy('clientes.razao_social', $dir)
-                      ->addSelect('cadastrodepedido.*');
-            } else {
-                $query->orderBy($orderBy, $dir);
-            }
-        } else {
-            $query->orderBy('data_pedido', 'desc');
-        }
-
-        $total_pedidos = (clone $query)->sum('valor_pedido');
-        $total_faturado = (clone $query)->sum('valor_faturado');
-        $total_comissao_parcial = (clone $query)->sum('valor_comissao_parcial');
-        $total_comissao_faturada = (clone $query)->sum('valor_comissao_faturada');
-
-        $pedidos = $query->get();
-
-        $cliente = $request->filled('cliente_id') ? Cliente::find($request->cliente_id) : null;
-        $representada = $request->filled('representada_id') ? \App\Models\Representada::find($request->representada_id) : null;
-        $transportadora = $request->filled('transportadora_id') ? \App\Models\Transportadora::find($request->transportadora_id) : null;
-        $mes = $request->mes;
-        $ano = $request->ano;
-        $data_inicial = $request->data_inicial;
-        $data_final = $request->data_final;
-
-        try {
-            $pdf = PDF::loadView('cadastrodepedido.relatorios.pdf', compact(
-                'pedidos',
-                'total_pedidos',
-                'total_faturado',
-                'total_comissao_parcial',
-                'total_comissao_faturada',
-                'cliente',
-                'representada',
-                'transportadora',
-                'mes',
-                'ano',
-                'data_inicial',
-                'data_final'
-            ));
-
-            return $pdf->download('relatorio_pedidos.pdf');
-        } catch (\Throwable $e) {
-            report($e);
-            return redirect()->back()->with('error', 'Erro ao gerar PDF. Tente filtrar por cliente, data ou outro critério para reduzir a quantidade de registros.');
-        }
-    }
-
-    public function exportExcel(Request $request)
-    {
-        return Excel::download(new PedidosExport($request), 'pedidos.xlsx');
-    }
-
-    public function dashboard(Request $request)
-    {
-        $graficoQuery = CadastroDePedido::query();
-
-        if ($request->filled('data_inicial') && $request->filled('data_final')) {
-            $graficoQuery->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
-        } else {
-            if ($request->mes) {
-                $graficoQuery->whereMonth('data_pedido', $request->mes);
-            }
-            if ($request->ano) {
-                $graficoQuery->whereYear('data_pedido', $request->ano);
-            }
-        }
-
-        if ($request->filled('status')) {
-            if ($request->status === 'pendente') {
-                $graficoQuery->whereBetween('valor_faturado', [0, 1]);
-            } elseif ($request->status === 'baixado') {
-                $graficoQuery->where('valor_faturado', '>', 1);
-            }
-        }
-
-        if ($request->cliente_id) {
-            $graficoQuery->where('cliente_id', $request->cliente_id);
-        }
-        if ($request->representada_id) {
-            $graficoQuery->where('representada_id', $request->representada_id);
-        }
-        if ($request->transportadora_id) {
-            $graficoQuery->where('transportadora_id', $request->transportadora_id);
-        }
-
-        $pedidosAgrupados = $graficoQuery->selectRaw('YEAR(data_pedido) as ano, MONTH(data_pedido) as mes,
+    $pedidosAgrupados = $graficoQuery->selectRaw('YEAR(data_pedido) as ano, MONTH(data_pedido) as mes,
                                  SUM(valor_pedido) as total_pedido,
                                  SUM(valor_faturado) as total_faturado')
-                                 ->groupByRaw('YEAR(data_pedido), MONTH(data_pedido)')
-                                 ->orderByRaw('YEAR(data_pedido), MONTH(data_pedido)')
-                                 ->get();
+      ->groupByRaw('YEAR(data_pedido), MONTH(data_pedido)')
+      ->orderByRaw('YEAR(data_pedido), MONTH(data_pedido)')
+      ->get();
 
-        $labels = [];
-        $valoresPedidos = [];
-        $valoresFaturados = [];
+    $labels = [];
+    $valoresPedidos = [];
+    $valoresFaturados = [];
 
-        foreach ($pedidosAgrupados as $pedido) {
-            $labels[] = str_pad($pedido->mes, 2, '0', STR_PAD_LEFT) . '/' . $pedido->ano;
-            $valoresPedidos[] = (float) $pedido->total_pedido;
-            $valoresFaturados[] = (float) $pedido->total_faturado;
-        }
-
-        $totaisQuery = CadastroDePedido::query();
-
-        if ($request->filled('data_inicial') && $request->filled('data_final')) {
-            $totaisQuery->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
-        } else {
-            if ($request->mes) {
-                $totaisQuery->whereMonth('data_pedido', $request->mes);
-            }
-            if ($request->ano) {
-                $totaisQuery->whereYear('data_pedido', $request->ano);
-            }
-        }
-
-        if ($request->cliente_id) {
-            $totaisQuery->where('cliente_id', $request->cliente_id);
-        }
-        if ($request->representada_id) {
-            $totaisQuery->where('representada_id', $request->representada_id);
-        }
-        if ($request->transportadora_id) {
-            $totaisQuery->where('transportadora_id', $request->transportadora_id);
-        }
-        if ($request->filled('status')) {
-            if ($request->status === 'pendente') {
-                $totaisQuery->whereBetween('valor_faturado', [0, 1]);
-            } elseif ($request->status === 'baixado') {
-                $totaisQuery->where('valor_faturado', '>', 1);
-            }
-        }
-
-        $total_pedidos = $totaisQuery->sum('valor_pedido');
-        $total_faturado = $totaisQuery->sum('valor_faturado');
-        $total_comissao_parcial = $totaisQuery->sum('valor_comissao_parcial');
-        $total_comissao_faturada = $totaisQuery->sum('valor_comissao_faturada');
-
-        $clientes = Cliente::orderBy('razao_social')->get();
-        $representadas = \App\Models\Representada::orderBy('razao_social')->get();
-        $transportadoras = \App\Models\Transportadora::orderBy('razao_social')->get();
-
-        return view('cadastrodepedido.dashboard', compact(
-            'labels',
-            'valoresPedidos',
-            'valoresFaturados',
-            'total_pedidos',
-            'total_faturado',
-            'total_comissao_parcial',
-            'total_comissao_faturada',
-            'clientes',
-            'representadas',
-            'transportadoras'
-        ));
+    foreach ($pedidosAgrupados as $pedido) {
+      $labels[] = str_pad($pedido->mes, 2, '0', STR_PAD_LEFT) . '/' . $pedido->ano;
+      $valoresPedidos[] = (float) $pedido->total_pedido;
+      $valoresFaturados[] = (float) $pedido->total_faturado;
     }
+
+    $totaisQuery = CadastroDePedido::query();
+
+    if ($request->filled('data_inicial') && $request->filled('data_final')) {
+      $totaisQuery->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
+    } else {
+      if ($request->mes) {
+        $totaisQuery->whereMonth('data_pedido', $request->mes);
+      }
+      if ($request->ano) {
+        $totaisQuery->whereYear('data_pedido', $request->ano);
+      }
+    }
+
+    if ($request->cliente_id) {
+      $totaisQuery->where('cliente_id', $request->cliente_id);
+    }
+    if ($request->representada_id) {
+      $totaisQuery->where('representada_id', $request->representada_id);
+    }
+    if ($request->transportadora_id) {
+      $totaisQuery->where('transportadora_id', $request->transportadora_id);
+    }
+    if ($request->filled('status')) {
+      if ($request->status === 'pendente') {
+        $totaisQuery->whereBetween('valor_faturado', [0, 1]);
+      } elseif ($request->status === 'baixado') {
+        $totaisQuery->where('valor_faturado', '>', 1);
+      }
+    }
+
+    $total_pedidos = $totaisQuery->sum('valor_pedido');
+    $total_faturado = $totaisQuery->sum('valor_faturado');
+    $total_comissao_parcial = $totaisQuery->sum('valor_comissao_parcial');
+    $total_comissao_faturada = $totaisQuery->sum('valor_comissao_faturada');
+
+    $clientes = Cliente::orderBy('razao_social')->get();
+    $representadas = \App\Models\Representada::orderBy('razao_social')->get();
+    $transportadoras = \App\Models\Transportadora::orderBy('razao_social')->get();
+
+    return view('cadastrodepedido.dashboard', compact(
+      'labels',
+      'valoresPedidos',
+      'valoresFaturados',
+      'total_pedidos',
+      'total_faturado',
+      'total_comissao_parcial',
+      'total_comissao_faturada',
+      'clientes',
+      'representadas',
+      'transportadoras'
+    ));
+  }
+
+  private function buildFilteredQuery(Request $request)
+  {
+    $query = CadastroDePedido::query();
+
+    if ($request->cliente_id) {
+      $query->where('cliente_id', $request->cliente_id);
+    }
+    if ($request->representada_id) {
+      $query->where('representada_id', $request->representada_id);
+    }
+    if ($request->transportadora_id) {
+      $query->where('transportadora_id', $request->transportadora_id);
+    }
+
+    if ($request->filled('data_inicial') && $request->filled('data_final')) {
+      $query->whereBetween('data_pedido', [$request->data_inicial, $request->data_final]);
+    } else {
+      if ($request->mes) {
+        $query->whereMonth('data_pedido', $request->mes);
+      }
+      if ($request->ano) {
+        $query->whereYear('data_pedido', $request->ano);
+      }
+    }
+
+    if ($request->filled('status')) {
+      if ($request->status === 'pendente') {
+        $query->whereBetween('valor_faturado', [0, 1]);
+      } elseif ($request->status === 'baixado') {
+        $query->where('valor_faturado', '>', 1);
+      }
+    }
+
+    return $query;
+  }
+
+  private function applyOrder($query, Request $request)
+  {
+    $query->with(['cliente', 'representada', 'transportadora']);
+
+    $allowedOrders = ['data_pedido', 'valor_pedido', 'valor_faturado', 'cliente_id'];
+    $orderBy = $request->get('order', 'data_pedido');
+    $dir = strtolower($request->get('dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+
+    if (!in_array($orderBy, $allowedOrders)) {
+      $orderBy = 'data_pedido';
+    }
+
+    if ($orderBy === 'cliente_id') {
+      $query->join('clientes', 'cadastrodepedido.cliente_id', '=', 'clientes.id')
+        ->orderBy('clientes.razao_social', $dir)
+        ->select('cadastrodepedido.*');
+    } else {
+      $query->orderBy($orderBy, $dir);
+    }
+
+    return $query;
+  }
+
+  private function resolvePerPage(Request $request): int
+  {
+    $allowed = [15, 25, 50, 100];
+    $perPage = (int) $request->get('per_page', self::PER_PAGE_DEFAULT);
+
+    return in_array($perPage, $allowed, true) ? $perPage : self::PER_PAGE_DEFAULT;
+  }
 }

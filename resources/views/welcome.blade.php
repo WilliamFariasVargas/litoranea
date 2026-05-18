@@ -42,25 +42,25 @@
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span></span><span class="counter" data-target="{{ $conteudo->anos_experiencia ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo?->anos_experiencia ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Anos de experiência</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span></span><span class="counter" data-target="{{ $conteudo->parceiros ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo?->parceiros ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Parceiros</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span></span><span class="counter" data-target="{{ $conteudo->estados ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo?->estados ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Estados atendidos</p>
                 </div>
             </div>
             <div class="col-md mb-3">
                 <div class="card shadow-sm border-0 p-4">
-                    <h2><span></span><span class="counter" data-target="{{ $conteudo->eventos ?? 0 }}">0</span></h2>
+                    <h2><span></span><span class="counter" data-target="{{ $conteudo?->eventos ?? 0 }}">0</span></h2>
                     <p class="mt-2 mb-0">Eventos</p>
                 </div>
             </div>
@@ -103,11 +103,11 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6 mb-4 mb-md-0">
-                <img src="{{ asset($conteudo->foto_sobre ? 'storage/' . $conteudo->foto_sobre : 'assets/images/foto.png') }}" alt="Sobre a Litorânea" class="img-fluid rounded">
+                <img src="{{ asset($conteudo?->foto_sobre ? 'storage/' . $conteudo->foto_sobre : 'assets/images/foto.png') }}" alt="Sobre a Litorânea" class="img-fluid rounded">
             </div>
             <div class="col-md-6">
                 <h2 class="text-center">Sobre a Litorânea</h2><br>
-                <p>{!! nl2br(e($conteudo->texto_sobre ?? 'Conteúdo ainda não adicionado.')) !!}</p>
+                <p>{!! nl2br(e($conteudo?->texto_sobre ?? 'Conteúdo ainda não adicionado.')) !!}</p>
             </div>
         </div>
     </div>
@@ -146,7 +146,7 @@
 
 <section class="container my-5 text-center">
     <h2 class="mb-4">Fale comigo</h2>
-    @if($conteudo->whatsapp)
+    @if($conteudo?->whatsapp)
         <a href="{{ $conteudo->whatsapp }}" target="_blank" class="btn btn-success btn-lg px-5 py-3">
             Clique aqui para falar no WhatsApp
         </a>

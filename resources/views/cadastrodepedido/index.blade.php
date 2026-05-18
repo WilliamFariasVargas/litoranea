@@ -85,9 +85,19 @@
         <input type="number" name="ano" value="{{ request('ano') }}" class="form-control">
     </div>
 
-    {{-- Inputs escondidos para ordenação --}}
+    <div class="col-md-3">
+        <label>Itens por página:</label>
+        <select name="per_page" class="form-control">
+            @foreach([15, 25, 50, 100] as $n)
+                <option value="{{ $n }}" {{ (int) request('per_page', 25) === $n ? 'selected' : '' }}>{{ $n }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- Inputs escondidos para ordenação e paginação --}}
     <input type="hidden" name="order" id="order" value="{{ request('order', 'data_pedido') }}">
     <input type="hidden" name="dir" id="dir" value="{{ request('dir', 'desc') }}">
+    <input type="hidden" name="page" id="page" value="{{ request('page', 1) }}">
 
     <div class="col-md-12 d-flex align-items-end gap-2 mt-2">
         <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -127,12 +137,9 @@
 
 <script>
     $(document).ready(function() {
-        // Inicializa Select2
-        $('.select2').select2({
-            placeholder: 'Selecione',
-            allowClear: true,
-            width: '100%'
-        });
+        cleanupStuckModalBackdrops();
+
+        initSelect2($('#filter_form select.select2'));
 
         // Evento de clique nos botões de ordenação
         $('.btn-order').on('click', function() {
@@ -145,8 +152,24 @@
 
             $('#order').val(orderBy);
             $('#dir').val(newDir);
+            $('#page').val(1);
 
             $('#filter_form').submit();
+        });
+
+        $(document).on('click', '#divTable .pagination a', function (e) {
+            e.preventDefault();
+            const href = $(this).attr('href');
+            if (!href || href === '#') return;
+
+            const url = new URL(href, window.location.origin);
+            const page = url.searchParams.get('page');
+            if (page) {
+                $('#page').val(page);
+            }
+            window.history.pushState({}, '', url.pathname + url.search);
+            tblPopulate();
+            atualizarLinksExportacao();
         });
 
         // Botão novo pedido
@@ -155,7 +178,7 @@
                 url: "{{ route('cadastrodepedido.create') }}",
                 method: 'GET',
                 success: function(data) {
-                    showModal(data);
+                    showCadastroPedidoModal(data);
                 },
                 error: function() {
                     Swal.fire('Erro!', 'Não foi possível abrir o formulário.', 'error');
@@ -163,19 +186,76 @@
             });
         });
 
-        // Submit do filtro com AJAX
         $('#filter_form').submit(function(e) {
             e.preventDefault();
+            $('#page').val(1);
             let queryString = $(this).serialize();
             window.history.pushState({}, '', '?' + queryString);
             tblPopulate();
             atualizarLinksExportacao();
         });
 
-        // Primeira carga
+        $(document).on('shown.bs.modal', '#modalMain', function () {
+            initCadastroPedidoModal($(this));
+        });
+
+        $(document).on('hidden.bs.modal', '#modalMain', function () {
+            destroySelect2($(this).find('select.select2'));
+            cleanupStuckModalBackdrops();
+        });
+
+        $(document).on('submit', '#create_pedido_form', function (e) {
+            e.preventDefault();
+            enviarFormularioPedido($(this), "{{ route('cadastrodepedido.store') }}");
+        });
+
+        $(document).on('submit', '#edit_pedido_form', function (e) {
+            e.preventDefault();
+            enviarFormularioPedido($(this), $(this).data('action'));
+        });
+
         tblPopulate();
         atualizarLinksExportacao();
     });
+
+    function enviarFormularioPedido(form, url) {
+        const formData = form.serializeArray();
+
+        form.find('.money').each(function () {
+            const name = $(this).attr('name');
+            const value = formatPedidoDecimal($(this).val().trim());
+
+            let found = false;
+            for (let i = 0; i < formData.length; i++) {
+                if (formData[i].name === name) {
+                    formData[i].value = value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                formData.push({ name: name, value: value });
+            }
+        });
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: $.param(formData),
+            success: function (data) {
+                hideCadastroPedidoModal();
+                Swal.fire('Sucesso!', data.message, 'success').then(function () {
+                    tblPopulate();
+                });
+            },
+            error: function (xhr) {
+                Swal.fire('Erro!', xhr.responseJSON?.message || 'Erro ao salvar pedido.', 'error')
+                    .then(function () {
+                        cleanupStuckModalBackdrops();
+                    });
+            }
+        });
+    }
 
     // Funções globais para serem usadas na tabela
     function tblPopulate() {
@@ -205,7 +285,7 @@
         window.location.href = "{{ route('cadastrodepedido.index') }}";
     }
 
-    function showModal(content) {
+    function showCadastroPedidoModal(content) {
         if ($('#modalMain').length === 0) {
             $('body').append(`
                 <div class="modal fade" id="modalMain" tabindex="-1" aria-hidden="true">
@@ -215,8 +295,30 @@
                 </div>
             `);
         }
-        $('#modalMain .modal-content').html(content);
-        $('#modalMain').modal('show');
+        const modalEl = document.getElementById('modalMain');
+        const $modal = $(modalEl);
+        const wasOpen = modalEl.classList.contains('show');
+
+        destroySelect2($modal.find('select.select2'));
+        $modal.find('.modal-content').html(content);
+
+        const instance = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+        if (wasOpen) {
+            initCadastroPedidoModal($modal);
+            return;
+        }
+
+        modalEl.addEventListener('shown.bs.modal', function onShown() {
+            modalEl.removeEventListener('shown.bs.modal', onShown);
+            cleanupStuckModalBackdrops();
+        }, { once: true });
+
+        instance.show();
+    }
+
+    function showModal(content) {
+        showCadastroPedidoModal(content);
     }
 </script>
 @endsection

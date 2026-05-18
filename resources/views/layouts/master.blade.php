@@ -16,6 +16,11 @@
      <!-- SELECT 2 -->
      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+     <style>
+        .select2-container--open { z-index: 1060 !important; }
+        .modal .select2-container--open { z-index: 1065 !important; }
+        .select2-dropdown { z-index: 1061 !important; }
+     </style>
 
      <!-- SWEETALERT-->
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

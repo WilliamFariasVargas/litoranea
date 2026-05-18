@@ -18,7 +18,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($pedidos as $pedido)
+        @forelse ($pedidos as $pedido)
         <tr>
             <td>
                 @if($pedido->valor_faturado > 1)
@@ -41,9 +41,28 @@
                 </div>
             </td>
         </tr>
-        @endforeach
+        @empty
+        <tr>
+            <td colspan="9" class="text-center text-muted py-4">Nenhum pedido encontrado com os filtros selecionados.</td>
+        </tr>
+        @endforelse
     </tbody>
 </table>
+
+@if($pedidos->hasPages() || $pedidos->total() > 0)
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 mb-2">
+        <small class="text-muted">
+            Exibindo {{ $pedidos->firstItem() ?? 0 }}–{{ $pedidos->lastItem() ?? 0 }}
+            de {{ number_format($pedidos->total(), 0, ',', '.') }} pedido(s)
+            @if(isset($perPage))
+                · {{ $perPage }} por página
+            @endif
+        </small>
+        <div id="pedidos-pagination">
+            {{ $pedidos->links('pagination::bootstrap-5') }}
+        </div>
+    </div>
+@endif
 
 <div class="mt-4">
     <h5 class="mb-2">Totais:</h5>
@@ -53,6 +72,7 @@
         <li><strong>Valor total comissão parcial:</strong> R$ {{ number_format($valor_total_comissao_parcial, 2, ',', '.') }}</li>
         <li><strong>Valor total comissão faturada:</strong> R$ {{ number_format($valor_total_comissao_faturada, 2, ',', '.') }}</li>
     </ul>
+    <p class="text-muted small mb-0">Totais consideram todos os registros do filtro, não apenas a página atual.</p>
 </div>
 
 <script>
@@ -100,32 +120,4 @@
         });
     }
 
-    $(document).ready(function() {
-        // Inicializa o select2 para o filtro normal (sem AJAX no filtro)
-        $('#filter_form select.select2').select2({
-            placeholder: 'Selecione',
-            allowClear: true
-        });
-
-        // Filtro funcionando por AJAX
-        $('#filter_form').submit(function(e) {
-            e.preventDefault();
-
-            var queryString = $(this).serialize();
-
-            $.ajax({
-                url: "{{ route('cadastrodepedido.tabela') }}?" + queryString,
-                method: "GET",
-                beforeSend: function() {
-                    $("#divTable").html("Carregando...");
-                },
-                success: function(response) {
-                    $("#divTable").html(response);
-                },
-                error: function() {
-                    Swal.fire('Erro!', 'Erro ao carregar os pedidos.', 'error');
-                }
-            });
-        });
-    });
     </script>

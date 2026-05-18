@@ -11,9 +11,13 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $conteudo = \App\Models\HomeContent::first();
-        $logosParceiros = \App\Models\LogoParceiro::all();
-        $eventos = \App\Models\Evento::with('fotos')->latest()->take(5)->get();
+        $conteudo = HomeContent::first();
+        if (!$conteudo) {
+            $conteudo = HomeContent::create([]);
+        }
+
+        $logosParceiros = LogoParceiro::all();
+        $eventos = Evento::with('fotos')->latest()->take(5)->get();
 
         return view('welcome', compact('conteudo', 'logosParceiros', 'eventos'));
     }
