@@ -130,12 +130,22 @@ class CadastroDePedidoController extends Controller
     set_time_limit(300);
     ini_set('memory_limit', '512M');
 
-    $query = $this->applyOrder($this->buildFilteredQuery($request), $request);
+    $baseQuery = $this->buildFilteredQuery($request);
+    $totalRegistros = (clone $baseQuery)->count();
 
-    $total_pedidos = (clone $query)->sum('valor_pedido');
-    $total_faturado = (clone $query)->sum('valor_faturado');
-    $total_comissao_parcial = (clone $query)->sum('valor_comissao_parcial');
-    $total_comissao_faturada = (clone $query)->sum('valor_comissao_faturada');
+    if ($totalRegistros > 2000) {
+      return $this->exportErrorResponse(
+        $request,
+        "Muitos registros ({$totalRegistros}). Use filtros de data, cliente ou representada para reduzir o volume antes de exportar o PDF."
+      );
+    }
+
+    $query = $this->applyOrder($baseQuery, $request);
+
+    $total_pedidos = (clone $baseQuery)->sum('valor_pedido');
+    $total_faturado = (clone $baseQuery)->sum('valor_faturado');
+    $total_comissao_parcial = (clone $baseQuery)->sum('valor_comissao_parcial');
+    $total_comissao_faturada = (clone $baseQuery)->sum('valor_comissao_faturada');
 
     $pedidos = $query->get();
 
@@ -166,13 +176,36 @@ class CadastroDePedidoController extends Controller
       return $pdf->download('relatorio_pedidos.pdf');
     } catch (\Throwable $e) {
       report($e);
-      return redirect()->back()->with('error', 'Erro ao gerar PDF. Tente filtrar por cliente, data ou outro critério para reduzir a quantidade de registros.');
+      return $this->exportErrorResponse(
+        $request,
+        'Erro ao gerar PDF. Tente filtrar por cliente, data ou outro critério para reduzir a quantidade de registros.'
+      );
     }
   }
 
   public function exportExcel(Request $request)
   {
-    return Excel::download(new PedidosExport($request), 'pedidos.xlsx');
+    try {
+      set_time_limit(300);
+      ini_set('memory_limit', '512M');
+
+      return Excel::download(new PedidosExport($request), 'pedidos.xlsx');
+    } catch (\Throwable $e) {
+      report($e);
+      return $this->exportErrorResponse(
+        $request,
+        'Erro ao gerar Excel. Tente aplicar filtros para reduzir a quantidade de registros.'
+      );
+    }
+  }
+
+  private function exportErrorResponse(Request $request, string $message)
+  {
+    if ($request->expectsJson() || $request->ajax()) {
+      return response()->json(['message' => $message], 422);
+    }
+
+    return redirect()->back()->with('error', $message);
   }
 
   public function dashboard(Request $request)

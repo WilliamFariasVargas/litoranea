@@ -115,12 +115,12 @@
             <i class="fas fa-sort{{ request('order') === 'valor_faturado' ? (request('dir') === 'asc' ? '-up' : '-down') : '' }}"></i>
         </button>
 
-        <a id="btnExportExcel" href="#" class="btn btn-success ms-auto">
+        <button type="button" id="btnExportExcel" class="btn btn-success ms-auto">
             <i class="fas fa-file-excel mx-2"></i> Exportar Excel
-        </a>
-        <a id="btnExportPdf" href="#" class="btn btn-danger">
+        </button>
+        <button type="button" id="btnExportPdf" class="btn btn-danger">
             <i class="fas fa-file-pdf mx-2"></i> Exportar PDF
-        </a>
+        </button>
     </div>
 </form>
 
@@ -134,6 +134,30 @@
 <section class="col-md-12 mt-2 container-fluid" id="divTable">
     {{-- Tabela será carregada aqui via AJAX --}}
 </section>
+
+<div class="modal fade" id="exportLoadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-4 p-md-5">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <h5 class="mb-2" id="exportLoadingTitle">Preparando arquivo...</h5>
+                <p class="text-muted small mb-4" id="exportLoadingMessage">Aguarde enquanto geramos o arquivo para download.</p>
+                <div class="progress" style="height: 22px;">
+                    <div id="exportProgressBar"
+                         class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                         role="progressbar"
+                         style="width: 0%"
+                         aria-valuenow="0"
+                         aria-valuemin="0"
+                         aria-valuemax="100"></div>
+                </div>
+                <p class="mt-2 mb-0 small text-muted" id="exportProgressPercent">0%</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     $(document).ready(function() {
@@ -169,7 +193,6 @@
             }
             window.history.pushState({}, '', url.pathname + url.search);
             tblPopulate();
-            atualizarLinksExportacao();
         });
 
         // Botão novo pedido
@@ -192,7 +215,6 @@
             let queryString = $(this).serialize();
             window.history.pushState({}, '', '?' + queryString);
             tblPopulate();
-            atualizarLinksExportacao();
         });
 
         $(document).on('shown.bs.modal', '#modalMain', function () {
@@ -214,8 +236,17 @@
             enviarFormularioPedido($(this), $(this).data('action'));
         });
 
+        $('#btnExportExcel').on('click', function () {
+            const url = "{{ url('cadastrodepedido/export-excel') }}" + window.location.search;
+            baixarExportacaoComLoading(url, 'pedidos.xlsx', 'Excel');
+        });
+
+        $('#btnExportPdf').on('click', function () {
+            const url = "{{ url('cadastrodepedido/export-pdf') }}" + window.location.search;
+            baixarExportacaoComLoading(url, 'relatorio_pedidos.pdf', 'PDF');
+        });
+
         tblPopulate();
-        atualizarLinksExportacao();
     });
 
     function enviarFormularioPedido(form, url) {
@@ -273,12 +304,6 @@
                 $("#divTable").html('<div class="alert alert-danger">Erro ao carregar dados</div>');
             }
         });
-    }
-
-    function atualizarLinksExportacao() {
-        let query = window.location.search;
-        $('#btnExportExcel').attr('href', "{{ url('cadastrodepedido/export-excel') }}" + query);
-        $('#btnExportPdf').attr('href', "{{ url('cadastrodepedido/export-pdf') }}" + query);
     }
 
     function limparFiltros() {

@@ -96,6 +96,135 @@ function cleanupStuckModalBackdrops() {
     }
 }
 
+let exportProgressTimer = null;
+
+function showExportLoadingModal(titulo, mensagem) {
+    const el = document.getElementById('exportLoadingModal');
+    if (!el) return;
+
+    document.getElementById('exportLoadingTitle').textContent = titulo || 'Preparando arquivo...';
+    document.getElementById('exportLoadingMessage').textContent = mensagem || 'Aguarde enquanto geramos o arquivo para download.';
+    updateExportProgress(0);
+
+    bootstrap.Modal.getOrCreateInstance(el, {
+        backdrop: 'static',
+        keyboard: false,
+    }).show();
+}
+
+function hideExportLoadingModal() {
+    if (exportProgressTimer) {
+        clearInterval(exportProgressTimer);
+        exportProgressTimer = null;
+    }
+
+    const el = document.getElementById('exportLoadingModal');
+    if (!el) return;
+
+    const instance = bootstrap.Modal.getInstance(el);
+    if (instance) {
+        instance.hide();
+    }
+}
+
+function updateExportProgress(percent) {
+    const value = Math.max(0, Math.min(100, Math.round(percent)));
+    const bar = document.getElementById('exportProgressBar');
+    const label = document.getElementById('exportProgressPercent');
+
+    if (bar) {
+        bar.style.width = value + '%';
+        bar.setAttribute('aria-valuenow', value);
+    }
+    if (label) {
+        label.textContent = value + '%';
+    }
+}
+
+function startExportProgressSimulation() {
+    if (exportProgressTimer) {
+        clearInterval(exportProgressTimer);
+    }
+
+    let progress = 5;
+    updateExportProgress(progress);
+
+    exportProgressTimer = setInterval(function () {
+        if (progress < 90) {
+            progress += Math.random() * 6 + 2;
+            updateExportProgress(Math.min(90, progress));
+        }
+    }, 450);
+}
+
+function baixarExportacaoComLoading(url, filename, tipoLabel) {
+    showExportLoadingModal(
+        'Gerando ' + tipoLabel + '...',
+        'Não feche esta janela. Com muitos registros, o processo pode levar alguns minutos.'
+    );
+    startExportProgressSimulation();
+
+    fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/octet-stream, application/json',
+        },
+    })
+        .then(function (response) {
+            const contentType = response.headers.get('Content-Type') || '';
+
+            if (!response.ok) {
+                if (contentType.includes('application/json')) {
+                    return response.json().then(function (data) {
+                        throw new Error(data.message || 'Não foi possível gerar o arquivo.');
+                    });
+                }
+                throw new Error('Não foi possível gerar o arquivo. Tente usar filtros para reduzir os registros.');
+            }
+
+            if (contentType.includes('application/json')) {
+                return response.json().then(function (data) {
+                    throw new Error(data.message || 'Resposta inválida do servidor.');
+                });
+            }
+
+            return response.blob();
+        })
+        .then(function (blob) {
+            updateExportProgress(100);
+
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(blobUrl);
+
+            setTimeout(function () {
+                hideExportLoadingModal();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Download iniciado',
+                    text: 'O arquivo ' + tipoLabel + ' foi gerado com sucesso.',
+                    timer: 2500,
+                    showConfirmButton: false,
+                });
+            }, 400);
+        })
+        .catch(function (error) {
+            hideExportLoadingModal();
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro na exportação',
+                text: error.message || 'Tente novamente com filtros mais específicos.',
+            });
+        });
+}
+
 function hideCadastroPedidoModal() {
     const el = document.getElementById('modalMain');
     if (!el) {
